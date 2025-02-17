@@ -36,3 +36,86 @@ Limitations:
 1. Currently, this code is not expected to handle multiple OCR data. 
 
 """
+import os
+import json
+import psycopg2
+from flask import Flask, Blueprint, request, jsonify
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Configuration class
+class Config:
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    if not DATABASE_URL:
+        raise ValueError("DATABASE_URL environment variable is missing.")
+
+# Function to get a database connection
+def get_db_connection():
+    try:
+        return psycopg2.connect(Config.DATABASE_URL)
+    except Exception as e:
+        print(f"Error getting DB connection: {e}")
+        return None
+
+# Function to fetch OCR text from the database
+def fetch_ocr_text(file_id):
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return None, "Database connection error"
+
+        with conn:
+            with conn.cursor() as cur:
+                query = "SELECT ocr_json_1 FROM ocr_data WHERE file_id = %s"
+
+                try:
+                    cur.execute(query, (int(file_id),))  # If file_id is an integer
+                except ValueError:
+                    cur.execute(query, (file_id,))  # If file_id is a string
+                
+                result = cur.fetchone()
+
+                if not result:
+                    return None, "OCR text not found"
+
+                ocr_json = result[0]
+
+                try:
+                    return json.loads(ocr_json) if isinstance(ocr_json, str) else ocr_json, None
+                except json.JSONDecodeError:
+                    return None, "Invalid JSON format"
+    except Exception as e:
+        print(f"Error fetching OCR text: {e}")
+        return None, str(e)
+
+# Define API blueprint
+api_blueprint = Blueprint("api", __name__)
+
+# API Endpoint to fetch OCR text (file_id passed in URL as part of the route)
+@api_blueprint.route("/get_ocr_text/<file_id>", methods=["GET"])
+def get_ocr_text(file_id):
+    try:
+        ocr_text, error = fetch_ocr_text(file_id)
+
+        if error:
+            return jsonify({"error": error}), 404
+
+        return jsonify({"message": "OCR text retrieved successfully", "ocr_text": ocr_text})
+
+    except Exception as e:
+        print(f"Error retrieving OCR text: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Flask App Factory
+def create_app():
+    app = Flask(__name__)
+    app.register_blueprint(api_blueprint, url_prefix="/api")
+
+    return app
+
+# Run the Flask application
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
