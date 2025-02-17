@@ -35,12 +35,19 @@ The code in this file is expected to provide following:
 Limitations:
 1. Currently, this code is not expected to handle multiple OCR data. 
 
+
+custom changes:
+ALTER TABLE public.extracted_data
+ADD CONSTRAINT unique_file_id UNIQUE (file_id);
+
+had to set file_id unique
 """
 import os
 import json
 import psycopg2
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -68,45 +75,135 @@ def fetch_ocr_text(file_id):
 
         with conn:
             with conn.cursor() as cur:
-                query = "SELECT ocr_json_1 FROM ocr_data WHERE file_id = %s"
+                query = "SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
 
                 try:
                     cur.execute(query, (int(file_id),))  # If file_id is an integer
                 except ValueError:
                     cur.execute(query, (file_id,))  # If file_id is a string
                 
-                result = cur.fetchone()
+                response = cur.fetchone()
+                # print(response)
 
-                if not result:
-                    return None, "OCR text not found"
+                if not response:
+                    return None, None, None, "file_id not found in ocr_data table"
 
-                ocr_json = result[0]
+                file_id_from_db, project_id, ocr_json_1 = response
 
                 try:
-                    return json.loads(ocr_json) if isinstance(ocr_json, str) else ocr_json, None
+                    ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
+                    return file_id_from_db, project_id, ocr_data, None
                 except json.JSONDecodeError:
-                    return None, "Invalid JSON format"
+                    return file_id_from_db, project_id, None, "Invalid JSON format"
     except Exception as e:
         print(f"Error fetching OCR text: {e}")
+        return None, str(e)
+
+def insert_instrument_type(user_id, project_id, file_id, instrument_type):
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return None, "Database connection error"
+
+        with conn:
+            with conn.cursor() as cur:
+                query = """
+                INSERT INTO public.extracted_data (user_id, file_id, project_id, instrument_type)
+                VALUES (%s, %s, %s, %s::jsonb)
+                ON CONFLICT (file_id) 
+                DO UPDATE 
+                SET instrument_type = EXCLUDED.instrument_type
+                RETURNING id;
+                """
+                user_id = int(user_id)
+                file_id = int(file_id)  # Convert to integer
+                project_id = int(project_id)  # Convert to integer
+                instrument_type_json = json.dumps(instrument_type)
+                try:
+                    cur.execute(query, (user_id, file_id, project_id, instrument_type_json))
+                    extracted_data_id = cur.fetchone()[0]
+                except Exception as e:
+                    print("Error inserting into database:", e)
+                    return None, "Database insert failed"
+
+                conn.commit()
+                return extracted_data_id, None
+
+    except Exception as e:
+        print(f"Error Inserting instrument_type: {e}")
         return None, str(e)
 
 
 
 # API Endpoint to fetch OCR text (file_id passed in URL as part of the route)
 
+def extract_instrument_type(ocr_text):
+    client = OpenAI()
+    # Define system and user prompts
+    system_prompt = """
+    You are a legal expert extraction algorithm specializing in property law and land transactions.
+    Extract the following details from the provided legal land document and provide output in valid JSON format.
+    """
+    user_prompt_doc_type = """Extract legal information from the following document:\n\n{ocr_text}. 
+    Instrument Type can be one of following: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way, Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption, Court Case, Assignment or Other. If the type is an amendment, return what kind of instrument it is amending. 
+    Supporting evidence should be from the text provided as document in this prompt. 
+    Expected output json should contain following fields: instrument type and supporting evidence from the input text data. In output json, keep two fields, one string "instrument_type" and second array of strings "supportingEvidence"."""
+
+    # Send request to OpenAI
+    completion = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt_doc_type}
+    ]
+    )
+    # Print extracted data
+    return completion.choices[0].message.content
+
+def find_best_match(ocr_data, instrument_data):
+    best_match = None
+    highest_confidence = 0
+
+    for evidence in instrument_data["SupportingEvidence"]:
+        for block in ocr_data["confidence_scores"]:
+            similarity = SequenceMatcher(None, evidence, block["text"]).ratio()
+            
+            if similarity > 0.8:  # Threshold for similarity match
+                if block["confidence"] > highest_confidence:
+                    highest_confidence = block["confidence"]
+                    best_match = block["text"]
+
+    return {"BestMatch": best_match, "Confidence": highest_confidence}
+
+
 
 # Flask App Factory
 def create_app():
     app = Flask(__name__)
-    @app.route("/api/v1/get_ocr_text/<file_id>", methods=["GET"])
-    def get_ocr_text(file_id):
+    @app.route("/api/v1/extract_data/<user_id>/<file_id>", methods=["GET"])
+    def extract_data(user_id, file_id):
         try:
-            ocr_text, error = fetch_ocr_text(file_id)
+            file_id, project_id, ocr_data, error = fetch_ocr_text(file_id)
 
             if error:
                 return jsonify({"error": error}), 404
 
-            return jsonify({"message": "OCR text retrieved successfully", "ocr_text": ocr_text})
+            else:
+                ocr_text = ocr_data.get("text", "")
+                print(ocr_text)
+                extracted_data = extract_instrument_type(ocr_text)
+                
+                cleaned_response = extracted_data.strip("```").lstrip("json\n").strip()
+                # cleaned_response = cleaned_response.replace("\n", "").replace(r'\"', "")
+
+                # print(ocr_data)
+                # print(cleaned_response)
+
+                extracted_data_id = insert_instrument_type(user_id, project_id, file_id, cleaned_response)
+
+
+
+            return jsonify({"message": "Data extraction successful", "extracted_data_id" : extracted_data_id})
 
         except Exception as e:
             print(f"Error retrieving OCR text: {e}")
