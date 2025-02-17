@@ -39,7 +39,7 @@ Limitations:
 import os
 import json
 import psycopg2
-from flask import Flask, Blueprint, request, jsonify
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -90,29 +90,27 @@ def fetch_ocr_text(file_id):
         print(f"Error fetching OCR text: {e}")
         return None, str(e)
 
-# Define API blueprint
-api_blueprint = Blueprint("api", __name__)
+
 
 # API Endpoint to fetch OCR text (file_id passed in URL as part of the route)
-@api_blueprint.route("/get_ocr_text/<file_id>", methods=["GET"])
-def get_ocr_text(file_id):
-    try:
-        ocr_text, error = fetch_ocr_text(file_id)
 
-        if error:
-            return jsonify({"error": error}), 404
-
-        return jsonify({"message": "OCR text retrieved successfully", "ocr_text": ocr_text})
-
-    except Exception as e:
-        print(f"Error retrieving OCR text: {e}")
-        return jsonify({"error": str(e)}), 500
 
 # Flask App Factory
 def create_app():
     app = Flask(__name__)
-    app.register_blueprint(api_blueprint, url_prefix="/api")
+    @app.route("/api/v1/get_ocr_text/<file_id>", methods=["GET"])
+    def get_ocr_text(file_id):
+        try:
+            ocr_text, error = fetch_ocr_text(file_id)
 
+            if error:
+                return jsonify({"error": error}), 404
+
+            return jsonify({"message": "OCR text retrieved successfully", "ocr_text": ocr_text})
+
+        except Exception as e:
+            print(f"Error retrieving OCR text: {e}")
+            return jsonify({"error": str(e)}), 500
     return app
 
 # Run the Flask application
