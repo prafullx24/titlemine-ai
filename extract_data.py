@@ -137,9 +137,7 @@ def insert_instrument_type(user_id, project_id, file_id, instrument_type):
 def insert_extracted_data(user_id, project_id, file_id, instrument_type):
 
     # To Do:
-        """
-        Add all values from Runsheet Propmt Columns and match them with extracted_data column. 
-        """
+    # Add all values from Runsheet Propmt Columns and match them with extracted_data column.
     try:
         conn = get_db_connection()
         if conn is None:
