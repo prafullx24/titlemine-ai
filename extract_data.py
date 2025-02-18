@@ -160,7 +160,7 @@ def extract_instrument_type(ocr_text):
     # Print extracted data
     return completion.choices[0].message.content
 
-def find_best_match(ocr_data, instrument_data):
+def find_confidence(ocr_data, instrument_data):
     best_match = None
     highest_confidence = 0
 
