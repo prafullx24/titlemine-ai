@@ -1,111 +1,19 @@
-"""
-This file is expected to contain all the code related to File OCR handling.
-As per the development plan, we are expecting to add multiple OCR Providers to increase our coverage of document processing.
-During the first milestone phase, we are specifically working with Google's Document AI.
 
-The code in this file is expected to provide the following:
-1. A Flask endpoint that takes file_id as input.
-2. This file is downloaded from an S3 URL and split if the page count is more than 15.
-3. These 15-page files are sent to OCR, and OCR data is received from Document AI.
-4. If a file is split, the OCR data is merged and stored in the database table OCR_data (columns: ocr_text_1 and ocr_json_1).
-5. Along with the OCR Text data, we also extract the JSON with OCR confidence from Document AI. This is stored in the ocr_json_1 column.
-6. When OCR is complete, call the internal endpoint "extract_data" to start the data extraction process.
+#### combine function - 
+# process_file_and_ocr_data(file_id, extracted_data): and  def fetch_and_save_ocr_data(file_id, extracted_data=None):
+### into a single function - 
+# fetch_and_process_ocr_data
 
-Limitations:
-1. Currently working with only one OCR provider.
-2. Document AI has a file size limit of 20 MB for single-file processing.
 
-To-Do:
-1. Add a second OCR Provider: Amazon Textract or Anthropic.
-2. Switch to Batch Processing Mode on Document AI to disable the limits.
+# means - 
+# The process_file_and_ocr_data function fetches file details and OCR data in a single query, then updates or inserts the OCR data in the database based on whether it already exists.
+# The fetch_and_save_ocr_data function fetches file details from the database and saves extracted OCR data, updating ocr_text_1 if it exists or inserting a new record if it doesn't.
 
-API Endpoint:
-https://host:port/api/v1/ocr_file/:file_id
-
-Response:
-Processing:
-{
-  "status": "processing",
-  "file_id": "123456"
-}
-
-Completed:
-{
-  "status": "completed",
-  "file_id": "123456",
-  "ocr_data_id": "123123"
-}
-
-Failed:
-{
-  "status": "failed",
-  "file_id": "123456"
-}
-
-Libraries:
-Flask
-psycopg2
-dotenv
-requests
-google.cloud
-json
-os
-"""
-
-"""
-This file is expected to contain a Flask endpoint that takes ocr_data_id as an input parameter to extract specific data from the OCR data of a file.
-We will use OpenAI LLM for this task.
-We are expected to combine multiple OCR texts into one to create a "Consensus Document" once additional OCR providers are integrated.
-
-Architecture:
-
-Our Data extraction process is divided into five layers:
-
-"Runsheet -> extracted_data -> OCR_data -> Files -> Files in S3"
-
-Here, "Runsheets" and "Files in S3" are accessible to the user, while everything else is abstracted away.
-
-Files refer to the files table used to maintain references to the original uploaded files.
-OCR_data contains the raw text and confidence score of each OCR Block of a file.
-extracted_data holds the LLM response for the runsheet prompts, containing a multiline response by the LLM.
-Runsheet stores specific information useful for the Title Attorney.
-
-The code in this file is expected to provide the following:
-1. A Flask Endpoint called from the OCR processing file, which takes file_id and ocr_data_id as input.
-2. Ignore the Consensus Document as we only have one OCR in the first milestone.
-3. Use ChatGPT to prompt and extract data from files that have completed OCR processing.
-    - Use psycopg2 to connect with a PostgreSQL database to query OCR data for a specific file.
-    - Use OpenAI API to extract data from this OCR text.
-    - Use JSON files in the OCR_data table to get confidence scores.
-4. Store the output from ChatGPT in JSON format in the extracted_data table.
-    {
-        "gpt_response": "<Multiline Response from ChatGPT>",
-        "specific_data": "<Exact Value>",
-        "confidence_score": "99.00"
-    }
-5. Retrieve specific data from this table and store it in the respective runsheet column.
-
-Limitations:
-1. Currently, this code is not expected to handle multiple OCR providers.
-
-"""
+# The fetch_and_process_ocr_data function fetches file details and OCR data from the database, then updates or inserts the OCR data in a single database call.
 
 
 
-
-# ----------------------------------------- *** Execution *** ----------------------------------
-# 1) api 
-# 2) Fetch file details from the database based on file_id --> fetch url from db 
-# 3) split file and Define paths for downloaded pdf files and OCR files
-# 4) Check if OCR data already exists --> if yes then load existing OCR JSON
-# 5) Download File (only if not already present) --> download file from s3 url
-# 6) Perform OCR on File --> extract text from the downloaded files
-# 7) Save OCR Output as JSON --> save the extracted text in json format
-# 8) Save extracted OCR data and update ocr_text_1 if empty --> save the extracted text in the database
-# ----------------------------------------- *** Execution *** ----------------------------------
-
-
-
+# ---------------------------------------- Actual Code ----------------------------------------
 import os
 import psycopg2
 import requests
@@ -120,6 +28,7 @@ load_dotenv()
 # Set Google Application Credentials
 credentials_path = os.getenv("CREDENTIALS_PATH")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -146,7 +55,15 @@ DOWNLOAD_FOLDER = "download_file"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 
+
+
+
+
+
+
+
 # The fetch_and_process_ocr_data function fetches file details and OCR data from the database, then updates or inserts the OCR data in a single database call.
+
 def fetch_and_process_ocr_data(file_id, extracted_data=None):
     """Fetch file details, check OCR data, update or insert in a single database call"""
     conn = psycopg2.connect(**DB_CONFIG)
@@ -172,19 +89,20 @@ def fetch_and_process_ocr_data(file_id, extracted_data=None):
             return None, jsonify({"error": "S3 URL not available"}), 404
         
         if extracted_data is not None:
-            extracted_text = extracted_data.get("text", "").replace("\n", " ")
-            # Use INSERT ... ON CONFLICT to handle both insert and update
-            upsert_query = """
-                INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
-                VALUES (%s, %s, %s, %s)
-                ON CONFLICT (file_id) DO UPDATE SET
-                    ocr_json_1 = EXCLUDED.ocr_json_1,
-                    ocr_text_1 = CASE
-                        WHEN public.ocr_data.ocr_text_1 IS NULL OR public.ocr_data.ocr_text_1 = '' THEN EXCLUDED.ocr_text_1
-                        ELSE public.ocr_data.ocr_text_1
-                    END
-            """
-            cur.execute(upsert_query, (file_id, project_id, json.dumps(extracted_data), extracted_text))
+            # Update OCR data if the record exists
+            if ocr_json_1 is not None:
+                update_query = "UPDATE public.ocr_data SET ocr_json_1 = %s WHERE file_id = %s"
+                cur.execute(update_query, (json.dumps(extracted_data), file_id))
+                
+                # Update ocr_text_1 only if it's empty
+                if not ocr_text_1 or ocr_text_1.strip() == "":
+                    extracted_text = extracted_data.get("text", "").replace("\n", " ")
+                    cur.execute("UPDATE public.ocr_data SET ocr_text_1 = %s WHERE file_id = %s", (extracted_text, file_id))
+            else:
+                # Insert new OCR data record
+                insert_query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1) VALUES (%s, %s, %s, %s)"
+                extracted_text = extracted_data.get("text", "").replace("\n", " ")
+                cur.execute(insert_query, (file_id, project_id, json.dumps(extracted_data), extracted_text))
         
         conn.commit()
         return {
@@ -207,6 +125,116 @@ def fetch_and_process_ocr_data(file_id, extracted_data=None):
 
 
 
+
+
+
+
+
+# def fetch_and_save_ocr_data(file_id, extracted_data=None):
+#     """Fetch file details and save extracted OCR data, update ocr_text_1 if empty"""
+#     conn = psycopg2.connect(**DB_CONFIG)
+#     cur = conn.cursor()
+    
+#     try:
+#         # Fetch file details from the database
+#         cur.execute("SELECT user_id, project_id, file_name, s3_url FROM public.files WHERE id = %s", (file_id,))
+#         file_data = cur.fetchone()
+#         if not file_data:
+#             return None, jsonify({"error": "File not found"}), 404
+        
+#         user_id, project_id, file_name, s3_url = file_data
+#         if not s3_url:
+#             return None, jsonify({"error": "S3 URL not available"}), 404
+        
+#         if extracted_data is not None:
+#         # Check if file_id exists in the ocr_data table
+#             cur.execute("SELECT ocr_json_1, ocr_text_1 FROM public.ocr_data WHERE file_id = %s", (file_id,))
+#             result = cur.fetchone()
+        
+#             if result:
+#                 # File exists, update the existing record
+#                 query = "UPDATE public.ocr_data SET ocr_json_1 = %s, ocr_text_1 = %s WHERE file_id = %s"
+#                 extracted_text = extracted_data.get("text", "").replace("\n", " ")
+#                 cur.execute(query, (json.dumps(extracted_data), extracted_text, file_id))
+#             else:
+#                 # Insert new record
+#                 query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1) VALUES (%s, %s, %s, %s)"
+#                 extracted_text = extracted_data.get("text", "").replace("\n", " ")
+#                 cur.execute(query, (file_id, project_id, json.dumps(extracted_data), extracted_text))
+            
+
+#         conn.commit()
+#         return file_data, None, 200
+#     except Exception as e:
+#         conn.rollback()
+#         return None, jsonify({"error": str(e)}), 500
+#     finally:
+#         cur.close()
+#         conn.close()
+
+
+
+
+
+
+# def process_file_and_ocr_data(file_id, extracted_data):
+#     """Fetch file details, check OCR data, update or insert in a single database call"""
+#     conn = psycopg2.connect(**DB_CONFIG)
+#     cur = conn.cursor()
+    
+#     try:
+#         # Fetch file details and check if OCR data exists in a single query using LEFT JOIN
+#         query = """
+#             SELECT f.user_id, f.project_id, f.file_name, f.s3_url, o.ocr_json_1, o.ocr_text_1
+#             FROM public.files f
+#             LEFT JOIN public.ocr_data o ON f.id = o.file_id
+#             WHERE f.id = %s
+#         """
+#         cur.execute(query, (file_id,))
+#         result = cur.fetchone()
+        
+#         if not result:
+#             return jsonify({"error": "File not found"}), 404
+        
+#         user_id, project_id, file_name, s3_url, ocr_json_1, ocr_text_1 = result
+        
+#         # Update OCR data if the record exists
+#         if ocr_json_1 is not None:
+#             update_query = "UPDATE public.ocr_data SET ocr_json_1 = %s WHERE file_id = %s"
+#             cur.execute(update_query, (json.dumps(extracted_data), file_id))
+            
+#             # Update ocr_text_1 only if it's empty
+#             if not ocr_text_1 or ocr_text_1.strip() == "":
+#                 extracted_text = extracted_data.get("text", "").replace("\n", " ")
+#                 cur.execute("UPDATE public.ocr_data SET ocr_text_1 = %s WHERE file_id = %s", (extracted_text, file_id))
+#         else:
+#             # Insert new OCR data record
+#             insert_query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1) VALUES (%s, %s, %s)"
+#             cur.execute(insert_query, (file_id, project_id, json.dumps(extracted_data)))
+        
+#         conn.commit()
+#         return {
+#             "file_id": file_id,
+#             "user_id": user_id,
+#             "project_id": project_id,
+#             "file_name": file_name,
+#             "s3_url": s3_url,
+#             "message": "OCR data processed successfully"
+#         }
+        
+#     except Exception as e:
+#         conn.rollback()
+#         return jsonify({"error": str(e)}), 500
+    
+#     finally:
+#         cur.close()
+#         conn.close()
+
+
+
+
+
+
 def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
     """Download a file from S3 URL and save it locally"""
     file_name = f"download_pdf_{user_id}_{project_id}_{file_id}{file_extension}"
@@ -220,6 +248,7 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
                 file.write(chunk) # Write the chunk to the file 
         return file_path # Return the file path if download is successful
     return None
+
 
 
 
@@ -257,9 +286,24 @@ def extract_text_with_confidence(file_path):
 
 
 
+
+
+
+
+
 @app.route("/api/v1/ocr_file/<int:file_id>", methods=["GET"])
 def process_ocr(file_id):
     """API Endpoint to download, perform OCR, save extracted text json file, upload that file in db and retrive plain text from that file and then upload that text in db  """
+
+        # # Step 1: Fetch File Info from DB
+        # file_data = get_file_info(file_id)
+        # if not file_data:
+        #     return jsonify({"error": "File not found"}), 404
+        
+        # user_id, project_id, file_name, s3_url = file_data
+        # if not s3_url:
+        #     return jsonify({"error": "S3 URL not available"}), 404
+
 
     # Step 1: Fetch File Info and Save OCR Data
     file_data, error_response, status_code = fetch_and_process_ocr_data(file_id)
@@ -321,3 +365,25 @@ def process_ocr(file_id):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
+
+# ---------------------------------------- Actual Code ----------------------------------------
+
+
+
+
+
+
+
+
+
+# ----------------------------------------- *** Execution *** ----------------------------------
+# 1) api 
+# 2) Fetch file details from the database based on file_id --> fetch url from db 
+# 3) split file and Define paths for downloaded pdf files and OCR files
+# 4) Check if OCR data already exists --> if yes then load existing OCR JSON
+# 5) Download File (only if not already present) --> download file from s3 url
+# 6) Perform OCR on File --> extract text from the downloaded files
+# 7) Save OCR Output as JSON --> save the extracted text in json format
+# 8) Save extracted OCR data and update ocr_text_1 if empty --> save the extracted text in the database
+# ----------------------------------------- *** Execution *** ----------------------------------
