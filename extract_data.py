@@ -41,13 +41,12 @@ ALTER TABLE public.extracted_data
 ADD CONSTRAINT unique_file_id UNIQUE (file_id);
 
 had to set file_id unique
-"""
-import os
+"""import os
 import json
 import psycopg2
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from dotenv import load_dotenv
-from openai import OpenAI
+import openai
 
 # Load environment variables
 load_dotenv()
@@ -83,7 +82,6 @@ def fetch_ocr_text(file_id):
                     cur.execute(query, (file_id,))  # If file_id is a string
                 
                 response = cur.fetchone()
-                # print(response)
 
                 if not response:
                     return None, None, None, "file_id not found in ocr_data table"
@@ -98,56 +96,90 @@ def fetch_ocr_text(file_id):
     except Exception as e:
         print(f"Error fetching OCR text: {e}")
         return None, str(e)
+    
+def prompts_by_instrument_type(instrument_type):
+    prompts = {
+        "Deed": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+            "volume_page": "Reference the recording information found in the document and/or the file name to determine the volume number and page number of where the document was filed with the county. Return as 'Volume Number/Page Number'.",
+            "document_case_number": "Reference information found in the margins, top of the document, or in the file name to determine the case, file, or recording number. Return as '#Document Number'. If none is found, return 'none found'.",
+            "execution_date": "What is the latest date on which a grantor or grantee signed the document?",
+            "recording_date": "What is the date of the transfer of ownership?",
+            "grantor": "Who is selling or transferring the property or rights? Provide full names.",
+            "grantee": "Who is receiving the property or rights? Provide full names.",
+            "property_description": "Provide a detailed description of the property being transferred, including any identifiers.",
+            "reservations": "Are there any property rights explicitly excluded from the transaction by the Grantor(s)? If yes, list them.",
+            "conditions": "Are there any conditions that must be met after the effective date to finalize the sale or prevent reversion? If yes, specify them."
+        }
+        },
+        "Lease": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+            "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+            "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
+            "execution_date": "What is the latest date the grantor or grantee signed the document?",
+            "recording_date": "What is the official date the lease was recorded with the county?",
+            "grantor": "Identify the landlord or entity leasing the property.",
+            "grantee": "Identify the tenant or entity receiving the lease rights.",
+            "property_description": "Provide a detailed description of the leased property.",
+            "reservations": "Are there any rights or parts of the property explicitly excluded from the lease? If yes, specify.",
+            "conditions": "Are there any conditions or obligations that must be met by the tenant or landlord? If yes, specify."
+        }
+        },
+        "Release": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+            "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+            "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
+            "execution_date": "What is the latest date the grantor or grantee signed the document?",
+            "recording_date": "What is the official date the release document was recorded with the county?",
+            "grantor": "Identify the entity or person releasing rights or claims.",
+            "grantee": "Identify the entity or person receiving the release.",
+            "property_description": "Provide a detailed description of the property or rights being released.",
+            "reservations": "Are there any conditions under which the release does not apply? If yes, specify.",
+            "conditions": "Are there any conditions attached to this release? If yes, specify."
+        }
+        }
+        
 
-def insert_instrument_type(user_id, project_id, file_id, instrument_type):
-    try:
-        conn = get_db_connection()
-        if conn is None:
-            return None, "Database connection error"
-
-        with conn:
-            with conn.cursor() as cur:
-                query = """
-                INSERT INTO public.extracted_data (user_id, file_id, project_id, instrument_type)
-                VALUES (%s, %s, %s, %s::jsonb)
-                ON CONFLICT (file_id) 
-                DO UPDATE 
-                SET instrument_type = EXCLUDED.instrument_type
-                RETURNING id;
-                """
-                user_id = int(user_id)
-                file_id = int(file_id)  # Convert to integer
-                project_id = int(project_id)  # Convert to integer
-                instrument_type_json = json.dumps(instrument_type)
-                try:
-                    cur.execute(query, (user_id, file_id, project_id, instrument_type_json))
-                    extracted_data_id = cur.fetchone()[0]
-                except Exception as e:
-                    print("Error inserting into database:", e)
-                    return None, "Database insert failed"
-
-                conn.commit()
-                return extracted_data_id, None
-
-    except Exception as e:
-        print(f"Error Inserting instrument_type: {e}")
-        return None, str(e)
 
 
 
-# API Endpoint to fetch OCR text (file_id passed in URL as part of the route)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+    fields = prompts.get(instrument_type, {}).get("fields", {})
+    return json.dumps(fields, indent=4)
+
 
 def extract_instrument_type(ocr_text):
-    client = OpenAI()
+    client = openai.OpenAI()
     # Define system and user prompts
     system_prompt = """
     You are a legal expert extraction algorithm specializing in property law and land transactions.
     Extract the following details from the provided legal land document and provide output in valid JSON format.
     """
-    user_prompt_doc_type = """Extract legal information from the following document:\n\n{ocr_text}. 
-    Instrument Type can be one of following: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way, Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption, Court Case, Assignment or Other. If the type is an amendment, return what kind of instrument it is amending. 
-    Supporting evidence should be from the text provided as document in this prompt. 
-    Expected output json should contain following fields: instrument type and supporting evidence from the input text data. In output json, keep two fields, one string "instrument_type" and second array of strings "supportingEvidence"."""
+    user_prompt_doc_type =f"""Extract legal information from the following document:\n\n{ocr_text}. 
+    Instrument Type can be one of following: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way, Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption, Court Case, Assignment or Other. If the type is an amendment, return what kind of instrument it is amending."""
 
     # Send request to OpenAI
     completion = client.chat.completions.create(
@@ -158,59 +190,67 @@ def extract_instrument_type(ocr_text):
     ]
     )
     # Print extracted data
-    return completion.choices[0].message.content
+    resp = completion.choices[0].message.content
+    resp = resp.strip("```").lstrip("json\n").strip()
 
-def find_best_match(ocr_data, instrument_data):
-    best_match = None
-    highest_confidence = 0
-
-    for evidence in instrument_data["SupportingEvidence"]:
-        for block in ocr_data["confidence_scores"]:
-            similarity = SequenceMatcher(None, evidence, block["text"]).ratio()
-            
-            if similarity > 0.8:  # Threshold for similarity match
-                if block["confidence"] > highest_confidence:
-                    highest_confidence = block["confidence"]
-                    best_match = block["text"]
-
-    return {"BestMatch": best_match, "Confidence": highest_confidence}
+    try:
+        json_resp = json.loads(resp)
+        return json_resp  # Return JSON object (dict)
+        print(json_resp)
+    except json.JSONDecodeError as e:
+        print("Error parsing JSON:", e)
+        return {"error": "Invalid JSON response from OpenAI", "raw_response": resp}
+        
 
 
+def extract_and_process_document(ocr_text):
+    try:
+        client = openai.OpenAI()  # New OpenAI client instance
 
-# Flask App Factory
-def create_app():
-    app = Flask(__name__)
-    @app.route("/api/v1/extract_data/<user_id>/<file_id>", methods=["GET"])
-    def extract_data(user_id, file_id):
-        try:
-            file_id, project_id, ocr_data, error = fetch_ocr_text(file_id)
+        system_prompt = f"""
+        You are a legal expert extraction algorithm specializing in property law and land transactions.
+        Extract the following details from the provided legal land document and provide output in valid JSON format.
+        Extract instrument type from the following document:\n\n{ocr_text}
+        """
+        
+        instrument_type_data = extract_instrument_type(ocr_text)
+        print(instrument_type_data)
+      
+        instrument_type = instrument_type_data.get("instrument_type", "")
+        prompt_output = prompts_by_instrument_type(instrument_type)
+        # print(prompt_output)
+        user_prompt_doc_type = f"""{prompt_output} according to these parameters, find the corresponding information and return the values in similar json."""
+        
+        if not instrument_type:
+            raise ValueError("Instrument type could not be extracted.")
+    
+        # Send request to OpenAI for document processing
+        response = client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[{"role": "system", "content": system_prompt},
+                      {"role": "user", "content": user_prompt_doc_type}]
+        )
 
-            if error:
-                return jsonify({"error": error}), 404
+        result = response.choices[0].message.content.strip("```").lstrip("json\n").strip()
+        output_file_path = os.path.join('output', f'{instrument_type}_extracted_data.json')
+        with open(output_file_path, 'w') as output_file:
+            json.dump(result, output_file, indent=4)
 
-            else:
-                ocr_text = ocr_data.get("text", "")
-                print(ocr_text)
-                extracted_data = extract_instrument_type(ocr_text)
-                
-                cleaned_response = extracted_data.strip("```").lstrip("json\n").strip()
-                # cleaned_response = cleaned_response.replace("\n", "").replace(r'\"', "")
+        return result
 
-                # print(ocr_data)
-                # print(cleaned_response)
-
-                extracted_data_id = insert_instrument_type(user_id, project_id, file_id, cleaned_response)
-
-
-
-            return jsonify({"message": "Data extraction successful", "extracted_data_id" : extracted_data_id})
-
-        except Exception as e:
-            print(f"Error retrieving OCR text: {e}")
-            return jsonify({"error": str(e)}), 500
-    return app
+    except Exception as e:
+        print(f"Error processing document: {e}")
+        return str(e)
 
 # Run the Flask application
 if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
+    # app = create_app()
+    # app.run(debug=True)
+    file_id_from_db, project_id, ocr_data, error = fetch_ocr_text(62)
+    ocr_text = ocr_data.get("text", "")
+    result = extract_and_process_document(ocr_text)
+
+ 
+    # result=extract_instrument_type(ocr_text)
+    print(result)
+
