@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ```
 
 ## set GOOGLE_APPLICATION_CREDENTIALS
-set GOOGLE_APPLICATION_CREDENTIALS="D:\6) X-tensible\3) Work\Projects\TitleMine\Titlemine-ai\3) Ashu (file-ocr)\titlemine-ai\titlemine-documentai-ocr-898de9277942.json"
+set GOOGLE_APPLICATION_CREDENTIALS="<Location of the json>"
 
 ## Usage
 

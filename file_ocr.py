@@ -52,73 +52,6 @@ json
 os
 """
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-This file is expected to contain a Flask endpoint which takes ocr_data_id as input parameter to extract specific data from OCR data of a file.
-We will use OpenAI LLM for this task.
-We are expected to combine three OCR texts into one to create a "Consensus Document". This will be added after we add second OCR provider.
-
-Architecture:
-
-Our Data extraction process is divided in five layers:
-
-"Runsheet -> extracted_data -> OCR_data -> Files -> Files in S3"
-
-Here "Runsheets" and "Files in S3" are accessible to the user, everything else is abstracted away.
-
-Files is the files table we use to maintain references to the original uploaded files
-OCR_data is the raw text and confidence score of each OCR Block of a file. 
-extracted_data is the LLM response for the runsheet prompts. This can contain the multiline response by the LLM.
-Runsheet holds the specific information which will be useful for the Title Attorney
-
-The code in this file is expected to provide the following:
-1. Flask Endpoint that is called from file_ocr.py file, which takes file_id and ocr_data_id as input.
-2. Ignore Consensus Document as we only have one OCR in the first milestone.
-3. Use ChatGPT to prompt and extract data from files which have completed OCR
-    - Use psycopg2 to connect with PostgreSQL database to query OCR data for a specific file 
-    - Use OpenAI to extract data from this OCR text
-    - Use JSON files in ocr_data table to get confidence scores
-4. Store the output from ChatGPT in JSON format in the extracted_data table.
-        {
-        "gpt_response": "<Multiline Response from ChatGPT>",
-        "specific_data": "<Exact Value>",
-        "confidence_score": "99.00"
-        }
-5. Get specific data from this table and store it in the respective runsheet column.
-
-Limitations:
-1. Currently, this code is not expected to handle multiple OCR data. 
-
-"""
-
-
 # ----------------------------------------- *** ----------------------------------
 # Code -
 # 1) it takes id of file from the database and download the file locally from the s3 url 
@@ -338,16 +271,6 @@ def process_ocr(file_id):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
-
-# ---------------------------------------- Actual Code ----------------------------------------
-
-
-
-
-
-
-
 
 
 # ----------------------------------------- *** Execution *** ----------------------------------
