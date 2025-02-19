@@ -42,6 +42,9 @@ ADD CONSTRAINT unique_file_id UNIQUE (file_id);
 
 had to set file_id unique
 """
+
+# This code is working upto Instrument Type Extraction
+
 import os
 import json
 import psycopg2
