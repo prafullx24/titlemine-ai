@@ -220,7 +220,7 @@ def extract_text_with_confidence(file_path):
 # The `save_and_update_ocr_data` function saves extracted OCR data to the database and 
 # updates `ocr_text_1` if it is empty, or inserts a new record if it doesn't exist.
 
-def save_and_update_ocr_data(file_id, project_id, extracted_data):
+def old_save_and_update_ocr_data(file_id, project_id, extracted_data):
     """Save extracted OCR data and update ocr_text_1 if empty"""
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
@@ -265,7 +265,44 @@ def save_and_update_ocr_data(file_id, project_id, extracted_data):
         cur.close()
         conn.close()
 
+# Compare two functions and implement changes
 
+def save_and_update_ocr_data(file_id, project_id, extracted_data):
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
+    
+    try:
+        # Check if file_id exists in the table
+        cur.execute("SELECT ocr_json_1, ocr_text_1 FROM public.ocr_data WHERE file_id = %s", (file_id,))
+        result = cur.fetchone() # Fetch the first row from the result set 
+        
+        if result:
+            # File entry exists in ocr_data, update the existing record
+            try:
+                extracted_text = extracted_data.get("text", "").replace("\n", " ")                
+            except (json.JSONDecodeError, TypeError):
+                query = "UPDATE public.ocr_data SET ocr_json_1 = %s WHERE file_id = %s"
+                cur.execute(query, (json.dumps(extracted_data), file_id))
+                return jsonify({"error": "Invalid JSON format in OCR data"}), 500
+
+            query = "UPDATE public.ocr_data SET ocr_text_1 = %s, ocr_json_1 = %s WHERE file_id = %s"
+            cur.execute(query, (extracted_text, json.dumps(extracted_data), file_id)) 
+        else:
+            # Insert new record
+            query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1) VALUES (%s, %s, %s)"
+            cur.execute(query, (file_id, project_id, json.dumps(extracted_data)))
+        
+        # Update ocr_status in public.files table
+        update_status_query = "UPDATE public.files SET ocr_status = 'Extracting Data' WHERE id = %s"
+        cur.execute(update_status_query, (file_id))
+
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
 
 
 
