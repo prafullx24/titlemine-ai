@@ -76,7 +76,6 @@ import os
 import psycopg2
 import requests
 import json
-import subprocess
 from flask import Flask, jsonify
 from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
