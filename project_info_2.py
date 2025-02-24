@@ -351,6 +351,300 @@ def extracted_data(project_id, file_ids):
 
 
 
+
+
+# def runsheet(project_id):
+#     """Check runsheet completeness for each file ID."""
+#     # Step 1: Get the total number of files and file IDs for the given project_id
+#     file_ids = get_total_files(project_id)
+#     if file_ids is None:
+#         print("Unable to fetch file counts")
+#         return
+
+#     try:
+#         conn = psycopg2.connect(**DB_CONFIG)
+#         cur = conn.cursor()
+
+#         # Step 2: Check for empty or null values in the runsheets table for each file ID
+#         complete_file_ids = []
+#         incomplete_file_ids = {}
+
+#         for file_id in file_ids:
+#             query = """
+#             SELECT 
+#                 id, file_id, project_id, user_id, document_case, instrument_type, volume_page, 
+#                 effective_date, execution_date, file_date, grantor, grantee, property_description, 
+#                 remarks, created_at, updated_at, sort_sequence
+#             FROM public.runsheets
+#             WHERE file_id = %s;
+#             """
+#             cur.execute(query, (file_id,))
+#             row = cur.fetchone()
+
+#             if row:
+#                 columns = ["id", "file_id", "project_id", "user_id", "document_case", "instrument_type", 
+#                            "volume_page", "effective_date", "execution_date", "file_date", "grantor", 
+#                            "grantee", "property_description", "remarks", "created_at", "updated_at", 
+#                            "sort_sequence"]
+#                 empty_columns = [columns[i] for i, value in enumerate(row) if value is None or value == '']
+
+#                 if not empty_columns:
+#                     complete_file_ids.append(file_id)
+#                 else:
+#                     incomplete_file_ids[file_id] = empty_columns
+
+#         # Close the cursor and connection
+#         cur.close()
+#         conn.close()
+
+#         # Step 3: Print results
+#         print("Runsheet complete for file IDs:", complete_file_ids)
+#         for file_id, empty_columns in incomplete_file_ids.items():
+#             print(f"File ID {file_id} has empty or null values in columns: {empty_columns}")
+
+#     except Exception as e:
+#         print(f"Error checking runsheet data: {e}")
+
+
+
+
+
+
+
+# def runsheet(project_id):
+#     """Check runsheet completeness for each file ID."""
+#     # Step 1: Get the total number of files and file IDs for the given project_id
+#     _, _, _, file_ids = get_total_files(project_id)
+#     if file_ids is None:
+#         return {"error": "Unable to fetch file counts"}
+
+#     try:
+#         conn = psycopg2.connect(**DB_CONFIG)
+#         cur = conn.cursor()
+
+#         # Step 2: Check for empty or null values in the runsheets table for each file ID
+#         complete_file_ids = []
+#         incomplete_file_ids = {}
+
+#         for file_id in file_ids:
+#             query = """
+#             SELECT 
+#                 id, file_id, project_id, user_id, document_case, instrument_type, volume_page, 
+#                 effective_date, execution_date, file_date, grantor, grantee, property_description, 
+#                 remarks, created_at, updated_at, sort_sequence
+#             FROM public.runsheets
+#             WHERE file_id = %s;
+#             """
+#             cur.execute(query, (file_id,))
+#             row = cur.fetchone()
+
+#             if row:
+#                 columns = ["id", "file_id", "project_id", "user_id", "document_case", "instrument_type", 
+#                            "volume_page", "effective_date", "execution_date", "file_date", "grantor", 
+#                            "grantee", "property_description", "remarks", "created_at", "updated_at", 
+#                            "sort_sequence"]
+#                 empty_columns = [columns[i] for i, value in enumerate(row) if value is None or value == ''] # check for empty or null values
+
+#                 if not empty_columns:
+#                     complete_file_ids.append(file_id)
+#                 else:
+#                     incomplete_file_ids[file_id] = empty_columns
+
+#         # Close the cursor and connection
+#         cur.close()
+#         conn.close()
+
+#         # Step 3: Return results as JSON
+#         return {
+#             "Runsheet complete_file_ids": complete_file_ids,
+#             "Runsheet incomplete_file_ids": incomplete_file_ids
+#         }
+
+#     except Exception as e:
+#         return {"error": f"Error checking runsheet data: {e}"}
+
+
+
+# def runsheet(project_id):
+#     """Check runsheet completeness for each file ID."""
+#     # Step 1: Get the total number of files and file IDs for the given project_id
+#     _, _, _, file_ids = get_total_files(project_id)
+#     if file_ids is None:
+#         return {"error": "Unable to fetch file counts"}
+    
+#     try:
+#         conn = psycopg2.connect(**DB_CONFIG)
+#         cur = conn.cursor()
+        
+#         complete_file_ids = []
+#         incomplete_file_ids = {}
+#         complete_count = 0
+#         incomplete_count = 0
+        
+#         for file_id in file_ids:
+#             query = """
+#             SELECT 
+#                 id, file_id, project_id, user_id, document_case, instrument_type, volume_page, 
+#                 effective_date, execution_date, file_date, grantor, grantee, property_description, 
+#                 remarks, created_at, updated_at, sort_sequence
+#             FROM public.runsheets
+#             WHERE file_id = %s;
+#             """
+#             cur.execute(query, (file_id,))
+#             row = cur.fetchone()
+            
+#             if row:
+#                 columns = ["id", "file_id", "project_id", "user_id", "document_case", "instrument_type", 
+#                           "volume_page", "effective_date", "execution_date", "file_date", "grantor", 
+#                           "grantee", "property_description", "remarks", "created_at", "updated_at", 
+#                           "sort_sequence"]
+#                 empty_columns = [columns[i] for i, value in enumerate(row) if value is None or value == '']
+                
+#                 if not empty_columns:
+#                     complete_file_ids.append(file_id)
+#                     complete_count += 1
+#                 else:
+#                     incomplete_file_ids[file_id] = empty_columns
+#                     incomplete_count += 1
+        
+#         # Close the cursor and connection
+#         cur.close()
+#         conn.close()
+        
+#         # Return detailed results
+#         return {
+#             "summary": {
+#                 "total_runsheets": len(file_ids),
+#                 "complete_runsheets": complete_count,
+#                 "incomplete_runsheets": incomplete_count
+#             },
+#             "details": {
+#                 "complete_file_ids": complete_file_ids,
+#                 "incomplete_file_ids": incomplete_file_ids
+#             }
+#         }
+        
+#     except Exception as e:
+#         return {"error": f"Error checking runsheet data: {e}"}
+
+
+
+
+
+
+# @app.route("/api/v1/project_info/<int:project_id>", methods=["GET"])
+# def project_info(project_id):
+#     # step 1 : get the total number of files for a given project_id
+#     total_files, completed_files, not_completed_files, file_ids = get_total_files(project_id)
+#     if total_files is None or completed_files is None or not_completed_files is None:
+#         return jsonify({"error": "Unable to fetch file counts"}), 500
+
+#     # step 2 : get OCR data for a given project_id
+#     ocr_data_result = ocr_data(project_id)
+#     if ocr_data_result is None:
+#         return jsonify({"error": "Unable to fetch OCR data"}), 500
+
+#     # step 3 : check if file IDs are available in the extracted_data table
+#     available_file_ids, unavailable_file_ids = extracted_data(project_id, file_ids)
+#     if available_file_ids is None or unavailable_file_ids is None:
+#         return jsonify({"error": "Unable to check extracted data"}), 500
+
+#     # Combine all results into a single JSON response
+#     response = {
+#         "project_id": project_id,
+#         "total_files": total_files,
+#         "No. of ocr completed_files": completed_files,
+#         "No. of ocr not_completed_files": not_completed_files,
+#         "ocr_data": ocr_data_result,
+#         "file_ids": file_ids,
+#         "Extraction performed on": available_file_ids,
+#         "Extraction not performed on": unavailable_file_ids,
+        
+#     }
+
+#     return jsonify(response)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def runsheet(project_id):
+    """Check runsheet completeness for each file ID."""
+    # Step 1: Get the total number of files and file IDs for the given project_id
+    _, _, _, file_ids = get_total_files(project_id)
+    if file_ids is None:
+        return {"error": "Unable to fetch file counts"}
+
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+
+        # Step 2: Check for empty or null values in the runsheets table for each file ID
+        complete_file_ids = []
+        incomplete_file_ids = {}
+        missing_file_ids = []
+
+        for file_id in file_ids:
+            query = """
+            SELECT 
+                id, file_id, project_id, user_id, document_case, instrument_type, volume_page, 
+                effective_date, execution_date, file_date, grantor, grantee, property_description, 
+                remarks, created_at, updated_at, sort_sequence
+            FROM public.runsheets
+            WHERE file_id = %s;
+            """
+            cur.execute(query, (file_id,))
+            row = cur.fetchone()
+
+            if row:
+                columns = ["id", "file_id", "project_id", "user_id", "document_case", "instrument_type", 
+                           "volume_page", "effective_date", "execution_date", "file_date", "grantor", 
+                           "grantee", "property_description", "remarks", "created_at", "updated_at", 
+                           "sort_sequence"]
+                empty_columns = [columns[i] for i, value in enumerate(row) if value is None or value == ''] # check for empty or null values
+
+                if not empty_columns:
+                    complete_file_ids.append(file_id)
+                else:
+                    incomplete_file_ids[file_id] = empty_columns
+            else:
+                missing_file_ids.append(file_id)
+
+        # Close the cursor and connection
+        cur.close()
+        conn.close()
+
+        # Step 3: Return results as JSON
+        return {
+            "Runsheet complete_file_ids": complete_file_ids,
+            "Runsheet incomplete_file_ids": incomplete_file_ids,
+            "Runsheet missing_file_ids": missing_file_ids
+        }
+
+    except Exception as e:
+        return {"error": f"Error checking runsheet data: {e}"}
+
+
+
+
+
+
+
+
+
+
+
 @app.route("/api/v1/project_info/<int:project_id>", methods=["GET"])
 def project_info(project_id):
     # step 1 : get the total number of files for a given project_id
@@ -368,6 +662,11 @@ def project_info(project_id):
     if available_file_ids is None or unavailable_file_ids is None:
         return jsonify({"error": "Unable to check extracted data"}), 500
 
+    # step 4 : check runsheet completeness for each file ID
+    runsheet_result = runsheet(project_id)
+    if "error" in runsheet_result:
+        return jsonify(runsheet_result), 500
+
     # Combine all results into a single JSON response
     response = {
         "project_id": project_id,
@@ -378,6 +677,11 @@ def project_info(project_id):
         "file_ids": file_ids,
         "Extraction performed on": available_file_ids,
         "Extraction not performed on": unavailable_file_ids,
+        # "runsheet": {
+        #     "complete_file_ids": runsheet_result.get("complete_file_ids", []),
+        #     "incomplete_file_ids": runsheet_result.get("incomplete_file_ids", {})
+        # }
+        "runsheet": runsheet_result
     }
 
     return jsonify(response)
@@ -388,8 +692,13 @@ def project_info(project_id):
 
 
 
-
-
+# @app.route("/api/v1/runsheet/<int:project_id>", methods=["GET"])
+# def runsheet_api(project_id):
+#     """API endpoint to check runsheet completeness for each file ID."""
+#     result = runsheet(project_id)
+#     if "error" in result:
+#         return jsonify(result), 500
+#     return jsonify(result)
 
 
 

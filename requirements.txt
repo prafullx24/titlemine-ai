@@ -1,0 +1,5 @@
+psycopg2
+requests
+Flask
+google-cloud-documentai
+python-dotenv
