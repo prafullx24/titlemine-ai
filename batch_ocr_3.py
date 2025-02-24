@@ -658,14 +658,49 @@ def extract_text_with_confidence(file_path):
 
 
 
+# def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
+#     conn = psycopg2.connect(**db_config)
+#     cur = conn.cursor()
+    
+#     try:
+#         new_records = [(data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) for data in all_extracted_data]
+        
+#         insert_query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1,ocr_text_1) VALUES %s"
+#         psycopg2.extras.execute_values(cur, insert_query, new_records)
+        
+#         file_ids = [data['file_id'] for data in all_extracted_data]
+#         update_status_query = "UPDATE public.files SET ocr_status = 'Completed' WHERE id = ANY(%s::int[])"
+#         cur.execute(update_status_query, (file_ids,))
+        
+#         conn.commit()
+#         print("Bulk insert and update executed successfully")
+#     except Exception as e:
+#         conn.rollback()
+#         print("Error in save_and_update_ocr_data_batch", e)
+#     finally:
+#         cur.close()
+#         conn.close()
+
+
 def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     conn = psycopg2.connect(**db_config)
     cur = conn.cursor()
     
     try:
-        new_records = [(data['file_id'], project_id, json.dumps(data['extracted_data'])) for data in all_extracted_data]
+        new_records = [
+            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " "))
+            for data in all_extracted_data
+        ]
         
-        insert_query = "INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1) VALUES %s"
+        insert_query = """
+        INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
+        VALUES %s
+        ON CONFLICT (file_id, project_id) 
+        DO UPDATE SET 
+            ocr_json_1 = EXCLUDED.ocr_json_1,
+            ocr_text_1 = EXCLUDED.ocr_text_1
+        """
+        
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
@@ -676,12 +711,10 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         print("Bulk insert and update executed successfully")
     except Exception as e:
         conn.rollback()
-        print("Error in save_and_update_ocr_data_batch", e)
+        print("Error in save_and_update_ocr_data_batch:", e)
     finally:
         cur.close()
         conn.close()
-
-
 
 
 
