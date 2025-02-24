@@ -98,7 +98,7 @@ load_dotenv()
 
 
 # Set Google Application Credentials
-credentials_path = os.getenv("CREDENTIALS_PATH")
+credentials_path = "./titlemine-documentai-ocr-898de9277942.json"
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 
@@ -107,19 +107,28 @@ app = Flask(__name__)
 
 
 # Database Configuration
+# DB_CONFIG = {
+#     "dbname": os.getenv("DB_NAME"),
+#     "host": os.getenv("DB_HOST"),
+#     "port": os.getenv("DB_PORT"),
+#     "user": os.getenv("DB_USER"),
+#     "password": os.getenv("DB_PASSWORD"),
+# }
+
 DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
+    "host": "192.168.1.72",
+    "port": 5432,
+    "dbname": "titlemine",
+    "user": "postgres",
+    "password": "mysecretpassword",
 }
 
 
+
 # Google Document AI Configuration
-PROJECT_ID = os.getenv("PROJECT_ID")
-LOCATION = os.getenv("LOCATION")
-PROCESSOR_ID = os.getenv("PROCESSOR_ID")
+# PROJECT_ID = os.getenv("PROJECT_ID")
+# LOCATION = os.getenv("LOCATION")
+# PROCESSOR_ID = os.getenv("PROCESSOR_ID")
 
 
 # Folder to store downloaded and OCR files
