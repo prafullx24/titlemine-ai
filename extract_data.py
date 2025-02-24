@@ -17,7 +17,7 @@ class Config:
     if not DATABASE_URL:
         raise ValueError("DATABASE_URL environment variable is missing.")
 
-# Configure logging
+# # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to get a database connection
@@ -62,7 +62,7 @@ def fetch_ocr_text(file_id):
 
 def extract_instrument_type(ocr_text):
     """
-    Extracts the instrument type from the provided OCR text using OpenAI's GPT-3.5-turbo.
+    Extracts the instrument type from the provided OCR text using OpenAI's GPT-4o-mini.
     """
     client = openai.OpenAI()
 
@@ -82,7 +82,7 @@ def extract_instrument_type(ocr_text):
 
     try:
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[{"role": "system", "content": system_prompt},
                       {"role": "user", "content": user_prompt_doc_type}]
         )
@@ -122,7 +122,7 @@ def extract_and_process_document(ocr_text):
         prompt_output = prompts_by_instrument_type(instrument_type)
         user_prompt_doc_type = f"""{prompt_output} according to these parameters, find the corresponding information and return the values in similar json."""
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[{"role": "system", "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format."},
                       {"role": "user", "content": user_prompt_doc_type}]
         )
@@ -174,7 +174,7 @@ def store_extracted_data(file_id, project_id, extracted_data):
                     grantee = json.dumps(extracted_data.get("grantee", []))
                     property_description = json.dumps(extracted_data.get("property_description", []))
                     sort_sequence = 0
-                    remarks = "N/A" #add remarks if needed.
+                    remarks = "N/A" 
                     file_date = recording_date #add file_date if needed.
 
                     check_query = "SELECT COUNT(*) FROM public.runsheets WHERE file_id = %s"
@@ -238,8 +238,9 @@ def process_single_document(file_id):
     return result
 
 # Example usage: process multiple file IDs concurrently
-file_ids_to_process = [66,67,77]  
+file_ids_to_process = [104,105,106,107]  
 results = process_documents_concurrently(file_ids_to_process)
+
 
 for result in results:
     logging.info(f"Processing result: {result}")

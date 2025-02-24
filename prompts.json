@@ -1,132 +1,132 @@
 {
     "Deed": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Deed",
+      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+      "fields": {
+        "instrument_type": "Deed",
         "volume_page": "Reference the recording information found in the document and/or the file name to determine the volume number and page number of where the document was filed with the county. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Reference information found in the margins, top of the document, or in the file name to determine the case, file, or recording number. Return as '#Document Number'. If none is found, return 'none found'.",
-        "execution_date": "What is the latest date on which a grantor or grantee signed the document?",
-        "effective_date": "What is the date of the transfer of ownership?",
-        "recording_date": "What is the date of the transfer of ownership?",
+        "document_case_number": "Reference information found in the margins, top of the document, or in the file name to determine the case, file, or recording number. Return as '#Document Number'. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If none is found, return 'none found'.",
+        "execution_date": "What is the latest date on which a grantor or grantee signed the document? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "effective_date": "What is the date of the transfer of ownership? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "recording_date": "What is the date of the transfer of ownership? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
         "grantee": "Who is selling or transferring the property or rights? Provide full names.",
         "grantor": "Who is receiving the property or rights? Provide full names.",
         "property_description": "What is the description of the property being transferred?",
         "reservations": "Is there any property or rights which are explicitly excluded from the transaction by the Grantor(s)?",
         "conditions": "Are there any conditions that must be met after the effective date to finalize or avoid reversion of the sale?"
-    }
+      }
     },
     "Lease": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Lease",
+      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+      "fields": {
+        "instrument_type": "Lease",
         "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which a lessor or lessee signed the document?",
-        "effective_date": "What is the date the lease is effective?",    
-        "recording_date": "What is the date on which the lease was recorded or filed with the county?",
+        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+        "execution_date": "What is the latest date on which a lessor or lessee signed the document? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "effective_date": "What is the date the lease is effective? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "recording_date": "What is the date on which the lease was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
         "grantee": "Who is granting rights under.",
         "grantor": "Who is granting rights under this lease?",
         "property_description": "What is the description of the rights being transferred, including a description of the land they are associated with?",
         "reservations": "Are there rights which are explicitly excluded from the transaction by the lessors?",
         "conditions": "Are there any conditions that must be met after the effective date to finalize, maintain, or extend the lease?"
-    }
+      }
     },
     "Release": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Release",
+      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+      "fields": {
+        "instrument_type": "Release",
         "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the release was signed?",
-        "effective_date": "What is the date that the release went into effect?",
-        "recording_date": "What is the date on which the release was recorded or filed with the county?",
+        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+        "execution_date": "What is the latest date on which the release was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "effective_date": "What is the date that the release went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "recording_date": "What is the date on which the release was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
         "grantee": "Who is gaining the rights or property?",
         "grantor": "Who is releasing the rights or property?",
         "property_description": "What is the description of the rights or property being transferred, including a description of the land they are associated with?",
         "reservations": "Are there rights which are explicitly excluded from the release?",
         "conditions": "Are there any conditions that must be met after the effective date to finalize or avoid negating the release?"
-    }
+      }
     },
     "Waiver": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Waiver",
+      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+      "fields": {
+        "instrument_type": "Waiver",
         "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the waiver was signed?",
-        "effective_date": "What is the date that the waiver went into effect?",
-        "recording_date": "What is the date on which the waiver was recorded or filed with the county?",
+        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+        "execution_date": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "effective_date": "What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+        "recording_date": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
         "grantee": "Who is the counterparty in the waiver?.",
         "grantor": "Who is waiving their rights?",
         "property_description": "What is the description of the rights being waived, including a description of the land they are associated with?",
         "reservations": "Are there rights which are explicitly excluded from the waiver?",
         "conditions": "Are there any conditions that must be met after the effective date to finalize or avoid negating the waiver?"
-    }
+      }
     },
     "Quitclaim": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-         "instrument_type":"Quitclaim",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the quitclaim was signed?",
-        "effective_date": "What is the date that the quitclaim went into effect?",
-        "recording_date": "What is the date on which the quitclaim was recorded or filed with the county?",
-        "grantor": "Who is releasing the rights or property?",
-        "grantee": "Who is gaining the rights or property?",
-        "property_description": "Provide a detailed description of the property or rights being released.",
-        "reservations": "Are there rights which are explicitly excluded from the quitclaim?",
-        "conditions": "Are there any conditions that must be met after the effective date to finalize the quitclaim?"
-    }
-    },
-    "Option": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Option",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the option was signed?",
-        "effective_date": "What is the date that the option went into effect?",
-        "recording_date": "What is the date on which the option was recorded or filed with the county?",
-        "grantor": "Who granted the option?",
-        "grantee": "Who received the option rights?",
-        "property_description": "What is the description of the rights or property being optioned, including a description of the land they are associated with?",
-        "reservations": "Are there rights which are explicitly excluded from the option?",
-        "conditions": "How long is the option and what are the conditions that must be met to exercise the option?"
-    }
-    },
-    "Easement or Right of Way": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Easement or Right of Way",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the easement was signed?",
-        "effective_date": "What is the date that the easement went into effect?",
-        "recording_date": "What is the date on which the easement was recorded or filed with the county?",
-        "grantor": "Who granted the easement?",
-        "grantee": "Who received the easement?",
-        "property_description": "What is the description of the rights of the easement, including a description of the land they cover?",
-        "reservations": "Are there rights which are explicitly excluded from the easement?",
-        "conditions": "Are there rights which are explicitly excluded from the easement?"
-    }
-    },
-    "Ratification": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-        "instrument_type":"Ratification",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the ratification was signed?",
-        "effective_date": "What is the date that the ratification went into effect?",
-        "recording_date": "What is the date on which the ratification was recorded or filed with the county?",
-        "grantor": "Who was the grantor in the agreement being ratified?",
-        "grantee": "Who is the grantee in the agreement being ratified?Identify the entity or person receiving the release.",
-        "property_description": "What rights or property are being confirmed or transfered in this ratification, including a description of the land involved?",
-        "reservations": "Are there rights or property which are explicitly excluded from the ratification?",
-        "conditions": "What conditions were met to ratify the original agreement? Are there any remaining conditions/"
-    }
-    },
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+          "instrument_type": "Quitclaim",
+          "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+          "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+          "execution_date": "What is the latest date on which the quitclaim was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "effective_date": "What is the date that the quitclaim went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "recording_date": "What is the date on which the quitclaim was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "grantor": "Who is releasing the rights or property?",
+          "grantee": "Who is gaining the rights or property?",
+          "property_description": "Provide a detailed description of the property or rights being released.",
+          "reservations": "Are there rights which are explicitly excluded from the quitclaim?",
+          "conditions": "Are there any conditions that must be met after the effective date to finalize the quitclaim?"
+        }
+      },
+      "Option": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+          "instrument_type": "Option",
+          "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+          "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+          "execution_date": "What is the latest date on which the option was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "effective_date": "What is the date that the option went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "recording_date": "What is the date on which the option was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "grantor": "Who granted the option?",
+          "grantee": "Who received the option rights?",
+          "property_description": "What is the description of the rights or property being optioned, including a description of the land they are associated with?",
+          "reservations": "Are there rights which are explicitly excluded from the option?",
+          "conditions": "How long is the option and what are the conditions that must be met to exercise the option?"
+        }
+      },
+      "Easement or Right of Way": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+          "instrument_type": "Easement or Right of Way",
+          "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+          "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+          "execution_date": "What is the latest date on which the easement was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "effective_date": "What is the date that the easement went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "recording_date": "What is the date on which the easement was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "grantor": "Who granted the easement?",
+          "grantee": "Who received the easement?",
+          "property_description": "What is the description of the rights of the easement, including a description of the land they cover?",
+          "reservations": "Are there rights which are explicitly excluded from the easement?",
+          "conditions": "Are there rights which are explicitly excluded from the easement?"
+        }
+      },
+      "Ratification": {
+        "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+        "fields": {
+          "instrument_type": "Ratification",
+          "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+          "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+          "execution_date": "What is the latest date on which the ratification was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "effective_date": "What is the date that the ratification went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "recording_date": "What is the date on which the ratification was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+          "grantor": "Who was the grantor in the agreement being ratified?",
+          "grantee": "Who is the grantee in the agreement being ratified?Identify the entity or person receiving the release.",
+          "property_description": "What rights or property are being confirmed or transfered in this ratification, including a description of the land involved?",
+          "reservations": "Are there rights or property which are explicitly excluded from the ratification?",
+          "conditions": "What conditions were met to ratify the original agreement? Are there any remaining conditions/"
+        }
+      },
     "Affidavit": {
     "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
     "fields": {
