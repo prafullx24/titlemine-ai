@@ -1,3 +1,87 @@
+"""
+This file is expected to contain all the code related to Batch File OCR handling.
+As per the development plan, we are expecting to add multiple OCR Providers to increase our coverage of document processing.
+During the first milestone phase, we are specifically working with Google's Document AI.
+
+The code in this file is expected to provide the following:
+
+A Flask endpoint that takes project_id as input.
+Fetch all files under the given project_id where OCR processing is incomplete.
+Download all these files from their respective S3 URLs concurrently.
+Perform OCR processing on these files using Google’s Document AI.
+Store the extracted OCR text in the database table OCR_data (columns: ocr_text_1 and ocr_json_1).
+Along with OCR Text data, extract the JSON with OCR confidence from Document AI and store it in ocr_json_1.
+When OCR processing is complete, update the ocr_status of all processed files to "Completed".
+Limitations:
+
+Currently working with only one OCR provider.
+Document AI has a file size limit of 20 MB for single-file processing.
+Processing is limited by API rate limits of Google Document AI.
+To-Do:
+
+Add a second OCR Provider: Amazon Textract or Anthropic.
+Switch to Batch Processing Mode on Document AI to disable the file size limit.
+API Endpoint:
+https://host:port/api/v1/batch_ocr/:project_id
+
+Response:
+
+Processing:
+{
+  "status": "processing",
+  "project_id": "123"
+}
+
+Completed:
+{
+  "status": "completed",
+  "project_id": "123"
+}
+
+
+Failed:
+{
+  "status": "failed",
+  "project_id": "123"
+}
+
+
+Libraries Used:
+
+Flask
+psycopg2
+dotenv
+requests
+google.cloud
+json
+os
+concurrent.futures (for parallel processing)
+
+
+The .env file is expected to contain the following environment variables:
+
+GOOGLE_APPLICATION_CREDENTIALS=
+CREDENTIALS_PATH=
+
+DB_NAME=
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+
+PROJECT_ID = 
+LOCATION = 
+PROCESSOR_ID = 
+
+"""
+
+
+
+
+
+
+
+
 import os
 import psycopg2
 import psycopg2.extras
@@ -44,7 +128,7 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 
 
-# Save project ID and file IDs to a JSON file
+# This function saves the project ID and file IDs to a JSON file in the specified download folder.
 def save_project_files_to_json(project_id, user_id, files):
     """Save project ID and file IDs to a JSON file."""
     data = {
@@ -62,7 +146,15 @@ def get_files_by_project(project_id):
     """Fetch all file IDs for a given project."""
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
-    query = "SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status FROM public.files WHERE project_id = %s AND ocr_status != 'completed'"
+
+    #query = "SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status FROM public.files WHERE project_id = %s AND ocr_status != 'completed'"
+    query = """
+    SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status 
+    FROM public.files 
+    WHERE project_id = %s 
+    AND (ocr_status IS NULL OR ocr_status = 'processing' OR ocr_status != 'completed')
+    """
+
     cur.execute(query, (project_id,project_id))
     files = cur.fetchall()
     print("Get files which not completed ocr by project ID")
@@ -90,7 +182,7 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
     response = requests.get(s3_url, stream=True) # Send a GET request to the S3 URL to download the file 
     if response.status_code == 200:
         with open(file_path, "wb") as file: # Open the file in write binary mode 
-            for chunk in response.iter_content(1024): 
+            for chunk in response.iter_content(1024): # Iterate over the response content in chunks of 1024 bytes
                 file.write(chunk) # Write the chunk to the file 
         return file_path 
     # print(f"Failed to download file from S3: {s3_url}")
@@ -101,7 +193,7 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
 
 # The code defines a function to download files concurrently from S3 URLs using a thread pool, handling errors and printing the download status for each file.
 def download_files_concurrently(files):
-    downloaded_files = []
+    downloaded_files = [] # List to store the downloaded file paths
 
     def download_file(file):
         try:
@@ -110,7 +202,7 @@ def download_files_concurrently(files):
             pdf_file_path = download_file_from_s3(s3_url, user_id, project_id, id, file_extension)
             if pdf_file_path:
                 # print(f"File downloaded successfully: {pdf_file_path}")
-                downloaded_files.append(pdf_file_path)
+                downloaded_files.append(pdf_file_path) # Append the downloaded file path to the list
             else:
                 print(f"Failed to download file: {file_name}")
         except Exception as e:
@@ -120,7 +212,8 @@ def download_files_concurrently(files):
         print("No files to download.")
         return []
 
-    with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
+    # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
+    with ThreadPoolExecutor() as executor:    # No limit on concurrent downloads
         executor.map(download_file, files)
 
     print("All files downloaded")
@@ -129,7 +222,7 @@ def download_files_concurrently(files):
 
 
 
-
+# This function saves the OCR extracted data as a JSON file in a specified download folder, using the user ID, project ID, and file ID to name the file.
 def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
     """Save OCR output as JSON."""
     ocr_file_path = os.path.join(DOWNLOAD_FOLDER, f"download_json_{user_id}_{project_id}_{file_id}.json")
@@ -139,6 +232,8 @@ def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
 
 
 
+
+#  This function iterates through a list of extracted OCR data and saves each entry as a JSON file using the save_ocr_output_as_json function.
 def save_ocr_outputs_as_json(extracted_data_list):
     """Save multiple OCR outputs as JSON."""
     for data in extracted_data_list:
@@ -151,6 +246,8 @@ def save_ocr_outputs_as_json(extracted_data_list):
 
 
 
+
+#This function processes a document using Google Document AI to extract text and confidence scores for each text segment, returning the extracted data in a structured format.
 def extract_text_with_confidence(file_path):
     """Extracts text and confidence scores from a document using Google Document AI"""
     
@@ -187,14 +284,15 @@ def extract_text_with_confidence(file_path):
 
 
 
+
+# This function processes multiple documents using Google Document AI to extract text and confidence scores, saves the extracted data as JSON files, and returns the aggregated results.
 def extract_text_with_confidence_batch(downloaded_files):
     """Extracts text and confidence scores from multiple documents using Google Document AI."""
     
-    all_extracted_data = []
+    all_extracted_data = [] # List to store all extracted data from multiple documents
 
     def process_file(file_path):
-        extracted_data = extract_text_with_confidence(file_path)
-        
+        extracted_data = extract_text_with_confidence(file_path) # Extract text and confidence scores from the document
 
         # Extract user_id, project_id, and file_id from the file name
         file_name_parts = os.path.basename(file_path).split('_')
@@ -209,7 +307,8 @@ def extract_text_with_confidence_batch(downloaded_files):
             'extracted_data': extracted_data
         }
 
-    with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent threads
+    # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent threads
+    with ThreadPoolExecutor() as executor:  # No limit on concurrent threads
         results = list(executor.map(process_file, downloaded_files))
 
     all_extracted_data.extend(results)
@@ -223,13 +322,14 @@ def extract_text_with_confidence_batch(downloaded_files):
 
 
 
+# This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
 def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     conn = psycopg2.connect(**db_config)
     cur = conn.cursor()
     
     try:
         new_records = [
-            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " "))
+            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
             for data in all_extracted_data
         ]
         
@@ -245,11 +345,11 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
-        update_status_query = "UPDATE public.files SET ocr_status = 'Completed' WHERE id = ANY(%s::int[])"
+        update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
         cur.execute(update_status_query, (file_ids,))
         
         conn.commit()
-        print("Bulk insert and update executed successfully")
+        # print("Bulk insert and update executed successfully")
     except Exception as e:
         conn.rollback()
         print("Error in save_and_update_ocr_data_batch:", e)
