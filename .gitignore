@@ -1,8 +1,5 @@
 titlemine-env/
-*.pyc
 titlemine-documentai-ocr-898de9277942.json
-
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
