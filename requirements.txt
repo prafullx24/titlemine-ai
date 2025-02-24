@@ -1,4 +1,5 @@
-
-flask
-psycopg2
+Flask
+psycopg2-binary
+requests
+google-cloud-documentai
 python-dotenv
