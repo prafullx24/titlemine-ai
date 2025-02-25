@@ -1,7 +1,97 @@
 """
 
+This file is expected to contain all the code related to Project Information retrieval.
+As per the development plan, this module is responsible for fetching project-related data, including file counts, OCR data, extracted data availability, and runsheet completion status.
 
+The code in this file is expected to provide the following:
+
+- A Flask endpoint that takes `project_id` as input.
+- Retrieve the total number of files under the given `project_id` from the database.
+- Count the number of files with OCR status as "Completed" and "Not Completed".
+- Fetch OCR-related data, including how many times OCR has been performed on a file.
+- Check if the extracted data for these files is available in the `extracted_data` table.
+- Validate the completeness of the runsheet data for each file in the project.
+- Return all this data in a structured JSON format.
+
+Limitations:
+
+- The current implementation relies on PostgreSQL queries and assumes proper indexing for efficiency.
+- The completeness check for runsheet data assumes that all necessary columns exist in the database schema.
+- Extracted data verification is based on file IDs available in the `extracted_data` table.
+
+To-Do:
+
+- Improve query performance for large datasets.
+- Introduce error handling improvements for better debugging.
+
+API Endpoint:
+`https://host:port/api/v1/project_info/:project_id`
+
+Response:
+
+Success:
+```json
+{
+  "project_id": "123",
+  "total_files": 100,
+  "No. of ocr completed_files": 80,
+  "No. of ocr not_completed_files": 20,
+  "ocr_data": [
+    {
+      "file_id": "xyz",
+      "perform_ocr_for_times": 2,
+      "not_perform_ocr_for_times": 1
+    }
+  ],
+  "file_ids": ["file1", "file2", ...],
+  "Extraction performed on": ["file1", "file3"],
+  "Extraction not performed on": ["file2"],
+  "Runsheet": {
+    "Runsheet complete_file_ids": ["file1"],
+    "Runsheet incomplete_file_ids": ["file2"],
+    "Runsheet incomplete_file_ids columns are": {
+      "file2": ["grantor", "grantee"]
+    }
+  }
+}
+```
+
+Failure:
+```json
+{
+  "error": "Unable to fetch file counts"
+}
+```
+
+Libraries Used:
+
+- Flask
+- psycopg2
+- dotenv
+- requests
+- google.cloud
+- json
+- os
+
+The `.env` file is expected to contain the following environment variables:
+
+```
+DB_NAME=
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+
+PROJECT_ID=
+LOCATION=
+PROCESSOR_ID=
+CREDENTIALS_PATH=
+```
 """
+
+
+
+
 
 
 
@@ -79,7 +169,7 @@ def get_total_files(project_id):
         conn.close()
 
         # Print all file IDs
-        print("File IDs:", file_ids)
+        # print("File IDs:", file_ids)
 
         return total_files, completed_files, not_completed_files, file_ids
     
@@ -91,6 +181,9 @@ def get_total_files(project_id):
 
 
 
+# function retrieves OCR data for a given project_id from the ocr_data table, 
+# counting the number of non-null and null OCR columns for each file, 
+# and returns the results in JSON format.
 
 def ocr_data(project_id):
     """Get OCR data for a given project_id from the ocr_data table."""
@@ -120,8 +213,12 @@ def ocr_data(project_id):
         cur.close()
         conn.close()
 
+        # print("Retrieves OCR data successfully")
+        # print(ocr_performed)
+        # print(ocr_not_performed)
+
         # Prepare the result in JSON format
-        result = []
+        result = [] # store results in a list
         for row in rows:
             file_id, ocr_performed, ocr_not_performed = row
             result.append({
@@ -141,7 +238,8 @@ def ocr_data(project_id):
 
 
 
-
+# function checks if the given file IDs are available in the extracted_data table for a specified project_id.
+# Returns two lists: available and unavailable file IDs.
 
 def extracted_data(project_id, file_ids):
     """Check if file IDs are available in the extracted_data table."""
@@ -154,7 +252,7 @@ def extracted_data(project_id, file_ids):
         SELECT file_id FROM extracted_data WHERE project_id = %s AND file_id = ANY(%s);
         """
         cur.execute(query, (project_id, file_ids))
-        available_file_ids = [row[0] for row in cur.fetchall()]
+        available_file_ids = [row[0] for row in cur.fetchall()] # fetch all rows and store in a list of available file IDs 
 
         # Find file IDs that are not available in the extracted_data table
         unavailable_file_ids = list(set(file_ids) - set(available_file_ids))
@@ -162,6 +260,10 @@ def extracted_data(project_id, file_ids):
         # Close the cursor and connection
         cur.close()
         conn.close()
+
+        # print("Extracted data checked successfully")
+        # print(available_file_ids)
+        # print(unavailable_file_ids)
 
         return available_file_ids, unavailable_file_ids
 
@@ -171,15 +273,16 @@ def extracted_data(project_id, file_ids):
 
 
 
-
+# function checks the completeness of runsheet data for given file IDs in a specified project.
+# categorizing them into complete, incomplete, and missing files, and returns the results.
 def runsheet(project_id, file_ids):
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
 
-        complete_file_ids = []
+        complete_file_ids = [] # store complete file IDs in a list
         incomplete_file_ids = []
-        incomplete_file_columns = {}
+        incomplete_file_columns = {} # store incomplete file columns in a dictionary
         missing_file_ids = []
 
         for file_id in file_ids:
@@ -198,16 +301,27 @@ def runsheet(project_id, file_ids):
                 missing_file_ids.append(file_id)
                 continue
             
-            columns = [desc[0] for desc in cur.description]
+            # This Code retrieves the column names from the cursor description object.
+            # Initializes a flag to track if any null values are found, and 
+            # Creates a set to store the names of columns that contain null values.
+            columns = [desc[0] for desc in cur.description] # get column names from the cursor description object 
             has_null = False
             null_columns = set()
-            
+
+
+            # This code iterates over each row in rows, and for each row, it enumerates through the values. 
+            # If any value is None, it sets the has_null flag to True and 
+            # Adds the corresponding column name (from columns[col_index]) to the null_columns set.
             for row in rows:
-                for col_index, value in enumerate(row):
+                for col_index, value in enumerate(row): # enumerate() function returns an index and value
                     if value is None:
                         has_null = True
                         null_columns.add(columns[col_index])
-            
+
+
+            # This code checks if the has_null flag is True. If it is, it appends the file_id to the incomplete_file_ids list and 
+            # stores the list of columns with null values in the incomplete_file_columns dictionary with the file_id as the key. 
+            # If has_null is False, it appends the file_id to the complete_file_ids list.
             if has_null:
                 incomplete_file_ids.append(file_id)
                 incomplete_file_columns[file_id] = list(null_columns)
@@ -217,6 +331,10 @@ def runsheet(project_id, file_ids):
         cur.close()
         conn.close()
 
+
+        # This code initializes an empty dictionary result and then checks if the lists complete_file_ids, incomplete_file_ids, or missing_file_ids are not empty. 
+        # If they are not empty, it adds them to the result dictionary with appropriate keys. For incomplete_file_ids, 
+        # It also adds the corresponding columns with null values from the incomplete_file_columns dictionary.
         result = {}
         if complete_file_ids:
             result["Runsheet complete_file_ids"] = complete_file_ids
@@ -236,19 +354,15 @@ def runsheet(project_id, file_ids):
 
 
 
-
-
-
-
-
 @app.route("/api/v1/project_info/<int:project_id>", methods=["GET"])
 def project_info(project_id):
+
     # step 1 : get the total number of files for a given project_id
     total_files, completed_files, not_completed_files, file_ids = get_total_files(project_id)
     if total_files is None or completed_files is None or not_completed_files is None:
         return jsonify({"error": "Unable to fetch file counts"}), 500
 
-    # step 2 : get OCR data for a given project_id
+    # step 2 : get OCR data information for a given project_id
     ocr_data_result = ocr_data(project_id)
     if ocr_data_result is None:
         return jsonify({"error": "Unable to fetch OCR data"}), 500
@@ -277,12 +391,6 @@ def project_info(project_id):
     }
 
     return jsonify(response)
-
-
-
-
-
-
 
 
 
