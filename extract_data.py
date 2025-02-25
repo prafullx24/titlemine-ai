@@ -8,16 +8,6 @@ from datetime import datetime
 
 # Load environment variables
 load_dotenv()
-import os
-import json
-import psycopg2
-from flask import Flask, jsonify
-from dotenv import load_dotenv
-import openai
-from datetime import datetime
-
-# Load environment variables
-load_dotenv()
 
 # Configuration class
 class Config:

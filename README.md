@@ -33,3 +33,22 @@ Replace `<file_id>` with the ID of the file you want to process.
 
 
 5. check = " titlemine-documentai-ocr-898de9277942.json " file available in folder which contain credentials.
+
+
+
+# Batch Processing
+
+Project: project_id
+Files: file_ids = [...]
+
+dbtrigger: files table: OCR delay
+Frontend: call 
+            files: 100
+            call: api/v1/process_files/:project_id
+            Project: 200 files 
+                     100 Files processed: OCR -> Extraction -> Runsheet 
+                     New 100 array 
+                     instrument_type: 100 
+                     execution_date ... grantors {10} : 1000
+                     Total: 1100
+
