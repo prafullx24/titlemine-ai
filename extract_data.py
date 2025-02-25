@@ -4,9 +4,9 @@ import psycopg2
 from dotenv import load_dotenv
 import openai
 from datetime import datetime
-import time
 import concurrent.futures
 import logging
+
 
 # Load environment variables
 load_dotenv()
@@ -117,16 +117,60 @@ def extract_and_process_document(ocr_text):
         client = openai.OpenAI()
         instrument_type_data = extract_instrument_type(ocr_text)
         instrument_type = instrument_type_data.get("instrument_type", "")
+
         if not instrument_type:
             raise ValueError("Instrument type could not be extracted.")
         prompt_output = prompts_by_instrument_type(instrument_type)
-        user_prompt_doc_type = f"""{prompt_output} according to these parameters, find the corresponding information and return the values in similar json."""
+        user_prompt_doc_type = f"""
+        Find the following parameters in the text data added at the end of this prompt. 
+        Parameters: 
+        {prompt_output}
+        Search in this text data: 
+        {ocr_text} 
+        """
+        
+        print(user_prompt_doc_type)
+        
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "system", "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format."},
-                      {"role": "user", "content": user_prompt_doc_type}]
+            messages=[{"role": "system", "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. The Text that you have to search this information from is at the end of the prompt."},
+                      {"role": "user", "content": user_prompt_doc_type}],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "document_extraction",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "instrument_type": {"type": "string"},
+                            "volume_page": {"type": "string"},
+                            "document_case_number": {"type": "string"},
+                            "execution_date": {"type": "string"},
+                            "effective_date": {"type": "string"},
+                            "recording_date": {"type": "string"},
+                            "grantee": {"type": "string"},
+                            "grantor": {"type": "string"},
+                            "property_description": {"type": "string"}
+                        },
+                        "required": [
+                            "instrument_type",
+                            "volume_page",
+                            "document_case_number",
+                            "execution_date",
+                            "effective_date",
+                            "recording_date",
+                            "grantee",
+                            "grantor",
+                            "property_description"
+                        ],
+                        "additionalProperties": False
+                    },
+                    "strict": True
+                }
+            }
         )
-        result = response.choices[0].message.content.strip("```").lstrip("json\n").strip()
+        result = response.choices[0].message.content
+        print(result)
         try:
             result_json = json.loads(result)
             return result_json
@@ -138,7 +182,7 @@ def extract_and_process_document(ocr_text):
         logging.error(f"Error processing document: {e}")
         return str(e)
 
-def store_extracted_data(file_id, project_id, extracted_data):
+def store_extracted_data(user_id, file_id, project_id, extracted_data):
     try:
         conn = get_db_connection()
         if conn is None:
@@ -177,31 +221,43 @@ def store_extracted_data(file_id, project_id, extracted_data):
                     remarks = "N/A" 
                     file_date = recording_date #add file_date if needed.
 
-                    check_query = "SELECT COUNT(*) FROM public.runsheets WHERE file_id = %s"
-                    cur.execute(check_query, (file_id,))
+                    check_query = "SELECT COUNT(*) FROM public.runsheets WHERE file_id = %s and project_id = %s"
+                    cur.execute(check_query, (file_id, project_id))
                     exists = cur.fetchone()[0] > 0
 
                     if exists:
                         update_query = """
-                        UPDATE public.runsheets SET 
-                            instrument_type = %s, document_case=%s, volume_page = %s, effective_date = %s,
-                            execution_date = %s, file_date =%s, grantor = %s, grantee = %s, property_description = %s, remarks = %s
-                        WHERE file_id = %s
-                        """
+                            UPDATE public.runsheets 
+                            SET 
+                                instrument_type = COALESCE(%s, instrument_type), 
+                                document_case = COALESCE(%s, document_case), 
+                                volume_page = COALESCE(%s, volume_page), 
+                                effective_date = COALESCE(%s, effective_date),
+                                execution_date = COALESCE(%s, execution_date), 
+                                file_date = COALESCE(%s, file_date), 
+                                grantor = COALESCE(%s, grantor), 
+                                grantee = COALESCE(%s, grantee), 
+                                property_description = COALESCE(%s, property_description), 
+                                remarks = COALESCE(%s, remarks), 
+                                user_id = COALESCE(user_id, user_id) 
+                            WHERE file_id = %s AND project_id = %s
+                            """
+
                         cur.execute(update_query, (
                             instrument_type, document_case, volume_page, effective_date,
-                            execution_date, file_date, grantor, grantee, property_description, remarks, file_id
+                            execution_date, file_date, grantor, grantee, property_description, remarks, file_id, project_id
                         ))
                     else:
                         insert_query = """
                         INSERT INTO public.runsheets (file_id, project_id, instrument_type, document_case, volume_page, 
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks, user_id)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """
-                        cur.execute(insert_query, (
+                        insert_output = cur.execute(insert_query, (
                             file_id, project_id, instrument_type, document_case, volume_page,
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks
+                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks, user_id
                         ))
+                        print(insert_output)
 
                     conn.commit()
                     return "Data successfully stored/updated."
@@ -220,6 +276,31 @@ def process_documents_concurrently(file_ids):
         results = list(executor.map(process_single_document, file_ids))
     return results
 
+def fetch_user_id(file_id):
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return None, "Database connection error"
+
+        with conn:
+            with conn.cursor() as cur:
+                query = "SELECT user_id FROM files WHERE files.id = %s"
+
+                try:
+                    cur.execute(query, (int(file_id),))  # If file_id is an integer
+                except ValueError:
+                    cur.execute(query, (file_id,))  # If file_id is a string
+
+                response = cur.fetchone()
+
+                if not response:
+                    return "user_id not found in files table"
+                else:
+                    return response
+    except Exception as e:
+        logging.error(f"Error fetching user_id: {e}")
+        return None, str(e)
+
 def process_single_document(file_id):
     file_id_from_db, project_id, ocr_data, error = fetch_ocr_text(file_id)
     if error:
@@ -229,16 +310,23 @@ def process_single_document(file_id):
     if not ocr_data:
         return f"No OCR data found for file_id {file_id}"
 
-    extracted_data = extract_and_process_document(ocr_data)
+    ocr_text = ocr_data.get("text", "")
+    extracted_data = extract_and_process_document(ocr_text)
     if "error" in extracted_data:
         logging.error(f"Error processing document {file_id}: {extracted_data}")
         return f"Error processing document {file_id}: {extracted_data.get('error')}"
-
-    result = store_extracted_data(file_id_from_db, project_id, extracted_data)
+    user_id = fetch_user_id(file_id)
+    result = store_extracted_data(user_id, file_id_from_db, project_id, extracted_data)
     return result
 
 # Example usage: process multiple file IDs concurrently
-file_ids_to_process = [104,105,106,107]  
+# file_ids_to_process = [
+#     28, 33, 34, 36, 37, 38, 39, 41, 42, 43, 47, 48, 49, 50, 51, 52, 53, 
+#     56, 57, 58, 59, 61, 62, 63, 65, 66, 67, 69, 70, 71, 72, 73, 74, 75, 
+#     76, 77, 78, 80, 81, 82, 84, 87, 89, 91
+# ]
+
+file_ids_to_process = [36]  
 results = process_documents_concurrently(file_ids_to_process)
 
 
