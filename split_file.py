@@ -94,7 +94,7 @@ from flask import Flask, jsonify, request
 from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
-import logging
+# import logging
 
 
 # Load environment variables
@@ -109,8 +109,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 # Initialize Flask App
 app = Flask(__name__)
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
+
 
 # Database Configuration
 DB_CONFIG = {
@@ -141,7 +140,7 @@ def save_project_files_to_variable(project_id, user_id, files):
         "project_id": project_id,
         "file_ids": [file[0] for file in files]
     }
-    print(data)
+    print(data) # Print the project ID and file IDs
     return data
 
 
@@ -181,6 +180,11 @@ def get_files_by_project(project_id):
 
 
 
+
+
+
+
+
 # The download_file_from_s3 function downloads a file from an S3 URL and saves it locally.
 def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
     """Download a file from S3 URL and save it locally"""
@@ -194,6 +198,8 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
             for chunk in response.iter_content(1024): # Iterate over the response content in chunks of 1024 bytes
                 file.write(chunk) # Write the chunk to the file 
         return file_path 
+    else:
+        print(f"Failed to download file from S3: {s3_url}, Status Code: {response.status_code}")
     # print(f"Failed to download file from S3: {s3_url}")
     return None
 
@@ -219,29 +225,28 @@ def download_files_concurrently(files):
         except Exception as e:
             print(f"Error downloading file {file}: {e}")
 
+
     if not files:
         print("No files to download.")
         return []
 
-    # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
-    with ThreadPoolExecutor() as executor:    # No limit on concurrent downloads
-        executor.map(download_file, files)
+    try:
+        # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
+        with ThreadPoolExecutor() as executor:    # No limit on concurrent downloads
+            executor.map(download_file, files)
+    except Exception as e:
+        print(f"Error in concurrent download: {e}")
 
     print("All files downloaded")
 
-    # for file_path in downloaded_files:
-    #     file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
-    #     print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
-
-
-    # print(downloaded_files)
-    # return downloaded_files
-
-    for file_path in downloaded_files:
-        file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
-        file_size_formatted = f"{file_size:.2f}"  # Format file size to 2 decimal places
-        file_sizes.append({"file_name": os.path.basename(file_path), "file_size": file_size_formatted})
-        # print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
+    try:
+        for file_path in downloaded_files:
+            file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
+            file_size_formatted = f"{file_size:.2f}"  # Format file size to 2 decimal places
+            file_sizes.append({"file_name": os.path.basename(file_path), "file_size": file_size_formatted})
+            # print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
+    except Exception as e:
+        print(f"Error calculating file sizes: {e}")
 
     # Print file sizes
     print("File sizes:", file_sizes)
@@ -252,13 +257,22 @@ def download_files_concurrently(files):
 
 
 
+
+
+
+
+
+
 # This function saves the OCR extracted data as a JSON file in a specified download folder, using the user ID, project ID, and file ID to name the file.
 def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
     """Save OCR output as JSON."""
     ocr_file_path = os.path.join(DOWNLOAD_FOLDER, f"download_json_{user_id}_{project_id}_{file_id}.json")
-    with open(ocr_file_path, "w", encoding="utf-8") as json_file:
-        json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
-        # print(f"OCR JSON saved successfully: {ocr_file_path}")
+    try:
+        with open(ocr_file_path, "w", encoding="utf-8") as json_file:
+            json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
+            # print(f"OCR JSON saved successfully: {ocr_file_path}")
+    except Exception as e:
+        print(f"Error saving OCR output as JSON for file {file_id}: {e}")
 
 
 
@@ -267,12 +281,15 @@ def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
 def save_ocr_outputs_as_json(extracted_data_list):
     """Save multiple OCR outputs as JSON."""
     for data in extracted_data_list:
-        user_id = data['user_id']
-        project_id = data['project_id']
-        file_id = data['file_id']
-        extracted_data = data['extracted_data']
-        save_ocr_output_as_json(user_id, project_id, file_id, extracted_data)
-    # print("All OCR JSON files saved successfully")
+        try:
+            user_id = data['user_id']
+            project_id = data['project_id']
+            file_id = data['file_id']
+            extracted_data = data['extracted_data']
+            save_ocr_output_as_json(user_id, project_id, file_id, extracted_data)
+            # print("All OCR JSON files saved successfully")
+        except Exception as e:
+            print(f"Error saving OCR output as JSON for file {data.get('file_id', 'unknown')}: {e}")
 
 
 
@@ -285,102 +302,133 @@ def save_ocr_outputs_as_json(extracted_data_list):
 
 def extract_text_with_confidence(file_path):
     """Extracts text and confidence scores from a document using Google Document AI"""
-    
+
     if not os.path.exists(credentials_path):
         raise FileNotFoundError(f"Credentials file not found: {credentials_path}")
 
+
     def split_pdf(file_path, start_page, end_page):
-        with open(file_path, 'rb') as file:
-            reader = PdfReader(file)
-            writer = PdfWriter()
-            for page_num in range(start_page, end_page):
-                writer.add_page(reader.pages[page_num])
-            split_file_path = f"{os.path.splitext(file_path)[0]}_pages_{start_page+1}_to_{end_page}.pdf"
-            with open(split_file_path, 'wb') as output_file:
-                writer.write(output_file)
-            return split_file_path
+        try:
+            with open(file_path, 'rb') as file:
+                reader = PdfReader(file)
+                writer = PdfWriter()
+                for page_num in range(start_page, end_page):
+                    writer.add_page(reader.pages[page_num])
+                split_file_path = f"{os.path.splitext(file_path)[0]}_pages_{start_page+1}_to_{end_page}.pdf"
+                with open(split_file_path, 'wb') as output_file:
+                    writer.write(output_file)
+                return split_file_path
+        except Exception as e:
+            print(f"Error splitting PDF {file_path} from page {start_page} to {end_page}: {e}")
+            return None
+
 
     def process_document(file_path):
-        client = documentai.DocumentProcessorServiceClient()
-        with open(file_path, "rb") as file:
-            content = file.read()
-        raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
-        name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}"
-        request = documentai.ProcessRequest(name=name, raw_document=raw_document)
+        try:
+            client = documentai.DocumentProcessorServiceClient()
+            with open(file_path, "rb") as file:
+                content = file.read()
+            raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
+            name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}"
+            request = documentai.ProcessRequest(name=name, raw_document=raw_document)
+            
+            # Debugging statement to log request details
+            #print(f"Processing document: {file_path}, Size: {len(content)} bytes")
+            
+            response = client.process_document(request=request)
+            
+            # Debugging statement to log response details
+            #print(f"Document processed: Done")
+            
+            document_dict = documentai.Document.to_dict(response.document)
+            extracted_text = document_dict.get("text", "")
+            extracted_data = {"text": extracted_text, "confidence_scores": []}
 
-        # Debugging statement to log request details
-        #print(f"Processing document: {file_path}, Size: {len(content)} bytes")
+            for page in response.document.pages:
+                for block in page.blocks:
+                    for segment in block.layout.text_anchor.text_segments:
+                        segment_text = document_dict["text"][segment.start_index:segment.end_index]
+                        confidence = block.layout.confidence
+                        extracted_data["confidence_scores"].append({
+                            "text": segment_text,
+                            "confidence": confidence
+                        })
 
-        response = client.process_document(request=request)
+            return extracted_data
 
-        # Debugging statement to log response details
-        #print(f"Document processed: Done")
+        except Exception as e:
+            print(f"Error processing document {file_path}: {e}")
+            return None
 
-        document_dict = documentai.Document.to_dict(response.document)
-        extracted_text = document_dict.get("text", "")
-        extracted_data = {"text": extracted_text, "confidence_scores": []}
 
-        for page in response.document.pages:
-            for block in page.blocks:
-                for segment in block.layout.text_anchor.text_segments:
-                    segment_text = document_dict["text"][segment.start_index:segment.end_index]
-                    confidence = block.layout.confidence
-                    extracted_data["confidence_scores"].append({
-                        "text": segment_text,
-                        "confidence": confidence
-                    })
-
-        return extracted_data
 
     def split_and_process(file_path, max_size_mb=20, max_pages=15):
+        try:
+            total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+            with open(file_path, 'rb') as file:
+                reader = PdfReader(file)
+                total_pages = len(reader.pages)
+                size_per_page_mb = total_size_mb / total_pages
+
+            if total_size_mb <= max_size_mb and total_pages <= max_pages:
+                return [process_document(file_path)]
+
+            start_page = 0
+            extracted_data = []
+
+            while start_page < total_pages:
+                end_page = start_page
+                current_size_mb = 0
+                while end_page < total_pages and current_size_mb + size_per_page_mb <= max_size_mb and (end_page - start_page) < max_pages:
+                    current_size_mb += size_per_page_mb
+                    end_page += 1
+
+                split_file_path = split_pdf(file_path, start_page, end_page)
+                if split_file_path:
+                    extracted_data.extend(split_and_process(split_file_path))
+                else:
+                    print(f"Error splitting file {file_path} from page {start_page} to {end_page}")
+
+                start_page = end_page
+
+            return extracted_data
+
+
+        except Exception as e:
+            print(f"Error in split_and_process for file {file_path}: {e}")
+            return []
+
+
+
+    try:
         total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
         with open(file_path, 'rb') as file:
             reader = PdfReader(file)
-            total_pages = len(reader.pages)
-            size_per_page_mb = total_size_mb / total_pages
-
-        if total_size_mb <= max_size_mb and total_pages <= max_pages:
-            return [process_document(file_path)]
-
-        start_page = 0
-        extracted_data = []
-
-        while start_page < total_pages:
-            end_page = start_page
-            current_size_mb = 0
-            while end_page < total_pages and current_size_mb + size_per_page_mb <= max_size_mb and (end_page - start_page) < max_pages:
-                current_size_mb += size_per_page_mb
-                end_page += 1
-
-            split_file_path = split_pdf(file_path, start_page, end_page)
-            extracted_data.extend(split_and_process(split_file_path))
-
-            start_page = end_page
-
-        return extracted_data
-
-    total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
-    with open(file_path, 'rb') as file:
-        reader = PdfReader(file)
-        num_pages = len(reader.pages)
+            num_pages = len(reader.pages)
 
         # Extract file ID from the file path
-    file_id = os.path.basename(file_path).split('_')[4].split('.')[0]
+        file_id = os.path.basename(file_path).split('_')[4].split('.')[0]
 
-    if total_size_mb > 20 and num_pages == 1:
-        # print('Splitting for this file is not possible !')
-        print(f'Splitting for this file is not possible! File ID: {file_id}')
-    elif total_size_mb > 20:
-        return split_and_process(file_path)
-    elif num_pages > 15:
-        extracted_data = []
-        for start_page in range(0, num_pages, 15):
-            end_page = min(start_page + 15, num_pages)
-            split_file_path = split_pdf(file_path, start_page, end_page)
-            extracted_data.extend(split_and_process(split_file_path))
-        return extracted_data
-    else:
-        return process_document(file_path)
+        if total_size_mb > 20 and num_pages == 1:
+            # print('Splitting for this file is not possible !')
+            print(f'Splitting for this file is not possible! File ID: {file_id}')
+        elif total_size_mb > 20:
+            return split_and_process(file_path)
+        elif num_pages > 15:
+            extracted_data = []
+            for start_page in range(0, num_pages, 15):
+                end_page = min(start_page + 15, num_pages)
+                split_file_path = split_pdf(file_path, start_page, end_page)
+                extracted_data.extend(split_and_process(split_file_path))
+            return extracted_data
+        else:
+            return process_document(file_path)
+        
+    except Exception as e:
+        print(f"Error processing document {file_path}: {e}")
+        return None
+
+
 
 
 
@@ -414,18 +462,27 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
             return None
 
     
+    try:
+        # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent threads
+        with ThreadPoolExecutor() as executor:  # No limit on concurrent threads
+            results = list(executor.map(process_file, downloaded_files))
 
-    # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent threads
-    with ThreadPoolExecutor() as executor:  # No limit on concurrent threads
-        results = list(executor.map(process_file, downloaded_files))
+    except Exception as e:
+        print(f"Error in concurrent processing: {e}")
+        return []
+
 
     # Filter out any None results due to errors
     results = [result for result in results if result is not None]
 
     all_extracted_data.extend(results)
 
-    # Save all OCR outputs as JSON
-    save_ocr_outputs_as_json(all_extracted_data)
+    try:
+        # Save all OCR outputs as JSON
+        save_ocr_outputs_as_json(all_extracted_data)
+    except Exception as e:
+        print(f"Error saving OCR outputs as JSON: {e}")
+
     print("Done with Extracts text and confidence scores ")
     return all_extracted_data
 
@@ -436,49 +493,8 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
 
 
-# # This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
-# def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
-#     conn = psycopg2.connect(**db_config)
-#     cur = conn.cursor()
-    
-#     try:
-#         new_records = [
-#             (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
-#             for data in all_extracted_data
-#         ]
-        
-#         insert_query = """
-#         INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
-#         VALUES %s
-#         ON CONFLICT (file_id, project_id) 
-#         DO UPDATE SET 
-#             ocr_json_1 = EXCLUDED.ocr_json_1,
-#             ocr_text_1 = EXCLUDED.ocr_text_1
-#         """
-        
-#         logging.debug(f"Executing insert query with records: {new_records}")
-        
-#         psycopg2.extras.execute_values(cur, insert_query, new_records)
-        
-#         file_ids = [data['file_id'] for data in all_extracted_data]
-#         update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
-        
-#         logging.debug(f"Executing update status query with file IDs: {file_ids}")
-        
-#         cur.execute(update_status_query, (file_ids,))
-        
-#         conn.commit()
-#         # print("Bulk insert and update executed successfully")
-#         logging.info("Bulk insert and update executed successfully")
-    
-#     except Exception as e:
-#         conn.rollback()
-#         # print("Error in save_and_update_ocr_data_batch:", e)
-#         logging.error(f"Error in save_and_update_ocr_data_batch: {e}")
-    
-#     finally:
-#         cur.close()
-#         conn.close()
+
+
 
 
 
@@ -488,17 +504,7 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     
     try:
         new_records = [
-            # (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'][0].get('text', '').replace("\n", " ")) # Access the first element of the list
-            # data['extracted_data'] is a list, so we need to access the first element using [0].
-            # We use 'text' in data['extracted_data'][0] to check if text exists before trying to access it.
-            # If extracted_data is empty, it avoids index errors by returning an empty string.
-            # (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'][0]['text'].replace("\n", " ") if data['extracted_data'] and 'text' in data['extracted_data'][0] else "")
-            
-            (data['file_id'], project_id, json.dumps(data['extracted_data']), 
-            data['extracted_data'][0].get('text', '').replace("\n", " ") 
-            if isinstance(data['extracted_data'], list) and data['extracted_data'] and isinstance(data['extracted_data'][0], dict) and 'text' in data['extracted_data'][0] 
-            else "")
-
+            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
             for data in all_extracted_data
         ]
         
@@ -511,23 +517,28 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
             ocr_text_1 = EXCLUDED.ocr_text_1
         """
         
-        logging.debug(f"Executing insert query with records: {new_records}")
+        # print(f"Executing insert query")
         
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
         update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
         
-        logging.debug(f"Executing update status query with file IDs: {file_ids}")
+        # print(f"Executing update status query with file IDs: {file_ids}")
         
-        cur.execute(update_status_query, (file_ids,))
+        try:
+            cur.execute(update_status_query, (file_ids,))
+        except Exception as e:
+            print(f"Error executing update status query: {e}")
+            raise
         
         conn.commit()
-        logging.info("Bulk insert and update executed successfully")
+        print("OCR data saved successfully in the database.")
+    
     
     except Exception as e:
         conn.rollback()
-        logging.error(f"Error in save_and_update_ocr_data_batch: {e}")
+        print(f"Error in save_and_update_ocr_data_batch: {e}")
     
     finally:
         cur.close()
@@ -545,38 +556,35 @@ def batch_ocr(project_id):
 
     # step 1 - get files by project and store file ids in a json file which ocr_status is not completed
     files = get_files_by_project(project_id)
-    # id, user_id, project_id, file_name, s3_url, ocr_status = files
-    # print(files)
     if not files:
         return jsonify({"error": "No files found for this project."}), 404
-
-    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
-
-
+    # id, user_id, project_id, file_name, s3_url, ocr_status = files
+    # print(files)
+    # return jsonify({"message": " get_files_by_project Execute successfully"}), 200
 
 
 
     # step 2 - download files from s3
     downloaded_files,file_sizes = download_files_concurrently(files)
-    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase", "file_sizes": file_sizes}), 200
+    # return jsonify({"message": "download_files_concurrently  Execute successfully"}), 200
     
 
 
-    # # # step 3- check_file_sizes_and_count_pages
-    # split_pdf_paths = check_file_sizes_and_count_pages(downloaded_files, file_sizes)
-    # return jsonify({"message": " Data successfully in DataBase", "split_pdf_paths": split_pdf_paths}), 200
 
     # Step 3: Perform OCR on all downloaded File
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    # return jsonify({"message": "Batch file download processing completed."}), 200
+    # return jsonify({"message": "extract_text_with_confidence_batch Execute successfully"}), 200
+
+
 
 
     # Step 4: Save and Update OCR Data 
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
-    # print("OCR data saved successfully in the database.")
-    logging.info("OCR data saved successfully in the database.")
+    # return jsonify({"message": "save_and_update_ocr_data_batch Execute successfully"}), 200
 
-    return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+
+
+    return jsonify({"message": "Inserted OR Updated Data successfully in DataBase"}), 200
 
 
 
