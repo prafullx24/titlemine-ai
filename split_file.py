@@ -94,6 +94,7 @@ from flask import Flask, jsonify, request
 from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 
 # Load environment variables
@@ -108,6 +109,8 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 # Initialize Flask App
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Database Configuration
 DB_CONFIG = {
@@ -306,12 +309,12 @@ def extract_text_with_confidence(file_path):
         request = documentai.ProcessRequest(name=name, raw_document=raw_document)
 
         # Debugging statement to log request details
-        print(f"Processing document: {file_path}, Size: {len(content)} bytes")
+        #print(f"Processing document: {file_path}, Size: {len(content)} bytes")
 
         response = client.process_document(request=request)
 
         # Debugging statement to log response details
-        print(f"Document processed: Done")
+        #print(f"Document processed: Done")
 
         document_dict = documentai.Document.to_dict(response.document)
         extracted_text = document_dict.get("text", "")
@@ -390,7 +393,7 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
     def process_file(file_path):
         try:
-            print(f"Processing file: {file_path}")
+            #print(f"Processing file: {file_path}")
             extracted_data = extract_text_with_confidence(file_path) # Extract text and confidence scores from the document
 
             # Extract user_id, project_id, and file_id from the file name
@@ -429,14 +432,73 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
 
 
-# This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
+
+
+
+
+# # This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
+# def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
+#     conn = psycopg2.connect(**db_config)
+#     cur = conn.cursor()
+    
+#     try:
+#         new_records = [
+#             (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
+#             for data in all_extracted_data
+#         ]
+        
+#         insert_query = """
+#         INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
+#         VALUES %s
+#         ON CONFLICT (file_id, project_id) 
+#         DO UPDATE SET 
+#             ocr_json_1 = EXCLUDED.ocr_json_1,
+#             ocr_text_1 = EXCLUDED.ocr_text_1
+#         """
+        
+#         logging.debug(f"Executing insert query with records: {new_records}")
+        
+#         psycopg2.extras.execute_values(cur, insert_query, new_records)
+        
+#         file_ids = [data['file_id'] for data in all_extracted_data]
+#         update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
+        
+#         logging.debug(f"Executing update status query with file IDs: {file_ids}")
+        
+#         cur.execute(update_status_query, (file_ids,))
+        
+#         conn.commit()
+#         # print("Bulk insert and update executed successfully")
+#         logging.info("Bulk insert and update executed successfully")
+    
+#     except Exception as e:
+#         conn.rollback()
+#         # print("Error in save_and_update_ocr_data_batch:", e)
+#         logging.error(f"Error in save_and_update_ocr_data_batch: {e}")
+    
+#     finally:
+#         cur.close()
+#         conn.close()
+
+
+
 def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     conn = psycopg2.connect(**db_config)
     cur = conn.cursor()
     
     try:
         new_records = [
-            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
+            # (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'][0].get('text', '').replace("\n", " ")) # Access the first element of the list
+            # data['extracted_data'] is a list, so we need to access the first element using [0].
+            # We use 'text' in data['extracted_data'][0] to check if text exists before trying to access it.
+            # If extracted_data is empty, it avoids index errors by returning an empty string.
+            # (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'][0]['text'].replace("\n", " ") if data['extracted_data'] and 'text' in data['extracted_data'][0] else "")
+            
+            (data['file_id'], project_id, json.dumps(data['extracted_data']), 
+            data['extracted_data'][0].get('text', '').replace("\n", " ") 
+            if isinstance(data['extracted_data'], list) and data['extracted_data'] and isinstance(data['extracted_data'][0], dict) and 'text' in data['extracted_data'][0] 
+            else "")
+
             for data in all_extracted_data
         ]
         
@@ -449,22 +511,27 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
             ocr_text_1 = EXCLUDED.ocr_text_1
         """
         
+        logging.debug(f"Executing insert query with records: {new_records}")
+        
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
         update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
+        
+        logging.debug(f"Executing update status query with file IDs: {file_ids}")
+        
         cur.execute(update_status_query, (file_ids,))
         
         conn.commit()
-        # print("Bulk insert and update executed successfully")
+        logging.info("Bulk insert and update executed successfully")
+    
     except Exception as e:
         conn.rollback()
-        print("Error in save_and_update_ocr_data_batch:", e)
+        logging.error(f"Error in save_and_update_ocr_data_batch: {e}")
+    
     finally:
         cur.close()
         conn.close()
-
-
 
 
 
@@ -506,7 +573,9 @@ def batch_ocr(project_id):
 
     # Step 4: Save and Update OCR Data 
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
-    print("OCR data saved successfully in the database.")
+    # print("OCR data saved successfully in the database.")
+    logging.info("OCR data saved successfully in the database.")
+
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
 
