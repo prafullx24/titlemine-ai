@@ -1,246 +1,186 @@
 import os
 import json
 import psycopg2
+import logging
 from dotenv import load_dotenv
 import openai
-from datetime import datetime
-import time
-import concurrent.futures
-import logging
+from flask import Flask, request, jsonify
 
-# Load environment variables
+# Load environment variables and configure logging
 load_dotenv()
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Configuration class
-class Config:
+def process_legal_documents(project_id, batch_size=10):
+    """
+    Process legal documents for a given project_id in batches with minimal API requests.
+    Returns a list of processed results.
+    """
+    # Database configuration
     DATABASE_URL = os.getenv("DATABASE_URL")
     if not DATABASE_URL:
         raise ValueError("DATABASE_URL environment variable is missing.")
 
-# # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Function to get a database connection
-def get_db_connection():
-    try:
-        return psycopg2.connect(Config.DATABASE_URL)
-    except Exception as e:
-        logging.error(f"Error getting DB connection: {e}")
-        return None
-
-# Function to fetch OCR text from the database
-def fetch_ocr_text(file_id):
-    try:
-        conn = get_db_connection()
-        if conn is None:
-            return None, "Database connection error"
-
-        with conn:
-            with conn.cursor() as cur:
-                query = "SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
-
-                try:
-                    cur.execute(query, (int(file_id),))  # If file_id is an integer
-                except ValueError:
-                    cur.execute(query, (file_id,))  # If file_id is a string
-
-                response = cur.fetchone()
-
-                if not response:
-                    return None, None, None, "file_id not found in ocr_data table"
-
-                file_id_from_db, project_id, ocr_json_1 = response
-
-                try:
-                    ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
-                    return file_id_from_db, project_id, ocr_data, None
-                except json.JSONDecodeError:
-                    return file_id_from_db, project_id, None, "Invalid JSON format"
-    except Exception as e:
-        logging.error(f"Error fetching OCR text: {e}")
-        return None, str(e)
-
-def extract_instrument_type(ocr_text):
-    """
-    Extracts the instrument type from the provided OCR text using OpenAI's GPT-4o-mini.
-    """
-    client = openai.OpenAI()
-
-    system_prompt = """
-    You are a legal expert extraction algorithm specializing in property law and land transactions.
-    Extract the following details from the provided legal land document and provide output in valid JSON format.
-    """
-
-    user_prompt_doc_type = f"""
-    Extract legal information from the following document:\n\n{ocr_text}. 
-    Carefully analyze the first few lines of the document to determine the instrument type.
-    Instrument Type can be one of following: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way, Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption, Court Case, Assignment or Other. 
-    If the type is an amendment, return what kind of instrument it is amending.
-    If the instrument type is not explicitly stated, return "Other".
-    Please return the result as a JSON object with a key named "instrument_type".
-    """
-
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "system", "content": system_prompt},
-                      {"role": "user", "content": user_prompt_doc_type}]
-        )
-
-        resp = completion.choices[0].message.content.strip("```").lstrip("json\n").strip()
-
-        try:
-            json_resp = json.loads(resp)
-            return json_resp
-        except json.JSONDecodeError as e:
-            logging.error(f"Error parsing JSON: {e}")
-            return {"error": "Invalid JSON response from OpenAI", "raw_response": resp}
-
-    except Exception as e:
-        logging.error(f"Error communicating with OpenAI: {e}")
-        return {"error": f"OpenAI API error: {e}"}
-
-# Load Prompts
-def load_prompts(filepath="prompts.json"):
-    with open(filepath, "r") as f:
+    # Load prompts from file
+    with open("prompts.json", "r") as f:
         prompts = json.load(f)
-    return prompts
 
-prompts = load_prompts()
-
-def prompts_by_instrument_type(instrument_type):
-    fields = prompts.get(instrument_type, {}).get("fields", {})
-    return json.dumps(fields, indent=4)
-
-def extract_and_process_document(ocr_text):
-    try:
-        client = openai.OpenAI()
-        instrument_type_data = extract_instrument_type(ocr_text)
-        instrument_type = instrument_type_data.get("instrument_type", "")
-        if not instrument_type:
-            raise ValueError("Instrument type could not be extracted.")
-        prompt_output = prompts_by_instrument_type(instrument_type)
-        user_prompt_doc_type = f"""{prompt_output} according to these parameters, find the corresponding information and return the values in similar json."""
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "system", "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format."},
-                      {"role": "user", "content": user_prompt_doc_type}]
-        )
-        result = response.choices[0].message.content.strip("```").lstrip("json\n").strip()
+    def get_db_connection():
         try:
-            result_json = json.loads(result)
-            return result_json
-        except json.JSONDecodeError as e:
-            logging.error(f"Error parsing json from LLM: {e}")
-            return {"error": "Invalid JSON response from OpenAI", "raw_response": result}
+            return psycopg2.connect(DATABASE_URL)
+        except Exception as e:
+            logging.error(f"Error getting DB connection: {e}")
+            return None
 
-    except Exception as e:
-        logging.error(f"Error processing document: {e}")
-        return str(e)
+    def fetch_file_ids():
+        try:
+            with get_db_connection() as conn:
+                if conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT file_id FROM ocr_data WHERE project_id = %s", (project_id,))
+                        return [row[0] for row in cur.fetchall()]
+            return None
+        except Exception as e:
+            logging.error(f"Error fetching file_ids: {e}")
+            return None
 
-def store_extracted_data(file_id, project_id, extracted_data):
+    def is_processed(file_id):
+        try:
+            with get_db_connection() as conn:
+                if conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT 1 FROM extracted_data WHERE file_id = %s", (file_id,))
+                        return cur.fetchone() is not None
+            return False
+        except Exception as e:
+            logging.error(f"Error checking processed file: {e}")
+            return False
+
+    def fetch_ocr(file_id):
+        try:
+            with get_db_connection() as conn:
+                if conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s", (file_id,))
+                        response = cur.fetchone()
+                        if response:
+                            file_id_db, proj_id, ocr_json = response
+                            ocr_data = json.loads(ocr_json) if isinstance(ocr_json, str) else ocr_json
+                            return file_id_db, proj_id, ocr_data, None
+                        return None, None, None, "file_id not found"
+            return None, None, None, "Database connection error"
+        except Exception as e:
+            logging.error(f"Error fetching OCR text: {e}")
+            return None, None, None, str(e)
+
+    def process_document(ocr_text):
+        client = openai.OpenAI()
+        system_prompt = """
+        You are a legal expert extraction algorithm specializing in property law and land transactions.
+        Extract the following details from the provided legal land document and provide output in valid JSON format.
+        """
+        
+        user_prompt = f"""
+        Extract legal information from the following document:\n\n{ocr_text}.
+        1. First, carefully analyze the first few lines to determine the instrument type.
+           Instrument Type can be: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way,
+           Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption,
+           Court Case, Assignment, or Other. If it's an amendment, specify what it amends. If not explicit, use "Other".
+        2. Then, extract these parameters based on the instrument type: 
+           {json.dumps(prompts.get("default", {}).get("fields", {}), indent=4)}
+           Search in the provided text data.
+        Return the result as a JSON object with "instrument_type" and all required fields.
+        """
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "document_extraction",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "instrument_type": {"type": "string"},
+                                "volume_page": {"type": "string"},
+                                "document_case_number": {"type": "string"},
+                                "execution_date": {"type": "string"},
+                                "effective_date": {"type": "string"},
+                                "recording_date": {"type": "string"},
+                                "grantee": {"type": "string"},
+                                "grantor": {"type": "string"},
+                                "property_description": {"type": "string"}
+                            },
+                            "required": ["instrument_type", "volume_page", "document_case_number",
+                                       "execution_date", "effective_date", "recording_date",
+                                       "grantee", "grantor", "property_description"],
+                            "additionalProperties": False
+                        },
+                        "strict": True
+                    }
+                }
+            )
+            result = json.loads(response.choices[0].message.content)
+            return result
+        except Exception as e:
+            logging.error(f"Error processing document: {e}")
+            return {"error": str(e)}
+
+    # Main processing logic
+    file_ids = fetch_file_ids()
+    if not file_ids:
+        logging.error(f"No files found for project_id {project_id}")
+        return "No files to process."
+
+    results = []
+    for i in range(0, len(file_ids), batch_size):
+        batch = [fid for fid in file_ids[i:i + batch_size] if not is_processed(fid)]
+        if not batch:
+            logging.info("Skipping batch, all files processed.")
+            continue
+
+        for file_id in batch:
+            file_id_db, proj_id, ocr_data, error = fetch_ocr(file_id)
+            if error:
+                logging.error(f"Error fetching OCR for {file_id}: {error}")
+                continue
+
+            ocr_text = ocr_data.get("text", "") if isinstance(ocr_data, dict) else ocr_data[0].get("text", "") if isinstance(ocr_data, list) else ""
+            if not ocr_text.strip():
+                logging.info(f"Skipping {file_id} due to empty OCR text.")
+                continue
+
+            extracted_data = process_document(ocr_text)
+            if "error" not in extracted_data:
+                results.append(extracted_data)
+            else:
+                logging.error(f"Error processing {file_id}: {extracted_data['error']}")
+
+        logging.info(f"Processed batch: {batch}")
+
+    return results if results else "Processing completed with no new results."
+
+	
+app = Flask(__name__)
+
+@app.route('/process_documents/<project_id>', methods=['GET'])
+def process_documents(project_id):
+    """
+    Endpoint to process legal documents. The project_id is passed as part of the URL.
+    Batch size is optional and defaults to 10 if not provided.
+    """
+    # Check if batch_size is provided as a query parameter, default to 10 if not.
+    batch_size = request.args.get('batch_size', 10, type=int)
+    
     try:
-        conn = get_db_connection()
-        if conn is None:
-            return "Database connection error"
-
-        with conn:
-            with conn.cursor() as cur:
-                try:
-                    conn.autocommit = False
-
-                    def convert_date(date_str):
-                        if date_str and date_str.lower() != "none found" and date_str.lower() != "n/a":
-                            try:
-                                return datetime.strptime(date_str, "%B %d, %Y").date()
-                            except ValueError:
-                                return None
-                        return None
-
-                    if isinstance(extracted_data, str):
-                        try:
-                            extracted_data = json.loads(extracted_data)
-                        except json.JSONDecodeError:
-                            return "Invalid JSON data"
-
-                    execution_date = convert_date(extracted_data.get("execution_date"))
-                    effective_date = convert_date(extracted_data.get("effective_date"))
-                    recording_date = convert_date(extracted_data.get("recording_date"))
-
-                    instrument_type = extracted_data.get("instrument_type", "N/A")
-                    volume_page = extracted_data.get("volume_page", "N/A")
-                    document_case = extracted_data.get("document_case_number", "N/A")
-                    grantor = extracted_data.get("grantor", "N/A")
-                    grantee = json.dumps(extracted_data.get("grantee", []))
-                    property_description = json.dumps(extracted_data.get("property_description", []))
-                    sort_sequence = 0
-                    remarks = "N/A" 
-                    file_date = recording_date #add file_date if needed.
-
-                    check_query = "SELECT COUNT(*) FROM public.runsheets WHERE file_id = %s"
-                    cur.execute(check_query, (file_id,))
-                    exists = cur.fetchone()[0] > 0
-
-                    if exists:
-                        update_query = """
-                        UPDATE public.runsheets SET 
-                            instrument_type = %s, document_case=%s, volume_page = %s, effective_date = %s,
-                            execution_date = %s, file_date =%s, grantor = %s, grantee = %s, property_description = %s, remarks = %s
-                        WHERE file_id = %s
-                        """
-                        cur.execute(update_query, (
-                            instrument_type, document_case, volume_page, effective_date,
-                            execution_date, file_date, grantor, grantee, property_description, remarks, file_id
-                        ))
-                    else:
-                        insert_query = """
-                        INSERT INTO public.runsheets (file_id, project_id, instrument_type, document_case, volume_page, 
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        """
-                        cur.execute(insert_query, (
-                            file_id, project_id, instrument_type, document_case, volume_page,
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks
-                        ))
-
-                    conn.commit()
-                    return "Data successfully stored/updated."
-                except Exception as e:
-                    conn.rollback()
-                    logging.error(f"Error storing extracted data: {e}")
-                    return f"Error storing data: {e}"
-
+        result = process_legal_documents(project_id, batch_size)
+        return jsonify(result), 200
     except Exception as e:
-        logging.error(f"Error with DB operation: {e}")
-        return f"DB error: {e}"
+        return jsonify({"error": str(e)}), 500
 
-# Concurrent execution for handling multiple documents
-def process_documents_concurrently(file_ids):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        results = list(executor.map(process_single_document, file_ids))
-    return results
-
-def process_single_document(file_id):
-    file_id_from_db, project_id, ocr_data, error = fetch_ocr_text(file_id)
-    if error:
-        logging.error(f"Error fetching OCR text for file {file_id}: {error}")
-        return error
-
-    if not ocr_data:
-        return f"No OCR data found for file_id {file_id}"
-
-    extracted_data = extract_and_process_document(ocr_data)
-    if "error" in extracted_data:
-        logging.error(f"Error processing document {file_id}: {extracted_data}")
-        return f"Error processing document {file_id}: {extracted_data.get('error')}"
-
-    result = store_extracted_data(file_id_from_db, project_id, extracted_data)
-    return result
-
-# Example usage: process multiple file IDs concurrently
-file_ids_to_process = [104,105,106,107]  
-results = process_documents_concurrently(file_ids_to_process)
-
-
-for result in results:
-    logging.info(f"Processing result: {result}")
+if __name__ == '__main__':
+    app.run(debug=True)
