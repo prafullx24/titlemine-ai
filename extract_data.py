@@ -221,11 +221,10 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
                     remarks = "N/A" 
                     file_date = recording_date #add file_date if needed.
 
-                    check_query = "SELECT COUNT(*) FROM public.runsheets WHERE file_id = %s and project_id = %s"
-                    cur.execute(check_query, (file_id, project_id))
-                    exists = cur.fetchone()[0] > 0
+                    check_query = "SELECT file_name FROM public.runsheets WHERE file_id = %s and project_id = %s"
+                    existing_file_name = cur.execute(check_query, (file_id, project_id))
 
-                    if exists:
+                    if existing_file_name:
                         update_query = """
                             UPDATE public.runsheets 
                             SET 
@@ -239,13 +238,14 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
                                 grantee = COALESCE(%s, grantee), 
                                 property_description = COALESCE(%s, property_description), 
                                 remarks = COALESCE(%s, remarks), 
-                                user_id = COALESCE(user_id, user_id) 
+                                user_id = COALESCE(user_id, user_id),
+                                file_name = COALESCE(%s, file_name)
                             WHERE file_id = %s AND project_id = %s
                             """
 
                         cur.execute(update_query, (
                             instrument_type, document_case, volume_page, effective_date,
-                            execution_date, file_date, grantor, grantee, property_description, remarks, file_id, project_id
+                            execution_date, file_date, grantor, grantee, property_description, remarks, existing_file_name, file_id, project_id
                         ))
                     else:
                         insert_query = """
@@ -257,7 +257,7 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
                             file_id, project_id, instrument_type, document_case, volume_page,
                             effective_date, execution_date, file_date, grantor, grantee, property_description, remarks, user_id
                         ))
-                        print(insert_output)
+                        # return "Runsheet Entry not found."
 
                     conn.commit()
                     return "Data successfully stored/updated."
@@ -326,7 +326,7 @@ def process_single_document(file_id):
 #     76, 77, 78, 80, 81, 82, 84, 87, 89, 91
 # ]
 
-file_ids_to_process = [36]  
+file_ids_to_process = [527]  
 results = process_documents_concurrently(file_ids_to_process)
 
 
