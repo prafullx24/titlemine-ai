@@ -1,0 +1,96 @@
+UPDATE public.files
+SET ocr_status = NULL
+WHERE id IN (573, 574);
+
+
+
+
+Now in this function file split in 15 pages i wants to check size of that file is greater than 20 mb or not if yes then i wants to print in terminal like files with size greater than 20 mb and files with size less than 20 mb 
+def extract_text_with_confidence(file_path):
+    """Extracts text and confidence scores from a document using Google Document AI"""
+    
+    if not os.path.exists(credentials_path):
+        raise FileNotFoundError(f"Credentials file not found: {credentials_path}")
+    
+
+
+    def split_pdf(file_path, start_page, end_page):
+        with open(file_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            writer = PyPDF2.PdfWriter()
+            for page_num in range(start_page, end_page):
+                writer.add_page(reader.pages[page_num])
+            split_file_path = f"{os.path.splitext(file_path)[0]}_pages_{start_page+1}_to_{end_page}.pdf"
+            with open(split_file_path, 'wb') as output_file:
+                writer.write(output_file)
+            return split_file_path
+
+    def process_document(file_path):
+        client = documentai.DocumentProcessorServiceClient() # Create a Document Processor Service Client object for Document AI which is used to process documents 
+        with open(file_path, "rb") as file:
+            content = file.read() 
+        raw_document = documentai.RawDocument(content=content, mime_type="application/pdf") # Create a Raw Document object with the file content and mime type
+        name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}" # Define the processor name 
+        request = documentai.ProcessRequest(name=name, raw_document=raw_document) # Create a Process Request object with the processor name and raw document
+        response = client.process_document(request=request) # Process the document using the client and request object
+        document_dict = documentai.Document.to_dict(response.document) # Convert the document response to a dictionary
+        extracted_text = document_dict.get("text", "") # Extract the text from the document dictionary
+        extracted_data = {
+            "text": extracted_text,
+            "confidence_scores": []
+        }
+        # Extract confidence scores for each text segment
+        for page in response.document.pages:
+            for block in page.blocks:
+                for segment in block.layout.text_anchor.text_segments:
+                    segment_text = document_dict["text"][segment.start_index:segment.end_index] # Extract the text segment from the document dictionary 
+                    confidence = block.layout.confidence # Extract the confidence score from the block layout 
+                    extracted_data["confidence_scores"].append({ # Append the confidence score to the extracted data 
+                        "text": segment_text,
+                        "confidence": confidence
+                    })
+
+        #print(f"Text extracted with confidence scores: {extracted_data}")
+        return extracted_data
+    
+    with open(file_path, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        num_pages = len(reader.pages)
+    
+    if num_pages > 15:
+        extracted_data = []
+        for start_page in range(0, num_pages, 15):
+            end_page = min(start_page + 15, num_pages)
+            split_file_path = split_pdf(file_path, start_page, end_page)
+            extracted_data.append(process_document(split_file_path))
+        return extracted_data
+    else:
+        return process_document(file_path)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    # Check the size of the split file
+            split_file_size = os.path.getsize(split_file_path) / (1024 * 1024)  # Convert size to MB
+            if split_file_size > 20:
+                print(f"File {split_file_path} is greater than 20 MB: {split_file_size:.2f} MB")
+            else:
+                print(f"File {split_file_path} is less than 20 MB: {split_file_size:.2f} MB")
+
+
+here insted of checking size of split file and printing in terminal i wants to again split file if size of that file is greater than 20 mb and for split file i wants to use size of file divided by number of pages which will return mi approximate single page size. and then create pdf file with pages have size less than 20 mb and naming is same like download_pdf_5_5_584_pages_31_to_45.pdf this format. and save all pdfs. 
