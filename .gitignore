@@ -4,6 +4,7 @@ titlemine-documentai-ocr-898de9277942.json
 __pycache__/
 *.py[cod]
 *$py.class
+download_file
 
 # C extensions
 *.so

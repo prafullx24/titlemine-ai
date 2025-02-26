@@ -87,48 +87,40 @@ import psycopg2
 import psycopg2.extras
 import requests
 import json
+import PyPDF2
+from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2.errors import PdfReadError
 from flask import Flask, jsonify, request
 from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 
 # Load environment variables
 load_dotenv()
 
-
 # Set Google Application Credentials
-credentials_path = "./titlemine-documentai-ocr-898de9277942.json"
+credentials_path = os.getenv("CREDENTIALS_PATH")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
-
 
 # Initialize Flask App
 app = Flask(__name__)
 
-
 # Database Configuration
-# DB_CONFIG = {
-#     "dbname": os.getenv("DB_NAME"),
-#     "host": os.getenv("DB_HOST"),
-#     "port": os.getenv("DB_PORT"),
-#     "user": os.getenv("DB_USER"),
-#     "password": os.getenv("DB_PASSWORD"),
-# }
-
 DB_CONFIG = {
-    "host": "192.168.1.72",
-    "port": 5432,
-    "dbname": "titlemine",
-    "user": "postgres",
-    "password": "mysecretpassword",
+    "dbname": os.getenv("DB_NAME"),
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
 }
 
 
-
 # Google Document AI Configuration
-# PROJECT_ID = os.getenv("PROJECT_ID")
-# LOCATION = os.getenv("LOCATION")
-# PROCESSOR_ID = os.getenv("PROCESSOR_ID")
+PROJECT_ID = os.getenv("PROJECT_ID")
+LOCATION = os.getenv("LOCATION")
+PROCESSOR_ID = os.getenv("PROCESSOR_ID")
 
 
 # Folder to store downloaded and OCR files
@@ -137,16 +129,16 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 
 
-# This function saves the project ID and file IDs to a JSON file in the specified download folder.
-def save_project_files_to_json(project_id, user_id, files):
-    """Save project ID and file IDs to a JSON file."""
+# This function saves the project ID and file IDs to a variable and prints the value.
+def save_project_files_to_variable(project_id, user_id, files):
+    """Save project ID and file IDs to a variable and print the value."""
     data = {
         "project_id": project_id,
         "file_ids": [file[0] for file in files]
     }
-    file_path = os.path.join(DOWNLOAD_FOLDER, f"project_{user_id}_{project_id}_files.json")
-    with open(file_path, "w") as json_file:
-        json.dump(data, json_file)
+    print(data)
+    return data
+
 
 
 
@@ -166,17 +158,20 @@ def get_files_by_project(project_id):
 
     cur.execute(query, (project_id,project_id))
     files = cur.fetchall()
-    print("Get files which not completed ocr by project ID")
+    # print("Get files which not completed ocr by project ID")
+
     cur.close()
     conn.close()
 
     # Save project ID and file IDs to a JSON file
     if files:
         user_id = files[0][1]
-        save_project_files_to_json(project_id, user_id, files)
-        print("Saved project ID and file IDs to a JSON file")
+        save_project_files_to_variable(project_id, user_id, files)
+        # print("file saved to variable")
 
     return files
+
+
 
 
 
@@ -203,6 +198,8 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
 # The code defines a function to download files concurrently from S3 URLs using a thread pool, handling errors and printing the download status for each file.
 def download_files_concurrently(files):
     downloaded_files = [] # List to store the downloaded file paths
+    file_sizes = []  # List to store file names and their sizes
+
 
     def download_file(file):
         try:
@@ -226,8 +223,27 @@ def download_files_concurrently(files):
         executor.map(download_file, files)
 
     print("All files downloaded")
+
+    # for file_path in downloaded_files:
+    #     file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
+    #     print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
+
+
     # print(downloaded_files)
-    return downloaded_files
+    # return downloaded_files
+
+    for file_path in downloaded_files:
+        file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
+        file_size_formatted = f"{file_size:.2f}"  # Format file size to 2 decimal places
+        file_sizes.append({"file_name": os.path.basename(file_path), "file_size": file_size_formatted})
+        # print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
+
+    # Print file sizes
+    print("File sizes:", file_sizes)
+
+    print("All files file size printed successfully")
+    return downloaded_files, file_sizes
+
 
 
 
@@ -256,69 +272,150 @@ def save_ocr_outputs_as_json(extracted_data_list):
 
 
 
-#This function processes a document using Google Document AI to extract text and confidence scores for each text segment, returning the extracted data in a structured format.
+# This function processes a document using Google Document AI to extract text and confidence scores for each text segment, returning the extracted data in a structured format.
+# This updated function first checks the number of pages in the PDF. 
+# If the number of pages is greater than 15, it splits the PDF into chunks of 15 pages and processes each chunk separately. 
+# The extracted data from each chunk is then combined and returned.
+
+
 def extract_text_with_confidence(file_path):
     """Extracts text and confidence scores from a document using Google Document AI"""
     
     if not os.path.exists(credentials_path):
         raise FileNotFoundError(f"Credentials file not found: {credentials_path}")
-    
-    client = documentai.DocumentProcessorServiceClient() # Create a Document Processor Service Client object for Document AI which is used to process documents 
-    with open(file_path, "rb") as file:
-        content = file.read() 
-    raw_document = documentai.RawDocument(content=content, mime_type="application/pdf") # Create a Raw Document object with the file content and mime type
-    name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}" # Define the processor name 
-    request = documentai.ProcessRequest(name=name, raw_document=raw_document) # Create a Process Request object with the processor name and raw document
-    response = client.process_document(request=request) # Process the document using the client and request object
-    document_dict = documentai.Document.to_dict(response.document) # Convert the document response to a dictionary
-    extracted_text = document_dict.get("text", "") # Extract the text from the document dictionary
-    extracted_data = {
-        "text": extracted_text,
-        "confidence_scores": []
-    }
-    # Extract confidence scores for each text segment
-    for page in response.document.pages:
-        for block in page.blocks:
-            for segment in block.layout.text_anchor.text_segments:
-                segment_text = document_dict["text"][segment.start_index:segment.end_index] # Extract the text segment from the document dictionary 
-                confidence = block.layout.confidence # Extract the confidence score from the block layout 
-                extracted_data["confidence_scores"].append({ # Append the confidence score to the extracted data 
-                    "text": segment_text,
-                    "confidence": confidence
-                })
 
-    #print(f"Text extracted with confidence scores: {extracted_data}")
-    return extracted_data
+    def split_pdf(file_path, start_page, end_page):
+        with open(file_path, 'rb') as file:
+            reader = PdfReader(file)
+            writer = PdfWriter()
+            for page_num in range(start_page, end_page):
+                writer.add_page(reader.pages[page_num])
+            split_file_path = f"{os.path.splitext(file_path)[0]}_pages_{start_page+1}_to_{end_page}.pdf"
+            with open(split_file_path, 'wb') as output_file:
+                writer.write(output_file)
+            return split_file_path
 
+    def process_document(file_path):
+        client = documentai.DocumentProcessorServiceClient()
+        with open(file_path, "rb") as file:
+            content = file.read()
+        raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
+        name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}"
+        request = documentai.ProcessRequest(name=name, raw_document=raw_document)
+
+        # Debugging statement to log request details
+        print(f"Processing document: {file_path}, Size: {len(content)} bytes")
+
+        response = client.process_document(request=request)
+
+        # Debugging statement to log response details
+        print(f"Document processed: Done")
+
+        document_dict = documentai.Document.to_dict(response.document)
+        extracted_text = document_dict.get("text", "")
+        extracted_data = {"text": extracted_text, "confidence_scores": []}
+
+        for page in response.document.pages:
+            for block in page.blocks:
+                for segment in block.layout.text_anchor.text_segments:
+                    segment_text = document_dict["text"][segment.start_index:segment.end_index]
+                    confidence = block.layout.confidence
+                    extracted_data["confidence_scores"].append({
+                        "text": segment_text,
+                        "confidence": confidence
+                    })
+
+        return extracted_data
+
+    def split_and_process(file_path, max_size_mb=20, max_pages=15):
+        total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+        with open(file_path, 'rb') as file:
+            reader = PdfReader(file)
+            total_pages = len(reader.pages)
+            size_per_page_mb = total_size_mb / total_pages
+
+        if total_size_mb <= max_size_mb and total_pages <= max_pages:
+            return [process_document(file_path)]
+
+        start_page = 0
+        extracted_data = []
+
+        while start_page < total_pages:
+            end_page = start_page
+            current_size_mb = 0
+            while end_page < total_pages and current_size_mb + size_per_page_mb <= max_size_mb and (end_page - start_page) < max_pages:
+                current_size_mb += size_per_page_mb
+                end_page += 1
+
+            split_file_path = split_pdf(file_path, start_page, end_page)
+            extracted_data.extend(split_and_process(split_file_path))
+
+            start_page = end_page
+
+        return extracted_data
+
+    total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+    with open(file_path, 'rb') as file:
+        reader = PdfReader(file)
+        num_pages = len(reader.pages)
+
+        # Extract file ID from the file path
+    file_id = os.path.basename(file_path).split('_')[4].split('.')[0]
+
+    if total_size_mb > 20 and num_pages == 1:
+        # print('Splitting for this file is not possible !')
+        print(f'Splitting for this file is not possible! File ID: {file_id}')
+    elif total_size_mb > 20:
+        return split_and_process(file_path)
+    elif num_pages > 15:
+        extracted_data = []
+        for start_page in range(0, num_pages, 15):
+            end_page = min(start_page + 15, num_pages)
+            split_file_path = split_pdf(file_path, start_page, end_page)
+            extracted_data.extend(split_and_process(split_file_path))
+        return extracted_data
+    else:
+        return process_document(file_path)
 
 
 
 
 # This function processes multiple documents using Google Document AI to extract text and confidence scores, saves the extracted data as JSON files, and returns the aggregated results.
-def extract_text_with_confidence_batch(downloaded_files):
+def extract_text_with_confidence_batch(downloaded_files, file_sizes):
     """Extracts text and confidence scores from multiple documents using Google Document AI."""
     
     all_extracted_data = [] # List to store all extracted data from multiple documents
 
     def process_file(file_path):
-        extracted_data = extract_text_with_confidence(file_path) # Extract text and confidence scores from the document
+        try:
+            print(f"Processing file: {file_path}")
+            extracted_data = extract_text_with_confidence(file_path) # Extract text and confidence scores from the document
 
-        # Extract user_id, project_id, and file_id from the file name
-        file_name_parts = os.path.basename(file_path).split('_')
-        user_id = file_name_parts[2]
-        project_id = file_name_parts[3]
-        file_id = file_name_parts[4].split('.')[0]
+            # Extract user_id, project_id, and file_id from the file name
+            file_name_parts = os.path.basename(file_path).split('_')
+            user_id = file_name_parts[2]
+            project_id = file_name_parts[3]
+            file_id = file_name_parts[4].split('.')[0]
+            
+            return {
+                'user_id': user_id,
+                'project_id': project_id,
+                'file_id': file_id,
+                'extracted_data': extracted_data
+            }
         
-        return {
-            'user_id': user_id,
-            'project_id': project_id,
-            'file_id': file_id,
-            'extracted_data': extracted_data
-        }
+        except Exception as e:
+            print(f"Error processing file {file_path}: {e}")
+            return None
+
+    
 
     # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent threads
     with ThreadPoolExecutor() as executor:  # No limit on concurrent threads
         results = list(executor.map(process_file, downloaded_files))
+
+    # Filter out any None results due to errors
+    results = [result for result in results if result is not None]
 
     all_extracted_data.extend(results)
 
@@ -330,7 +427,6 @@ def extract_text_with_confidence_batch(downloaded_files):
 
 
 
-
 # This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
 def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     conn = psycopg2.connect(**db_config)
@@ -338,17 +434,14 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     
     try:
         new_records = [
-            (data['file_id'], project_id, json.dumps(data['extracted_data']), 
-            data['extracted_data'][0].get('text', '').replace("\n", " ") 
-            if isinstance(data['extracted_data'], dict) and data['extracted_data'] and isinstance(data['extracted_data'][0], dict) and 'text' in data['extracted_data'][0] 
-            else "")
+            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
             for data in all_extracted_data
         ]
         
         insert_query = """
         INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
         VALUES %s
-        ON CONFLICT (file_id, project_id) 
+        ON CONFLICT (file_id, project_id)  
         DO UPDATE SET 
             ocr_json_1 = EXCLUDED.ocr_json_1,
             ocr_text_1 = EXCLUDED.ocr_text_1
@@ -372,6 +465,11 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
 
 
 
+
+
+
+
+
 @app.route("/api/v1/batch_ocr/<int:project_id>", methods=["POST"])
 def batch_ocr(project_id):
     """Batch process OCR for all files under a project."""
@@ -383,16 +481,16 @@ def batch_ocr(project_id):
     if not files:
         return jsonify({"error": "No files found for this project."}), 404
 
-
+    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
     # step 2 - download files from s3
-    downloaded_files = download_files_concurrently(files)
-
-
-    # # Step 3: Perform OCR on all downloaded File
-    all_extracted_data = extract_text_with_confidence_batch(downloaded_files)
+    downloaded_files, file_sizes = download_files_concurrently(files)
+    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase", "file_sizes": file_sizes}), 200
+    # # # step 3- check_file_sizes_and_count_pages
+    # split_pdf_paths = check_file_sizes_and_count_pages(downloaded_files, file_sizes)
+    # return jsonify({"message": " Data successfully in DataBase", "split_pdf_paths": split_pdf_paths}), 200
+    # Step 3: Perform OCR on all downloaded File
+    all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
     # return jsonify({"message": "Batch file download processing completed."}), 200
-
-
     # Step 4: Save and Update OCR Data 
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
     print("OCR data saved successfully in the database.")
@@ -400,5 +498,14 @@ def batch_ocr(project_id):
 
 
 
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # app.run(debug=True, host="0.0.0.0", port=5000)
+    project_id = 12
+    files = get_files_by_project(project_id)
+    if not files:
+        print("No files found for this project.")
+    downloaded_files, file_sizes = download_files_concurrently(files)
+    all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
+    save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+    print("OCR data saved successfully in the database.")
