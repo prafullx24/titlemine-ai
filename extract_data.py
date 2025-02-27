@@ -276,6 +276,11 @@ def process_documents_concurrently(file_ids):
         results = list(executor.map(process_single_document, file_ids))
     return results
 
+def process_documents_sequentially(file_ids):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = list(executor.map(process_single_document, file_ids))
+    return results
+
 def fetch_user_id(file_id):
     try:
         conn = get_db_connection()

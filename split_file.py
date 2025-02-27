@@ -95,10 +95,14 @@ from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 import logging
+import threading
 
 
 # Load environment variables
 load_dotenv()
+
+# Init Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Set Google Application Credentials
 credentials_path = os.getenv("CREDENTIALS_PATH")
@@ -148,7 +152,6 @@ def get_files_by_project(project_id):
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
 
-    #query = "SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status FROM public.files WHERE project_id = %s AND ocr_status != 'completed'"
     query = """
     SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status 
     FROM public.files 
@@ -158,7 +161,6 @@ def get_files_by_project(project_id):
 
     cur.execute(query, (project_id,project_id))
     files = cur.fetchall()
-    # print("Get files which not completed ocr by project ID")
 
     cur.close()
     conn.close()
@@ -167,10 +169,32 @@ def get_files_by_project(project_id):
     if files:
         user_id = files[0][1]
         save_project_files_to_variable(project_id, user_id, files)
-        # print("file saved to variable")
 
     return files
 
+def get_single_file_by_file_id(file_id): 
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
+
+    query = """
+    SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
+    FROM public.files 
+    WHERE id = %s 
+    AND (ocr_status IS NULL OR ocr_status = 'processing' OR ocr_status != 'completed')
+    """
+    # Ensure OCR Status in files table before using this function.
+    cur.execute(query, (file_id,))
+    files = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    # Save project ID and file IDs to a JSON file
+    if files:
+        user_id = files[0][1]
+        save_project_files_to_variable(file_id, user_id, files)
+
+    return files
 
 
 
@@ -188,8 +212,9 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
         with open(file_path, "wb") as file: # Open the file in write binary mode 
             for chunk in response.iter_content(1024): # Iterate over the response content in chunks of 1024 bytes
                 file.write(chunk) # Write the chunk to the file 
+        logging.info(f"Downloaded file from S3: file_id: {file_id}; project_id {project_id}")
         return file_path 
-    # print(f"Failed to download file from S3: {s3_url}")
+    logging.error(f"Failed to download file from S3: {s3_url}")
     return None
 
 
@@ -199,7 +224,7 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
 def download_files_concurrently(files):
     downloaded_files = [] # List to store the downloaded file paths
     file_sizes = []  # List to store file names and their sizes
-
+    temp_project_id = files[0][2]
 
     def download_file(file):
         try:
@@ -207,30 +232,21 @@ def download_files_concurrently(files):
             file_extension = os.path.splitext(file_name)[1] # Get the file extension 
             pdf_file_path = download_file_from_s3(s3_url, user_id, project_id, id, file_extension)
             if pdf_file_path:
-                # print(f"File downloaded successfully: {pdf_file_path}")
                 downloaded_files.append(pdf_file_path) # Append the downloaded file path to the list
             else:
-                print(f"Failed to download file: {file_name}")
+                logging.error(f"Failed to download file from S3: {file_name} : {s3_url} project_id: {project_id}")
+                
         except Exception as e:
-            print(f"Error downloading file {file}: {e}")
+            logging.error(f"Error downloading file {file}: {e}")
 
     if not files:
-        print("No files to download.")
+        logging.error(f"No files to download. project_id: {temp_project_id}")
         return []
-
     # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
     with ThreadPoolExecutor() as executor:    # No limit on concurrent downloads
         executor.map(download_file, files)
 
-    print("All files downloaded")
-
-    # for file_path in downloaded_files:
-    #     file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
-    #     print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
-
-
-    # print(downloaded_files)
-    # return downloaded_files
+    logging.info(f"All files downloaded. project_id: {temp_project_id}")
 
     for file_path in downloaded_files:
         file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
@@ -239,13 +255,9 @@ def download_files_concurrently(files):
         # print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
 
     # Print file sizes
-    print("File sizes:", file_sizes)
-
-    print("All files file size printed successfully")
+    # print("File sizes:", file_sizes)
+    # print("All files file size printed successfully")
     return downloaded_files, file_sizes
-
-
-
 
 # This function saves the OCR extracted data as a JSON file in a specified download folder, using the user ID, project ID, and file ID to name the file.
 def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
@@ -253,10 +265,7 @@ def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
     ocr_file_path = os.path.join(DOWNLOAD_FOLDER, f"download_json_{user_id}_{project_id}_{file_id}.json")
     with open(ocr_file_path, "w", encoding="utf-8") as json_file:
         json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
-        # print(f"OCR JSON saved successfully: {ocr_file_path}")
-
-
-
+        logging.info(f"OCR JSON saved successfully: {ocr_file_path}")
 
 #  This function iterates through a list of extracted OCR data and saves each entry as a JSON file using the save_ocr_output_as_json function.
 def save_ocr_outputs_as_json(extracted_data_list):
@@ -268,14 +277,6 @@ def save_ocr_outputs_as_json(extracted_data_list):
         extracted_data = data['extracted_data']
         save_ocr_output_as_json(user_id, project_id, file_id, extracted_data)
     # print("All OCR JSON files saved successfully")
-
-
-
-
-# This function processes a document using Google Document AI to extract text and confidence scores for each text segment, returning the extracted data in a structured format.
-# This updated function first checks the number of pages in the PDF. 
-# If the number of pages is greater than 15, it splits the PDF into chunks of 15 pages and processes each chunk separately. 
-# The extracted data from each chunk is then combined and returned.
 
 
 def extract_text_with_confidence(file_path):
@@ -462,13 +463,14 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         cur.close()
         conn.close()
 
-
-
-
-
-
-
-
+def start_extraction(project_id):
+    files = get_files_by_project(project_id)
+    if not files:
+        logging.error(f"No files found for this project: {project_id}")
+    downloaded_files, file_sizes = download_files_concurrently(files)
+    all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
+    save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+    logging.info(f"OCR data saved successfully in the database for project_id: {project_id}")
 
 @app.route("/api/v1/batch_ocr/<int:project_id>", methods=["POST"])
 def batch_ocr(project_id):
@@ -496,16 +498,24 @@ def batch_ocr(project_id):
     print("OCR data saved successfully in the database.")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
-
-
-
-if __name__ == "__main__":
-    # app.run(debug=True, host="0.0.0.0", port=5000)
-    project_id = 12
-    files = get_files_by_project(project_id)
+@app.route("/api/v1/file_ocr/<int:project_id>/<int:file_id>", methods=["POST"])
+def file_ocr(project_id, file_id):
+    files = get_single_file_by_file_id(file_id)
     if not files:
-        print("No files found for this project.")
+        return jsonify({"error": "File does not match the OCR criteria, Check ocr_status."}), 404
     downloaded_files, file_sizes = download_files_concurrently(files)
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
     print("OCR data saved successfully in the database.")
+    return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+
+@app.route('/start-extraction/<int:project_id>', methods=['GET'])
+def start_task(project_id):
+    thread = threading.Thread(target=start_extraction, args=(project_id,))
+    thread.start()  # Start the task in a new thread
+    
+    return jsonify({"message": "Process started", "file_id": project_id}), 202
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
