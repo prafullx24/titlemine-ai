@@ -48,7 +48,7 @@ def process_legal_documents(project_id, batch_size=10):
             with get_db_connection() as conn:
                 if conn:
                     with conn.cursor() as cur:
-                        cur.execute("SELECT 1 FROM runsheet_data WHERE file_id = %s", (file_id,))
+                        cur.execute("SELECT 1 FROM Extracted_data WHERE file_id = %s", (file_id,))
                         return cur.fetchone() is not None
             return False
         except Exception as e:
@@ -229,7 +229,7 @@ def process_legal_documents(project_id, batch_size=10):
                 logging.info(f"Skipping {file_id} due to empty OCR text.")
                 continue
 
-            batch_documents.append((file_id, ocr_text, record_id, proj_id))
+            batch_documents.append((file_id_db, ocr_text, record_id, proj_id))
 
         # Process all documents in the batch with a single API call
         if batch_documents:
