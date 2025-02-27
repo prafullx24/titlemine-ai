@@ -1,0 +1,29 @@
+2025-02-27 17:20:17,716 - INFO - 127.0.0.1 - - [27/Feb/2025 17:20:17] "GET /start-extraction/47 HTTP/1.1" 202 -
+2025-02-27 17:20:22,466 - INFO - Downloaded file from S3: file_id: 527; project_id 47
+2025-02-27 17:20:24,173 - INFO - Downloaded file from S3: file_id: 530; project_id 47
+2025-02-27 17:20:24,360 - INFO - Downloaded file from S3: file_id: 528; project_id 47
+2025-02-27 17:20:24,399 - INFO - Downloaded file from S3: file_id: 529; project_id 47
+2025-02-27 17:20:24,805 - INFO - Downloaded file from S3: file_id: 531; project_id 47
+2025-02-27 17:20:24,806 - INFO - All files downloaded. project_id: 47
+2025-02-27 17:20:24,807 - INFO - Processing file: download_file/download_pdf_2_47_527.pdf
+2025-02-27 17:20:24,807 - INFO - Processing file: download_file/download_pdf_2_47_530.pdf
+2025-02-27 17:20:24,808 - INFO - Processing file: download_file/download_pdf_2_47_528.pdf
+2025-02-27 17:20:24,809 - INFO - Processing file: download_file/download_pdf_2_47_529.pdf
+2025-02-27 17:20:24,811 - INFO - Processing file: download_file/download_pdf_2_47_531.pdf
+2025-02-27 17:20:24,891 - INFO - Processing document: download_file/download_pdf_2_47_528.pdf, Size: 2004914 bytes
+2025-02-27 17:20:24,896 - INFO - Processing document: download_file/download_pdf_2_47_527.pdf, Size: 964527 bytes
+2025-02-27 17:20:24,900 - INFO - Processing document: download_file/download_pdf_2_47_531.pdf, Size: 1467141 bytes
+2025-02-27 17:20:24,907 - INFO - Processing document: download_file/download_pdf_2_47_529.pdf, Size: 1116481 bytes
+2025-02-27 17:20:24,917 - INFO - Processing document: download_file/download_pdf_2_47_530.pdf, Size: 1598586 bytes
+2025-02-27 17:20:32,134 - INFO - Document processed: download_file/download_pdf_2_47_527.pdf, Size: 964527 bytes
+2025-02-27 17:20:33,404 - INFO - Document processed: download_file/download_pdf_2_47_531.pdf, Size: 1467141 bytes
+2025-02-27 17:20:33,635 - INFO - Document processed: download_file/download_pdf_2_47_528.pdf, Size: 2004914 bytes
+2025-02-27 17:20:33,909 - INFO - Document processed: download_file/download_pdf_2_47_530.pdf, Size: 1598586 bytes
+2025-02-27 17:20:33,931 - INFO - Document processed: download_file/download_pdf_2_47_529.pdf, Size: 1116481 bytes
+2025-02-27 17:20:34,118 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_527.json
+2025-02-27 17:20:34,118 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_530.json
+2025-02-27 17:20:34,119 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_528.json
+2025-02-27 17:20:34,119 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_529.json
+2025-02-27 17:20:34,119 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_531.json
+2025-02-27 17:20:34,119 - INFO - Done with Extracts text and confidence scores 
+2025-02-27 17:20:37,462 - INFO - OCR data saved successfully in the database for project_id: 47

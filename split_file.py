@@ -99,7 +99,7 @@ import threading
 
 
 # Load environment variables
-load_dotenv()
+load_dotenv('./.env', override=True)
 
 # Init Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -140,7 +140,7 @@ def save_project_files_to_variable(project_id, user_id, files):
         "project_id": project_id,
         "file_ids": [file[0] for file in files]
     }
-    print(data)
+    # print(data)
     return data
 
 
@@ -153,13 +153,13 @@ def get_files_by_project(project_id):
     cur = conn.cursor()
 
     query = """
-    SELECT id, user_id, %s as project_id, file_name, s3_url, ocr_status 
+    SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
     FROM public.files 
     WHERE project_id = %s 
-    AND (ocr_status IS NULL OR ocr_status = 'processing' OR ocr_status != 'completed')
+    AND (ocr_status IS NULL OR ocr_status = 'Processing' OR ocr_status != 'Extracting')
     """
 
-    cur.execute(query, (project_id,project_id))
+    cur.execute(query, (project_id,))
     files = cur.fetchall()
 
     cur.close()
@@ -180,7 +180,7 @@ def get_single_file_by_file_id(file_id):
     SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
     FROM public.files 
     WHERE id = %s 
-    AND (ocr_status IS NULL OR ocr_status = 'processing' OR ocr_status != 'completed')
+    AND (ocr_status IS NULL OR ocr_status = 'Processing' OR ocr_status != 'Extracting')
     """
     # Ensure OCR Status in files table before using this function.
     cur.execute(query, (file_id,))
@@ -256,6 +256,7 @@ def download_files_concurrently(files):
 
     # Print file sizes
     # print("File sizes:", file_sizes)
+
     # print("All files file size printed successfully")
     return downloaded_files, file_sizes
 
@@ -305,12 +306,12 @@ def extract_text_with_confidence(file_path):
         request = documentai.ProcessRequest(name=name, raw_document=raw_document)
 
         # Debugging statement to log request details
-        print(f"Processing document: {file_path}, Size: {len(content)} bytes")
+        logging.info(f"Processing document: {file_path}, Size: {len(content)} bytes")
 
         response = client.process_document(request=request)
 
         # Debugging statement to log response details
-        print(f"Document processed: Done")
+        logging.info(f"Document processed: {file_path}, Size: {len(content)} bytes")
 
         document_dict = documentai.Document.to_dict(response.document)
         extracted_text = document_dict.get("text", "")
@@ -365,7 +366,7 @@ def extract_text_with_confidence(file_path):
 
     if total_size_mb > 20 and num_pages == 1:
         # print('Splitting for this file is not possible !')
-        print(f'Splitting for this file is not possible! File ID: {file_id}')
+        logging.error(f'Splitting for this file is not possible! File ID: {file_id}')
     elif total_size_mb > 20:
         return split_and_process(file_path)
     elif num_pages > 15:
@@ -389,7 +390,7 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
     def process_file(file_path):
         try:
-            print(f"Processing file: {file_path}")
+            logging.info(f"Processing file: {file_path}")
             extracted_data = extract_text_with_confidence(file_path) # Extract text and confidence scores from the document
 
             # Extract user_id, project_id, and file_id from the file name
@@ -406,7 +407,7 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
             }
         
         except Exception as e:
-            print(f"Error processing file {file_path}: {e}")
+            logging.error(f"Error processing file {file_path}: {e}")
             return None
 
     
@@ -422,7 +423,7 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
     # Save all OCR outputs as JSON
     save_ocr_outputs_as_json(all_extracted_data)
-    print("Done with Extracts text and confidence scores ")
+    logging.info("Done with Extracts text and confidence scores ")
     return all_extracted_data
 
 
@@ -434,10 +435,14 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     cur = conn.cursor()
     
     try:
-        new_records = [
-            (data['file_id'], project_id, json.dumps(data['extracted_data']), data['extracted_data'].get('text', '').replace("\n", " ")) #Converts the extracted_data dictionary to a JSON-formatted string.
-            for data in all_extracted_data
-        ]
+        new_records = []
+        for data in all_extracted_data:
+            extracted_data = data['extracted_data']
+            if isinstance(extracted_data, list):
+                extracted_data = {"text": "", "confidence_scores": extracted_data}
+            new_records.append(
+                (data['file_id'], project_id, json.dumps(extracted_data), extracted_data.get('text', '').replace("\n", " "))
+        )
         
         insert_query = """
         INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
@@ -451,14 +456,14 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
-        update_status_query = "UPDATE public.files SET ocr_status = 'completed' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
+        update_status_query = "UPDATE public.files SET ocr_status = 'Extracting' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
         cur.execute(update_status_query, (file_ids,))
         
         conn.commit()
         # print("Bulk insert and update executed successfully")
     except Exception as e:
         conn.rollback()
-        print("Error in save_and_update_ocr_data_batch:", e)
+        logging.error(f"Error in save_and_update_ocr_data_batch: {e} project_id: {project_id}")
     finally:
         cur.close()
         conn.close()
@@ -495,7 +500,7 @@ def batch_ocr(project_id):
     # return jsonify({"message": "Batch file download processing completed."}), 200
     # Step 4: Save and Update OCR Data 
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
-    print("OCR data saved successfully in the database.")
+    logging.info(f"OCR data saved successfully in the database.{project_id}")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
 @app.route("/api/v1/file_ocr/<int:project_id>/<int:file_id>", methods=["POST"])
@@ -506,7 +511,7 @@ def file_ocr(project_id, file_id):
     downloaded_files, file_sizes = download_files_concurrently(files)
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
-    print("OCR data saved successfully in the database.")
+    logging.info("OCR data saved successfully in the database.")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
 @app.route('/start-extraction/<int:project_id>', methods=['GET'])
@@ -519,3 +524,4 @@ def start_task(project_id):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+    # start_extraction(27)
