@@ -1,0 +1,935 @@
+2025-02-27 19:35:18,627 - INFO - Document processed: download_file/download_pdf_2_12_41_pages_1_to_15.pdf, Size: 7109287 bytes
+2025-02-27 19:35:19,306 - INFO - Processing document: download_file/download_pdf_2_12_34_pages_16_to_29.pdf, Size: 5482958 bytes
+2025-02-27 19:35:19,312 - INFO - Processing document: download_file/download_pdf_2_12_81_pages_16_to_20.pdf, Size: 1767139 bytes
+2025-02-27 19:35:19,322 - INFO - Processing document: download_file/download_pdf_2_12_42_pages_16_to_30.pdf, Size: 5683510 bytes
+2025-02-27 19:35:19,334 - INFO - Processing document: download_file/download_pdf_2_12_41_pages_16_to_30.pdf, Size: 6724132 bytes
+2025-02-27 19:35:20,238 - INFO - Document processed: download_file/download_pdf_2_12_67_pages_1_to_15.pdf, Size: 7908730 bytes
+2025-02-27 19:35:20,425 - INFO - Document processed: download_file/download_pdf_2_12_78_pages_16_to_22.pdf, Size: 2220221 bytes
+2025-02-27 19:35:20,890 - INFO - Document processed: download_file/download_pdf_2_12_74_pages_16_to_25.pdf, Size: 3781491 bytes
+2025-02-27 19:35:21,162 - INFO - Processing document: download_file/download_pdf_2_12_67_pages_16_to_19.pdf, Size: 1838606 bytes
+2025-02-27 19:35:26,890 - INFO - Document processed: download_file/download_pdf_2_12_81_pages_16_to_20.pdf, Size: 1767139 bytes
+2025-02-27 19:35:29,457 - INFO - Document processed: download_file/download_pdf_2_12_67_pages_16_to_19.pdf, Size: 1838606 bytes
+2025-02-27 19:35:32,168 - INFO - Document processed: download_file/download_pdf_2_12_34_pages_16_to_29.pdf, Size: 5482958 bytes
+2025-02-27 19:35:32,932 - INFO - Document processed: download_file/download_pdf_2_12_42_pages_16_to_30.pdf, Size: 5683510 bytes
+2025-02-27 19:35:33,277 - INFO - Processing document: download_file/download_pdf_2_12_42_pages_31_to_33.pdf, Size: 844128 bytes
+2025-02-27 19:35:33,514 - INFO - Document processed: download_file/download_pdf_2_12_41_pages_16_to_30.pdf, Size: 6724132 bytes
+2025-02-27 19:35:40,452 - INFO - Document processed: download_file/download_pdf_2_12_42_pages_31_to_33.pdf, Size: 844128 bytes
+2025-02-27 19:35:40,519 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_71.json
+2025-02-27 19:35:40,519 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_72.json
+2025-02-27 19:35:40,519 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_75.json
+2025-02-27 19:35:40,519 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_36.json
+2025-02-27 19:35:40,520 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_70.json
+2025-02-27 19:35:40,520 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_43.json
+2025-02-27 19:35:40,521 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_38.json
+2025-02-27 19:35:40,521 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_39.json
+2025-02-27 19:35:40,521 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_28.json
+2025-02-27 19:35:40,522 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_77.json
+2025-02-27 19:35:40,522 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_49.json
+2025-02-27 19:35:40,522 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_52.json
+2025-02-27 19:35:40,522 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_48.json
+2025-02-27 19:35:40,523 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_73.json
+2025-02-27 19:35:40,523 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_56.json
+2025-02-27 19:35:40,524 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_76.json
+2025-02-27 19:35:40,524 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_37.json
+2025-02-27 19:35:40,524 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_51.json
+2025-02-27 19:35:40,525 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_50.json
+2025-02-27 19:35:40,525 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_69.json
+2025-02-27 19:35:40,525 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_57.json
+2025-02-27 19:35:40,526 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_62.json
+2025-02-27 19:35:40,526 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_58.json
+2025-02-27 19:35:40,526 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_66.json
+2025-02-27 19:35:40,529 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_74.json
+2025-02-27 19:35:40,529 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_65.json
+2025-02-27 19:35:40,529 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_82.json
+2025-02-27 19:35:40,530 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_80.json
+2025-02-27 19:35:40,530 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_61.json
+2025-02-27 19:35:40,530 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_84.json
+2025-02-27 19:35:40,531 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_87.json
+2025-02-27 19:35:40,532 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_47.json
+2025-02-27 19:35:40,533 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_53.json
+2025-02-27 19:35:40,533 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_63.json
+2025-02-27 19:35:40,534 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_91.json
+2025-02-27 19:35:40,534 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_89.json
+2025-02-27 19:35:40,536 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_78.json
+2025-02-27 19:35:40,539 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_34.json
+2025-02-27 19:35:40,541 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_42.json
+2025-02-27 19:35:40,542 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_59.json
+2025-02-27 19:35:40,545 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_41.json
+2025-02-27 19:35:40,547 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_81.json
+2025-02-27 19:35:40,549 - INFO - OCR JSON saved successfully: download_file/download_json_2_12_67.json
+2025-02-27 19:35:40,549 - INFO - Done with Extracts text and confidence scores 
+2025-02-27 19:35:57,727 - INFO - OCR data saved successfully in the database for project_id: 12
+2025-02-27 19:35:57,744 - INFO - Starting OpenAI Extraction: 12
+2025-02-27 19:36:00,205 - INFO - Processing file ID: 34
+2025-02-27 19:36:03,531 - INFO - ocr_data fetched for file_id: 34
+2025-02-27 19:36:04,398 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:36:04,408 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:36:04,408 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:36:06,309 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:36:06,312 - INFO - {"instrument_type":"Other","volume_page":"Volume Number/Page Number","document_case_number":"none found","execution_date":"latest date found","effective_date":"effective date found","recording_date":"recording date found","grantee":"grantee name found","grantor":"grantor name found","property_description":"property description found"}
+2025-02-27 19:36:06,313 - INFO - Total Token used for data extraction: 423
+2025-02-27 19:36:11,503 - INFO - Completed processing file ID 34: Data successfully stored/updated.
+2025-02-27 19:36:11,504 - INFO - Processing file ID: 36
+2025-02-27 19:36:13,872 - INFO - ocr_data fetched for file_id: 36
+2025-02-27 19:36:14,216 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:36:14,217 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:36:45,093 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:36:45,097 - INFO - Total Token used for instrument_type: 1428
+2025-02-27 19:36:45,097 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:36:45,419 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:36:45,420 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:37:17,700 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:37:17,706 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "N/A",
+  "document_case_number": "No. 8272",
+  "execution_date": "May 22, 1879",
+  "effective_date": "May 29, 1879",
+  "recording_date": "June 3, 1879",
+  "grantee": "William C Braman",
+  "grantor": "Antonette Roberts",
+  "property_description": "Fourteen hundred & twenty eight acres of land situated in said Matagorda County being a part of F W Dempsey league on the east side of the Colorado River, bounded as follows on the Westerly end by said River, on the easterly end by the S Ingram league, on the on the Northerly side by the McFarland and Jaques league, and on the Sutherly side by 500 acres of land part of same league sold by Charles Power decd. to Tupper Barton & Taylor."
+}
+2025-02-27 19:37:17,706 - INFO - Total Token used for data extraction: 1972
+2025-02-27 19:37:22,956 - INFO - Completed processing file ID 36: Data successfully stored/updated.
+2025-02-27 19:37:22,956 - INFO - Processing file ID: 37
+2025-02-27 19:37:25,807 - INFO - ocr_data fetched for file_id: 37
+2025-02-27 19:37:26,124 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:37:26,125 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:37:56,926 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:37:56,929 - INFO - Total Token used for instrument_type: 5034
+2025-02-27 19:37:56,929 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:37:57,249 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:37:57,250 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:38:41,912 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:38:41,924 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "40/279",
+  "document_case_number": "#24066",
+  "execution_date": "December 28, 1945",
+  "effective_date": "January 2, 1946",
+  "recording_date": "January 24, 1946",
+  "grantee": "Brooklyn Boxley",
+  "grantor": "V. L. Harris",
+  "property_description": "Situated in the Burnett and Sojourner League in Matagorda County, Texas, and described as follows: Beginning at a stake on the north west line of the M O'Connell ten acre tract and one hundred feet south 45 deg. West of north corner of said tract. Thence south 45 deg. West along line of said tract 50 feet to a stake. Thence North 45 deg. West ninety three feet to a stake on line of road. Thence North 45 deg. east fifty feet to a stake. Thence south 45 deg. east ninety three feet to the place of beginning, containing less than one acre of land."
+}
+2025-02-27 19:38:41,924 - INFO - Total Token used for data extraction: 5607
+2025-02-27 19:38:47,118 - INFO - Completed processing file ID 37: Data successfully stored/updated.
+2025-02-27 19:38:47,119 - INFO - Processing file ID: 38
+2025-02-27 19:38:49,970 - INFO - ocr_data fetched for file_id: 38
+2025-02-27 19:38:50,861 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:38:50,868 - INFO - Total Token used for instrument_type: 6173
+2025-02-27 19:38:50,868 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 19:38:51,184 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:38:51,185 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:39:25,272 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:39:25,284 - INFO - {
+    "instrument_type": "Lease",
+    "volume_page": "Volume 12/268-269",
+    "document_case_number": "none found",
+    "execution_date": "June 24, 1924",
+    "effective_date": "N/A",
+    "recording_date": "June 27, 1924",
+    "grantee": "Tom Petrucha and Julia Petrucha",
+    "grantor": "Alexander Deussen",
+    "property_description": "All of the land now owned by the Lessor in the F. W. Dempsey League estimated to be fourteen hundred (1400) acres more or less. All of the land now owned by the Lessor in the D. McFarlane League estimated to be two hundred and fifty (250) acres more or less. All of the land now owned by the lessor in the M. R. Williams League estimated to be one thousand (1000.00) acres more or less. All of the land now owned by the lessor in the N. Clopper League and in the W. L. Gazean survey estimated to be seven hundred (700) acres more or less. Three lots in the townsite of Wadsworth now owned by lessor. Also all lands now owned by the lessor in the county of Matagorda and State of Texas excepting the land now owned by the lessor in the G. S. Pentecost League and excepting one acre now owned by the lessor in the R. Ingram league and excepting three lots now owned by the lessor in the city of Pay City."
+}
+2025-02-27 19:39:25,284 - INFO - Total Token used for data extraction: 6802
+2025-02-27 19:39:30,468 - INFO - Completed processing file ID 38: Data successfully stored/updated.
+2025-02-27 19:39:30,468 - INFO - Processing file ID: 39
+2025-02-27 19:39:38,312 - INFO - ocr_data fetched for file_id: 39
+2025-02-27 19:39:39,658 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:39:39,662 - INFO - Total Token used for instrument_type: 4204
+2025-02-27 19:39:39,663 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 19:39:40,082 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:39:40,083 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:40:13,304 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:40:13,313 - INFO - {
+  "instrument_type": "Lease",
+  "volume_page": "none found",
+  "document_case_number": "#5866-0",
+  "execution_date": "June 23, 1939",
+  "effective_date": "June 23, 1939",
+  "recording_date": "February 14, 1940",
+  "grantee": "W. H. Mannes",
+  "grantor": "Tom Petrucha and Julia Petrucha",
+  "property_description": "1316 acres, more or less, in the F. W. Dempsey League, 165.3 acres, more or less, in the D. McFarland League, Matagorda County, Texas, including all of the Tom Petrucha Ranch located in the Dempsey and McFarland Leagues."
+}
+2025-02-27 19:40:13,313 - INFO - Total Token used for data extraction: 4671
+2025-02-27 19:40:19,292 - INFO - Completed processing file ID 39: Data successfully stored/updated.
+2025-02-27 19:40:19,292 - INFO - Processing file ID: 41
+2025-02-27 19:40:22,509 - INFO - ocr_data fetched for file_id: 41
+2025-02-27 19:40:23,050 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:40:23,050 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:40:53,995 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:40:54,002 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:40:54,002 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:40:55,083 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:40:55,083 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:41:27,618 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:41:27,619 - INFO - {"instrument_type":"Other","volume_page":"Volume Number/Page Number","document_case_number":"none found","execution_date":"latest date of signing","effective_date":"effective date","recording_date":"recording date","grantee":"recipient of property/rights","grantor":"giver of property/rights","property_description":"description of the property or rights transferred"}
+2025-02-27 19:41:27,619 - INFO - Total Token used for data extraction: 428
+2025-02-27 19:41:33,382 - INFO - Completed processing file ID 41: Data successfully stored/updated.
+2025-02-27 19:41:33,382 - INFO - Processing file ID: 42
+2025-02-27 19:41:36,784 - INFO - ocr_data fetched for file_id: 42
+2025-02-27 19:41:37,831 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:41:37,851 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:41:37,851 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:41:38,278 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:41:38,278 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:42:11,254 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:42:11,258 - INFO - {"instrument_type":"Other","volume_page":"none found","document_case_number":"none found","execution_date":"none found","effective_date":"none found","recording_date":"none found","grantee":"none found","grantor":"none found","property_description":"none found"}
+2025-02-27 19:42:11,259 - INFO - Total Token used for data extraction: 412
+2025-02-27 19:42:16,663 - INFO - Completed processing file ID 42: Data successfully stored/updated.
+2025-02-27 19:42:16,663 - INFO - Processing file ID: 69
+2025-02-27 19:42:19,336 - INFO - ocr_data fetched for file_id: 69
+2025-02-27 19:42:19,872 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:42:19,872 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:42:50,937 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:42:50,944 - INFO - Total Token used for instrument_type: 4042
+2025-02-27 19:42:50,944 - INFO - {'instrument_type': 'Court Case'}
+2025-02-27 19:42:51,366 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:42:51,367 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:43:23,424 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:43:23,436 - INFO - {
+  "instrument_type": "Court Case",
+  "volume_page": "29/5",
+  "document_case_number": "15,244",
+  "execution_date": "N/A",
+  "effective_date": "August 4, 1952",
+  "recording_date": "August 15, 1952",
+  "grantee": "Jessica Elizabeth Petrucha",
+  "grantor": "Tom J. Petrucha",
+  "property_description": "All legal relationships and rights between said child and its natural father are hereby ended and determined and said child shall henceforth be deemed the child of petitioner."
+}
+2025-02-27 19:43:23,436 - INFO - Total Token used for data extraction: 4332
+2025-02-27 19:43:29,185 - INFO - Completed processing file ID 69: Data successfully stored/updated.
+2025-02-27 19:43:29,185 - INFO - Processing file ID: 70
+2025-02-27 19:43:31,860 - INFO - ocr_data fetched for file_id: 70
+2025-02-27 19:43:32,324 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:43:32,325 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:44:03,664 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:44:03,667 - INFO - Total Token used for instrument_type: 2816
+2025-02-27 19:44:03,668 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 19:44:07,245 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:44:07,250 - INFO - {
+  "instrument_type": "Lease",
+  "volume_page": "none found",
+  "document_case_number": "No.83258",
+  "execution_date": "November 18, 1919",
+  "effective_date": "November 18, 1919",
+  "recording_date": "November 20, 1919",
+  "grantee": "A.H. Ueckert, Trustee for Elgin Oil & Refining Co",
+  "grantor": "Tom Petrucha and wife Julia Petrucha",
+  "property_description": "About 1200 acres of land, more or less, out of the F.W. Dempsey and Dugald McFarland Leagues, bounded on the East by the Public Road running from Bay City to Matagorda, on the South by lands of Stewart Bros, on the West by the Colorado River and on the North by lands of Joe Govender, Seerden and Culver & Plotner & Stoddard, and containing 1200 acres, more or less."
+}
+2025-02-27 19:44:07,250 - INFO - Total Token used for data extraction: 3326
+2025-02-27 19:44:12,592 - INFO - Completed processing file ID 70: Data successfully stored/updated.
+2025-02-27 19:44:12,593 - INFO - Processing file ID: 71
+2025-02-27 19:44:14,948 - INFO - ocr_data fetched for file_id: 71
+2025-02-27 19:44:15,270 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:44:15,271 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:44:46,232 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:44:46,236 - INFO - Total Token used for instrument_type: 1118
+2025-02-27 19:44:46,236 - INFO - {'instrument_type': 'Court Case'}
+2025-02-27 19:44:46,552 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:44:46,553 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:45:18,020 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:45:18,026 - INFO - {
+    "instrument_type": "Court Case",
+    "volume_page": "none found",
+    "document_case_number": "none found",
+    "execution_date": "N/A",
+    "effective_date": "June 4, 1999",
+    "recording_date": "June 17, 1899",
+    "grantee": "Wells Thompson",
+    "grantor": "Ray Luila",
+    "property_description": "None"
+}
+2025-02-27 19:45:18,027 - INFO - Total Token used for data extraction: 1374
+2025-02-27 19:45:23,209 - INFO - Completed processing file ID 71: Data successfully stored/updated.
+2025-02-27 19:45:23,210 - INFO - Processing file ID: 72
+2025-02-27 19:45:25,579 - INFO - ocr_data fetched for file_id: 72
+2025-02-27 19:45:25,871 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:45:25,872 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:45:56,519 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:45:56,527 - INFO - Total Token used for instrument_type: 1160
+2025-02-27 19:45:56,527 - INFO - {'instrument_type': 'Release'}
+2025-02-27 19:45:56,834 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:45:56,835 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:46:29,049 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:46:29,062 - INFO - {
+  "instrument_type": "Release",
+  "volume_page": "none found",
+  "document_case_number": "#6874",
+  "execution_date": "December 23, 1939",
+  "effective_date": "N/A",
+  "recording_date": "February 15, 1940",
+  "grantee": "Tom Petrucha and Julia Petrucha, husband and wife",
+  "grantor": "W. H. Mannes",
+  "property_description": "The East 50 acres of the 165.3 acre tract in the D. McFarland League, and the East 766 acres of the 1316 acre tract in the F. W. Dempsey Survey"
+}
+2025-02-27 19:46:29,062 - INFO - Total Token used for data extraction: 1604
+2025-02-27 19:46:34,251 - INFO - Completed processing file ID 72: Data successfully stored/updated.
+2025-02-27 19:46:34,251 - INFO - Processing file ID: 73
+2025-02-27 19:46:36,871 - INFO - ocr_data fetched for file_id: 73
+2025-02-27 19:46:37,669 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:46:37,673 - INFO - Total Token used for instrument_type: 2231
+2025-02-27 19:46:37,674 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:46:37,981 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:46:37,982 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:47:12,015 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:47:12,025 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "I/424",
+  "document_case_number": "No. 8370",
+  "execution_date": "April 8, 1880",
+  "effective_date": "April 17, 1880",
+  "recording_date": "April 19, 1880",
+  "grantee": "Joseph Patrucio",
+  "grantor": "Frank Seardon",
+  "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee situated on the East of the Colorado River in Matagorda County."
+}
+2025-02-27 19:47:12,025 - INFO - Total Token used for data extraction: 2717
+2025-02-27 19:47:17,238 - INFO - Completed processing file ID 73: Data successfully stored/updated.
+2025-02-27 19:47:17,238 - INFO - Processing file ID: 74
+2025-02-27 19:47:20,570 - INFO - ocr_data fetched for file_id: 74
+2025-02-27 19:47:20,892 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:47:20,893 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:47:51,581 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:47:51,585 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:47:51,585 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:47:51,900 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:47:51,901 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:48:24,537 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:48:24,545 - INFO - {"instrument_type":"Other","volume_page":"Volume 10/Page 123","document_case_number":"none found","execution_date":"2023-10-01","effective_date":"2023-10-15","recording_date":"2023-10-20","grantee":"John Doe","grantor":"Jane Smith","property_description":"Lot 5, Block 2, Sunny Acres Subdivision"}
+2025-02-27 19:48:24,545 - INFO - Total Token used for data extraction: 438
+2025-02-27 19:48:29,771 - INFO - Completed processing file ID 74: Data successfully stored/updated.
+2025-02-27 19:48:29,771 - INFO - Processing file ID: 75
+2025-02-27 19:48:32,151 - INFO - ocr_data fetched for file_id: 75
+2025-02-27 19:48:32,479 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:48:32,480 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:49:04,344 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:49:04,354 - INFO - Total Token used for instrument_type: 1158
+2025-02-27 19:49:04,354 - INFO - {'instrument_type': 'Release'}
+2025-02-27 19:49:06,334 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:49:06,337 - INFO - {
+  "instrument_type": "Release",
+  "volume_page": "Vol. 133/287-290",
+  "document_case_number": "none found",
+  "execution_date": "March 10, 1941",
+  "effective_date": "N/A",
+  "recording_date": "April 1, 1941",
+  "grantee": "M. W. McClendon",
+  "grantor": "H. N. Greis as Trustee for Deep Rock Oil Corporation",
+  "property_description": "200 acres lying on the West side of Highway No. 60, out of that part of our 1316 acre tract in the F. W. Dempsey League."
+}
+2025-02-27 19:49:06,337 - INFO - Total Token used for data extraction: 1602
+2025-02-27 19:49:11,494 - INFO - Completed processing file ID 75: Data successfully stored/updated.
+2025-02-27 19:49:11,494 - INFO - Processing file ID: 76
+2025-02-27 19:49:14,116 - INFO - ocr_data fetched for file_id: 76
+2025-02-27 19:49:14,428 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:49:14,428 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:49:45,608 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:49:45,610 - INFO - Total Token used for instrument_type: 3175
+2025-02-27 19:49:45,610 - INFO - {'instrument_type': 'Ratification'}
+2025-02-27 19:49:45,941 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:49:45,942 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:50:18,851 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:50:18,854 - INFO - {
+  "instrument_type": "Ratification",
+  "volume_page": "Volume Number/Page Number",
+  "document_case_number": "Instrument No. 54601",
+  "execution_date": "April 23, 1952",
+  "effective_date": "N/A",
+  "recording_date": "September 2, 1952",
+  "grantee": "J. W. Edens",
+  "grantor": "Julia Petrucha, Tom J. Petrucha, Ruby Petrucha, and others as Lessors",
+  "property_description": "1481.30 acres of land, more or less, in the F. W. Dempsey League, Abstract 26, and D. McFarland League, Abstract 61, Matagorda County, Texas, said land being all of the Tom Petrucha ranch."
+}
+2025-02-27 19:50:18,854 - INFO - Total Token used for data extraction: 3665
+2025-02-27 19:50:24,153 - INFO - Completed processing file ID 76: Data successfully stored/updated.
+2025-02-27 19:50:24,153 - INFO - Processing file ID: 77
+2025-02-27 19:50:26,803 - INFO - ocr_data fetched for file_id: 77
+2025-02-27 19:50:27,136 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:50:27,136 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:50:58,020 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:50:58,029 - INFO - Total Token used for instrument_type: 3717
+2025-02-27 19:50:58,030 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 19:50:58,666 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:50:58,667 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:51:31,574 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:51:31,586 - INFO - {
+  "instrument_type": "Lease",
+  "volume_page": "N/A",
+  "document_case_number": "No.871833",
+  "execution_date": "May 28, 1923",
+  "effective_date": "N/A",
+  "recording_date": "July 26, 1923",
+  "grantee": "W. D. Wilson and R. J. Sisk",
+  "grantor": "Tom Petrucha",
+  "property_description": "465 acres out of the East end of my tract of land in the M. R. Williams League- all land owned by me in the F. R. Dempsey League, except 300 acres off of the West end of my said lands. Also all land owned by me in the D. McFarland League, except 100 acres out of the West end of my narrow strip in said League- The 25 acres acquired from Ryman is included herein, Also all town lots owned by me in the townsite of Wadsworth."
+}
+2025-02-27 19:51:31,586 - INFO - Total Token used for data extraction: 4226
+2025-02-27 19:51:36,793 - INFO - Completed processing file ID 77: Data successfully stored/updated.
+2025-02-27 19:51:36,794 - INFO - Processing file ID: 78
+2025-02-27 19:51:39,627 - INFO - ocr_data fetched for file_id: 78
+2025-02-27 19:51:40,454 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:51:40,460 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:51:40,460 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:51:40,788 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:51:40,789 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:52:12,882 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:52:12,893 - INFO - {"instrument_type":"Other","volume_page":"none found","document_case_number":"none found","execution_date":"none found","effective_date":"none found","recording_date":"none found","grantee":"none found","grantor":"none found","property_description":"none found"}
+2025-02-27 19:52:12,893 - INFO - Total Token used for data extraction: 412
+2025-02-27 19:52:18,079 - INFO - Completed processing file ID 78: Data successfully stored/updated.
+2025-02-27 19:52:18,080 - INFO - Processing file ID: 28
+2025-02-27 19:52:20,419 - INFO - ocr_data fetched for file_id: 28
+2025-02-27 19:52:20,757 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:52:20,758 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:52:51,594 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:52:51,601 - INFO - Total Token used for instrument_type: 1644
+2025-02-27 19:52:51,601 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:52:51,918 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:52:51,918 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:53:24,055 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:53:24,064 - INFO - {
+    "instrument_type": "Deed",
+    "volume_page": "3/238",
+    "document_case_number": "#15879",
+    "execution_date": "January 6, 1879",
+    "effective_date": "N/A",
+    "recording_date": "January 9, 1877",
+    "grantee": "Mary Ann Derrill",
+    "grantor": "Henry H. Servill",
+    "property_description": "A plot of ground 25x140 feet situated in the town of Bay City in the county of Matagorda, State of Texas, together with the two-story frame business building and all furniture and fixtures therein and all exterior improvements."
+}
+2025-02-27 19:53:24,064 - INFO - Total Token used for data extraction: 2122
+2025-02-27 19:53:29,268 - INFO - Completed processing file ID 28: Data successfully stored/updated.
+2025-02-27 19:53:29,268 - INFO - Processing file ID: 43
+2025-02-27 19:53:31,654 - INFO - ocr_data fetched for file_id: 43
+2025-02-27 19:53:31,983 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:53:31,984 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:54:03,193 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:54:03,198 - INFO - Total Token used for instrument_type: 1466
+2025-02-27 19:54:03,198 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:54:03,513 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:54:03,514 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:54:35,564 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:54:35,566 - INFO - {
+    "instrument_type": "Deed",
+    "volume_page": "Volume Number/Page Number",
+    "document_case_number": "File: No. 9964",
+    "execution_date": "December 8, 1885",
+    "effective_date": "N/A",
+    "recording_date": "January 26, 1886",
+    "grantee": "Frank Seerden",
+    "grantor": "David Hirsch",
+    "property_description": "an undivided half of the Dougald McFarlane league of land situated in the County of Matagorda in the State of Texas, including three hundred and six acres of land"
+}
+2025-02-27 19:54:35,566 - INFO - Total Token used for data extraction: 1938
+2025-02-27 19:54:40,768 - INFO - Completed processing file ID 43: Data successfully stored/updated.
+2025-02-27 19:54:40,769 - INFO - Processing file ID: 47
+2025-02-27 19:54:43,604 - INFO - ocr_data fetched for file_id: 47
+2025-02-27 19:54:44,247 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:54:44,250 - INFO - Total Token used for instrument_type: 203
+2025-02-27 19:54:44,250 - INFO - {'instrument_type': 'Other'}
+2025-02-27 19:54:44,848 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:54:44,849 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:55:16,109 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:55:16,115 - INFO - {"instrument_type":"Other","volume_page":"Volume 34/Page 578","document_case_number":"none found","execution_date":"March 15, 2023","effective_date":"April 1, 2023","recording_date":"March 20, 2023","grantee":"John Doe","grantor":"Jane Smith","property_description":"50 acres of land located in Springfield Township"}
+2025-02-27 19:55:16,115 - INFO - Total Token used for data extraction: 437
+2025-02-27 19:55:21,337 - INFO - Completed processing file ID 47: Data successfully stored/updated.
+2025-02-27 19:55:21,337 - INFO - Processing file ID: 48
+2025-02-27 19:55:23,909 - INFO - ocr_data fetched for file_id: 48
+2025-02-27 19:55:24,237 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:55:24,237 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:55:55,311 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:55:55,319 - INFO - Total Token used for instrument_type: 1793
+2025-02-27 19:55:55,319 - INFO - {'instrument_type': 'Affidavit'}
+2025-02-27 19:55:55,655 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:55:55,656 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:56:28,205 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:56:28,240 - INFO - {
+  "instrument_type": "Affidavit",
+  "volume_page": "none found",
+  "document_case_number": "5116; 3296",
+  "execution_date": "November 19, 2003",
+  "effective_date": "N/A",
+  "recording_date": "December 30, 2003",
+  "grantee": "none found",
+  "grantor": "BETTY ARMATTA",
+  "property_description": "Heirship of MATTHEW KELLY ARMATTA, deceased."
+}
+2025-02-27 19:56:28,241 - INFO - Total Token used for data extraction: 2056
+2025-02-27 19:56:33,468 - INFO - Completed processing file ID 48: Data successfully stored/updated.
+2025-02-27 19:56:33,468 - INFO - Processing file ID: 49
+2025-02-27 19:56:36,038 - INFO - ocr_data fetched for file_id: 49
+2025-02-27 19:56:37,101 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:56:37,104 - INFO - Total Token used for instrument_type: 2279
+2025-02-27 19:56:37,104 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:56:37,406 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:56:37,407 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:57:11,096 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:57:11,110 - INFO - {
+    "instrument_type": "Deed",
+    "volume_page": "L/513",
+    "document_case_number": "#8370",
+    "execution_date": "April 17, 1880",
+    "effective_date": "April 17, 1880",
+    "recording_date": "April 19, 1880",
+    "grantee": "Joseph Patrucio",
+    "grantor": "Frank Seardon",
+    "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee situated on the East of the Colorado River in Matagorda County."
+}
+2025-02-27 19:57:11,110 - INFO - Total Token used for data extraction: 2761
+2025-02-27 19:57:16,293 - INFO - Completed processing file ID 49: Data successfully stored/updated.
+2025-02-27 19:57:16,294 - INFO - Processing file ID: 50
+2025-02-27 19:57:18,661 - INFO - ocr_data fetched for file_id: 50
+2025-02-27 19:57:18,982 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:57:18,983 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:57:50,895 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:57:50,903 - INFO - Total Token used for instrument_type: 1644
+2025-02-27 19:57:50,903 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:57:51,216 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:57:51,216 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:58:23,636 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:58:23,646 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Volume 3/Page 238",
+  "document_case_number": "No. 15879",
+  "execution_date": "January 6, 1879",
+  "effective_date": "N/A",
+  "recording_date": "January 9, 1877",
+  "grantee": "Mary Ann Derrill",
+  "grantor": "Henry H. Servill",
+  "property_description": "Comprising a plot of ground 25x140 fict located in the town of Bay City in the bounty of Matagorda, State of Texas, together with the two story frame business building and all furniture and fixtures therein."
+}
+2025-02-27 19:58:23,646 - INFO - Total Token used for data extraction: 2126
+2025-02-27 19:58:28,806 - INFO - Completed processing file ID 50: Data successfully stored/updated.
+2025-02-27 19:58:28,807 - INFO - Processing file ID: 51
+2025-02-27 19:58:31,174 - INFO - ocr_data fetched for file_id: 51
+2025-02-27 19:58:31,497 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:58:31,498 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:59:02,298 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:59:02,307 - INFO - Total Token used for instrument_type: 1178
+2025-02-27 19:59:02,307 - INFO - {'instrument_type': 'Release'}
+2025-02-27 19:59:02,627 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:59:02,628 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:59:35,155 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:59:35,163 - INFO - {
+  "instrument_type": "Release",
+  "volume_page": "132/438-41",
+  "document_case_number": "none found",
+  "execution_date": "December 16, 1940",
+  "effective_date": "N/A",
+  "recording_date": "January 8, 1941",
+  "grantee": "Deep Rock Oil Corp",
+  "grantor": "Tom Petrucha and Julia Petrucha",
+  "property_description": "West 115.3 acres of the 165.3 acres in the D. McFarland League and West 550 acres of the 1,316 acres in the F. W. Dempsey League."
+}
+2025-02-27 19:59:35,163 - INFO - Total Token used for data extraction: 1616
+2025-02-27 19:59:40,315 - INFO - Completed processing file ID 51: Data successfully stored/updated.
+2025-02-27 19:59:40,316 - INFO - Processing file ID: 52
+2025-02-27 19:59:42,702 - INFO - ocr_data fetched for file_id: 52
+2025-02-27 19:59:43,526 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:59:43,527 - INFO - Total Token used for instrument_type: 1531
+2025-02-27 19:59:43,527 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:59:43,813 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:59:43,814 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:00:15,996 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:00:16,006 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Book L/pg. 513",
+  "document_case_number": "No. 8371",
+  "execution_date": "April 17, 1880",
+  "effective_date": "April 17, 1880",
+  "recording_date": "April 19, 1880",
+  "grantee": "Frank Seardon",
+  "grantor": "Joseph Patrucio",
+  "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 2 out of league Survey No. 8, D. McFarlane Original grantee, situated on the East side of the Colorado River, in Matagorda County."
+}
+2025-02-27 20:00:16,006 - INFO - Total Token used for data extraction: 2024
+2025-02-27 20:00:21,215 - INFO - Completed processing file ID 52: Data successfully stored/updated.
+2025-02-27 20:00:21,216 - INFO - Processing file ID: 53
+2025-02-27 20:00:24,081 - INFO - ocr_data fetched for file_id: 53
+2025-02-27 20:00:24,400 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:00:24,401 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:00:55,843 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:00:55,853 - INFO - Total Token used for instrument_type: 8975
+2025-02-27 20:00:55,853 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 20:00:56,162 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:00:56,163 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:01:28,984 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:01:28,998 - INFO - {
+  "instrument_type": "Lease",
+  "volume_page": "Volume 3/Page 238",
+  "document_case_number": "Instrument No. 54058",
+  "execution_date": "February 28, 1952",
+  "effective_date": "N/A",
+  "recording_date": "July 24, 1952",
+  "grantee": "J. W. Edens",
+  "grantor": "Julia Petrucha and others",
+  "property_description": "1481.30 acres, more or less, in the F. W. Dempsey League, Abstract 26, and the D. McFarland League, Abstract 61."
+}
+2025-02-27 20:01:28,998 - INFO - Total Token used for data extraction: 9412
+2025-02-27 20:01:34,176 - INFO - Completed processing file ID 53: Data successfully stored/updated.
+2025-02-27 20:01:34,177 - INFO - Processing file ID: 56
+2025-02-27 20:01:36,773 - INFO - ocr_data fetched for file_id: 56
+2025-02-27 20:01:37,724 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:01:37,734 - INFO - Total Token used for instrument_type: 2322
+2025-02-27 20:01:37,734 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 20:01:38,057 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:01:38,058 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:02:12,299 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:02:12,304 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Volume J/Page 147-148",
+  "document_case_number": "none found",
+  "execution_date": "May 21, 1902",
+  "effective_date": "N/A",
+  "recording_date": "May 23, 1902",
+  "grantee": "Thomas Petrucis",
+  "grantor": "Joseph Petrucis and Catherine Petrucis",
+  "property_description": "A tract of 476 acres of the Francis H. Dempsey league on the east side of the Colorado River, and various parcels of land situate in Matagorda County, Texas."
+}
+2025-02-27 20:02:12,305 - INFO - Total Token used for data extraction: 2799
+2025-02-27 20:02:17,523 - INFO - Completed processing file ID 56: Data successfully stored/updated.
+2025-02-27 20:02:17,523 - INFO - Processing file ID: 57
+2025-02-27 20:02:20,165 - INFO - ocr_data fetched for file_id: 57
+2025-02-27 20:02:20,485 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:02:20,486 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:02:51,859 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:02:51,872 - INFO - Total Token used for instrument_type: 2339
+2025-02-27 20:02:51,873 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 20:02:52,181 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:02:52,182 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:03:25,647 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:03:25,660 - INFO - {
+    "instrument_type": "Deed",
+    "volume_page": "L/pp 108 et seq.",
+    "document_case_number": "Cause No. 1672",
+    "execution_date": "February 5, 1884",
+    "effective_date": "February 5, 1884",
+    "recording_date": "March 6, 1884",
+    "grantee": "Fred. C. McCamly",
+    "grantor": "J. E. Lockwood and J. P. Reed",
+    "property_description": "A part of the headright league granted to Lloyd Sojourner and Pumphrey Burnett containing thirteen hundred & eighty (1380) acres, lying and being in the County of Matagorda, State of Texas, on old Caney Creek about 25 miles from the Coast."
+}
+2025-02-27 20:03:25,660 - INFO - Total Token used for data extraction: 2851
+2025-02-27 20:03:30,871 - INFO - Completed processing file ID 57: Data successfully stored/updated.
+2025-02-27 20:03:30,871 - INFO - Processing file ID: 58
+2025-02-27 20:03:33,464 - INFO - ocr_data fetched for file_id: 58
+2025-02-27 20:03:33,798 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:03:33,798 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:04:04,609 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:04:04,613 - INFO - Total Token used for instrument_type: 2962
+2025-02-27 20:04:04,613 - INFO - {'instrument_type': 'Affidavit'}
+2025-02-27 20:04:06,435 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:04:06,437 - INFO - {
+  "instrument_type": "Affidavit",
+  "volume_page": "none found",
+  "document_case_number": "#33124 Affidavit of Tom Petrucha",
+  "execution_date": "February 2, 1948",
+  "effective_date": "N/A",
+  "recording_date": "March 15, 1948",
+  "grantee": "none found",
+  "grantor": "Tom Petrucha",
+  "property_description": "A tract of land consisting of 860 acres in the D. McFarland League, used for grazing cattle and farming."
+}
+2025-02-27 20:04:06,437 - INFO - Total Token used for data extraction: 3236
+2025-02-27 20:04:11,695 - INFO - Completed processing file ID 58: Data successfully stored/updated.
+2025-02-27 20:04:11,695 - INFO - Processing file ID: 59
+2025-02-27 20:04:14,524 - INFO - ocr_data fetched for file_id: 59
+2025-02-27 20:04:14,840 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:04:14,841 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:04:46,481 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:04:46,486 - INFO - Total Token used for instrument_type: 5702
+2025-02-27 20:04:46,486 - INFO - {'instrument_type': 'Probate'}
+2025-02-27 20:04:46,803 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:04:46,804 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:05:19,129 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:05:19,140 - INFO - {
+  "instrument_type": "Probate",
+  "volume_page": "94/896",
+  "document_case_number": "5116",
+  "execution_date": "June 25, 1968",
+  "effective_date": "April 10, 1985",
+  "recording_date": "April 10, 1985",
+  "grantee": "Sidney Harold Armatta and Matthew Kelly Armatta",
+  "grantor": "John Marton Armatta",
+  "property_description": "Sidney Harold Armatta and Matthew Kelly Armatta are to receive all property of every kind, owned by John Marton Armatta at his death, equally and share and share alike. Additionally, there are provisions made for the income from the estate to be paid to Ida Katherine Armatta, should she survive him."
+}
+2025-02-27 20:05:19,141 - INFO - Total Token used for data extraction: 6037
+2025-02-27 20:05:24,345 - INFO - Completed processing file ID 59: Data successfully stored/updated.
+2025-02-27 20:05:24,345 - INFO - Processing file ID: 61
+2025-02-27 20:05:26,992 - INFO - ocr_data fetched for file_id: 61
+2025-02-27 20:05:27,287 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:05:27,288 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:05:58,270 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:05:58,282 - INFO - Total Token used for instrument_type: 4978
+2025-02-27 20:05:58,282 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 20:05:58,592 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:05:58,592 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:06:31,506 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:06:31,512 - INFO - {
+  "instrument_type": "Lease",
+  "volume_page": "Volume 132/Page 459",
+  "document_case_number": "#7240",
+  "execution_date": "March 11, 1940",
+  "effective_date": "March 11, 1940",
+  "recording_date": "March 23, 1940",
+  "grantee": "W. H. Mannes",
+  "grantor": "Tom Petrucha and Julia Petrucha",
+  "property_description": "200 acres lying on the West side of Highway No. 60, out of that part of our 1316 acre tract in the F. W. Dempsey League released by W. H. Mannes in Vol. 132, at page 459, Deed Records of said County."
+}
+2025-02-27 20:06:31,513 - INFO - Total Token used for data extraction: 5441
+2025-02-27 20:06:36,700 - INFO - Completed processing file ID 61: Data successfully stored/updated.
+2025-02-27 20:06:36,701 - INFO - Processing file ID: 62
+2025-02-27 20:06:39,321 - INFO - ocr_data fetched for file_id: 62
+2025-02-27 20:06:40,415 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:06:40,417 - INFO - Total Token used for instrument_type: 1852
+2025-02-27 20:06:40,417 - INFO - {'instrument_type': 'Easement and Right of Way'}
+2025-02-27 20:06:40,724 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:06:40,725 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:07:13,519 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:07:13,527 - INFO - {
+  "instrument_type": "Easement and Right of Way",
+  "volume_page": "Vol. 9, pages 229-30",
+  "document_case_number": "877181",
+  "execution_date": "September 5, 1928",
+  "effective_date": "",
+  "recording_date": "September 20, 1928",
+  "grantee": "CENTRAL POWER AND LIGHT COMPANY",
+  "grantor": "Tom Petrucha and Julia Petrucha",
+  "property_description": "Being a part of the D. McFarland League and the F. W. Dempsey League; deeded to Tom Petrucha by Joseph Petrucha and Catherine Petrucha."
+}
+2025-02-27 20:07:13,527 - INFO - Total Token used for data extraction: 1985
+2025-02-27 20:07:18,749 - INFO - Completed processing file ID 62: Data successfully stored/updated.
+2025-02-27 20:07:18,749 - INFO - Processing file ID: 63
+2025-02-27 20:07:21,606 - INFO - ocr_data fetched for file_id: 63
+2025-02-27 20:07:21,924 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:07:21,925 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:07:53,025 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:07:53,032 - INFO - Total Token used for instrument_type: 5792
+2025-02-27 20:07:53,032 - INFO - {'instrument_type': 'Lease'}
+2025-02-27 20:07:53,349 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:07:53,350 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:08:26,470 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:08:26,477 - INFO - {
+    "instrument_type": "Lease",
+    "volume_page": "Volume 118/Page 88",
+    "document_case_number": "#33944",
+    "execution_date": "April 7, 1948",
+    "effective_date": "March 23, 1948",
+    "recording_date": "May 10, 1948",
+    "grantee": "J. M. Huber Corporation",
+    "grantor": "A. S. Culver et ux, Minnie Culver",
+    "property_description": "492.52 acres of land, more or less, being the tract of land designated as Tract No. 1 described in a plat of the George B. Culver Estate's 1,970.08 acres of land in the F. W. Dempsey League, Abstract 26, and the Wm. Selkirk Survey, Abstract 87 according to the recorded plat of said tract of land made by John F. Rother, County Surveyor of Matagorda County, Texas, December 18, 1936."
+}
+2025-02-27 20:08:26,477 - INFO - Total Token used for data extraction: 6311
+2025-02-27 20:08:31,683 - INFO - Completed processing file ID 63: Data successfully stored/updated.
+2025-02-27 20:08:31,683 - INFO - Processing file ID: 65
+2025-02-27 20:08:34,345 - INFO - ocr_data fetched for file_id: 65
+2025-02-27 20:08:35,473 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:08:35,478 - INFO - Total Token used for instrument_type: 2124
+2025-02-27 20:08:35,478 - INFO - {'instrument_type': 'Quitclaim'}
+2025-02-27 20:08:35,787 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:08:35,787 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:09:08,462 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:09:08,475 - INFO - {
+    "instrument_type": "Quitclaim",
+    "volume_page": "None found.",
+    "document_case_number": "none found",
+    "execution_date": "April 21, 1917",
+    "effective_date": "N/A",
+    "recording_date": "April 26, 1917",
+    "grantee": "BAY STOCK FARMS COMPANY",
+    "grantor": "AMERICAN TRUST COMPANY",
+    "property_description": "Lot numbered Seventy-nine (79) of the Colonial Land Company's Subdivision of the Kilbride Pasture, containing sixty-six and three-tenths (66.3) acres of land, Beid land being in the S. R. Fisher League and J. R. Lawrence Survey, all in the County of Matagorda and State of Texas."
+}
+2025-02-27 20:09:08,475 - INFO - Total Token used for data extraction: 2580
+2025-02-27 20:09:13,642 - INFO - Completed processing file ID 65: Data successfully stored/updated.
+2025-02-27 20:09:13,642 - INFO - Processing file ID: 66
+2025-02-27 20:09:16,006 - INFO - ocr_data fetched for file_id: 66
+2025-02-27 20:09:16,325 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:09:16,326 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:09:47,137 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:09:47,142 - INFO - Total Token used for instrument_type: 1550
+2025-02-27 20:09:47,142 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 20:09:47,461 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:09:47,462 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:10:19,310 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:10:19,318 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "none found",
+  "document_case_number": "# 15-52ct",
+  "execution_date": "September 1, 1899",
+  "effective_date": "N/A",
+  "recording_date": "September 1, 1897",
+  "grantee": "Tom Petrustica",
+  "grantor": "H. Praylon",
+  "property_description": "Containing 191 acres of land more or less"
+}
+2025-02-27 20:10:19,318 - INFO - Total Token used for data extraction: 1992
+2025-02-27 20:10:24,533 - INFO - Completed processing file ID 66: Data successfully stored/updated.
+2025-02-27 20:10:24,533 - INFO - Processing file ID: 67
+2025-02-27 20:10:27,367 - INFO - ocr_data fetched for file_id: 67
+2025-02-27 20:10:27,681 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:10:27,681 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:10:58,996 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:10:59,002 - INFO - Total Token used for instrument_type: 203
+2025-02-27 20:10:59,002 - INFO - {'instrument_type': 'Other'}
+2025-02-27 20:10:59,369 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:10:59,370 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:11:30,920 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:11:30,927 - INFO - {"instrument_type":"Other","volume_page":"Volume 12/Page 3","document_case_number":"none found","execution_date":"2022-01-15","effective_date":"2022-01-20","recording_date":"2022-01-22","grantee":"John Doe","grantor":"Jane Smith","property_description":"Parcel of land located at 123 Main St, Springfield, County of Somewhere."}
+2025-02-27 20:11:30,927 - INFO - Total Token used for data extraction: 442
+2025-02-27 20:11:36,150 - INFO - Completed processing file ID 67: Data successfully stored/updated.
+2025-02-27 20:11:36,150 - INFO - Processing file ID: 80
+2025-02-27 20:11:38,773 - INFO - ocr_data fetched for file_id: 80
+2025-02-27 20:11:40,045 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:11:40,048 - INFO - Total Token used for instrument_type: 3726
+2025-02-27 20:11:40,049 - INFO - {'instrument_type': 'Assignment'}
+2025-02-27 20:11:40,363 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:11:40,363 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:12:12,270 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:12:12,279 - INFO - {
+  "instrument_type": "Assignment",
+  "volume_page": "none found",
+  "document_case_number": "none found",
+  "execution_date": "December 26, 1935",
+  "effective_date": "none found",
+  "recording_date": "January 15, 1936",
+  "grantee": "F. L. Luckel",
+  "grantor": "Wm. Cash",
+  "property_description": "N/A"
+}
+2025-02-27 20:12:12,279 - INFO - Total Token used for data extraction: 3976
+2025-02-27 20:12:17,508 - INFO - Completed processing file ID 80: Data successfully stored/updated.
+2025-02-27 20:12:17,508 - INFO - Processing file ID: 81
+2025-02-27 20:12:20,366 - INFO - ocr_data fetched for file_id: 81
+2025-02-27 20:12:20,694 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:12:20,695 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:12:51,628 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:12:51,632 - INFO - Total Token used for instrument_type: 203
+2025-02-27 20:12:51,632 - INFO - {'instrument_type': 'Other'}
+2025-02-27 20:12:51,943 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:12:51,944 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:13:23,420 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:13:23,429 - INFO - {"instrument_type":"Other","volume_page":"none found","document_case_number":"none found","execution_date":"none found","effective_date":"none found","recording_date":"none found","grantee":"none found","grantor":"none found","property_description":"none found"}
+2025-02-27 20:13:23,430 - INFO - Total Token used for data extraction: 412
+2025-02-27 20:13:28,666 - INFO - Completed processing file ID 81: Data successfully stored/updated.
+2025-02-27 20:13:28,666 - INFO - Processing file ID: 82
+2025-02-27 20:13:31,053 - INFO - ocr_data fetched for file_id: 82
+2025-02-27 20:13:31,349 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:13:31,350 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:14:02,096 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:14:02,103 - INFO - Total Token used for instrument_type: 1478
+2025-02-27 20:14:02,103 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 20:14:02,399 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:14:02,399 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:14:34,287 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:14:34,294 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "12/144",
+  "document_case_number": "#17634",
+  "execution_date": "May 31, 1902",
+  "effective_date": "N/A",
+  "recording_date": "September 18, 1903",
+  "grantee": "Cave Belt Railroad Company",
+  "grantor": "Tom Petrucha",
+  "property_description": "A strip of land one hundred feet wide, fifty feet on each side of the center of the track of the Cave Belt Railroad."
+}
+2025-02-27 20:14:34,294 - INFO - Total Token used for data extraction: 1934
+2025-02-27 20:14:39,599 - INFO - Completed processing file ID 82: Data successfully stored/updated.
+2025-02-27 20:14:39,599 - INFO - Processing file ID: 84
+2025-02-27 20:14:42,193 - INFO - ocr_data fetched for file_id: 84
+2025-02-27 20:14:43,509 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:14:43,514 - INFO - Total Token used for instrument_type: 2404
+2025-02-27 20:14:43,514 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 20:14:43,829 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:14:43,830 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:15:18,522 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:15:18,529 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Vol. 7",
+  "document_case_number": "none found",
+  "execution_date": "September 7, 1901",
+  "effective_date": "N/A",
+  "recording_date": "September 13, 1901",
+  "grantee": "Thomas Petrucis",
+  "grantor": "Mary B. Plaman, Misses Mary & Broman, Minnie Bramale, Julia Craman, Dr. Daniel H. Braman",
+  "property_description": "a tract of land in Matagorda County, Texas, being a portion of the league of land granted to Francis H. Dempsey by title dated December 18, 1836"
+}
+2025-02-27 20:15:18,529 - INFO - Total Token used for data extraction: 2899
+2025-02-27 20:15:24,946 - INFO - Completed processing file ID 84: Data successfully stored/updated.
+2025-02-27 20:15:24,947 - INFO - Processing file ID: 87
+2025-02-27 20:15:27,302 - INFO - ocr_data fetched for file_id: 87
+2025-02-27 20:15:27,611 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:15:27,612 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:15:58,530 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:15:58,533 - INFO - Total Token used for instrument_type: 1120
+2025-02-27 20:15:58,533 - INFO - {'instrument_type': 'Affidavit'}
+2025-02-27 20:15:58,839 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:15:58,840 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:16:31,307 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:16:31,328 - INFO - {
+  "instrument_type": "Affidavit",
+  "volume_page": "none found",
+  "document_case_number": "#48937-Affidavit",
+  "execution_date": "June 2, A. D. 1951",
+  "effective_date": "N/A",
+  "recording_date": "June 12, A. D. 1951",
+  "grantee": "none found",
+  "grantor": "A. Harris",
+  "property_description": "Attestation regarding Tom Petrucha's children."
+}
+2025-02-27 20:16:31,328 - INFO - Total Token used for data extraction: 1383
+2025-02-27 20:16:36,536 - INFO - Completed processing file ID 87: Data successfully stored/updated.
+2025-02-27 20:16:36,536 - INFO - Processing file ID: 89
+2025-02-27 20:16:39,133 - INFO - ocr_data fetched for file_id: 89
+2025-02-27 20:16:39,903 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:16:39,904 - INFO - Total Token used for instrument_type: 2232
+2025-02-27 20:16:39,904 - INFO - {'instrument_type': 'Release'}
+2025-02-27 20:16:40,218 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:16:40,219 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:17:13,707 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:17:13,726 - INFO - {
+  "instrument_type": "Release",
+  "volume_page": "165/335",
+  "document_case_number": "#35287 Rel. O & G L",
+  "execution_date": "July 24, 1948",
+  "effective_date": "N/A",
+  "recording_date": "August 26, 1948",
+  "grantee": "Julia Petrucha, et al",
+  "grantor": "Coahuila Oil Company",
+  "property_description": "A parcel of land in the shape of a square comprising 150 acres in the northern part of the F. W. Dempsey survey in said County."
+}
+2025-02-27 20:17:13,726 - INFO - Total Token used for data extraction: 2664
+2025-02-27 20:17:18,963 - INFO - Completed processing file ID 89: Data successfully stored/updated.
+2025-02-27 20:17:18,963 - INFO - Processing file ID: 91
+2025-02-27 20:17:21,540 - INFO - ocr_data fetched for file_id: 91
+2025-02-27 20:17:21,858 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:17:21,859 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:17:52,624 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:17:52,634 - INFO - Total Token used for instrument_type: 1927
+2025-02-27 20:17:52,634 - INFO - {'instrument_type': 'Right of Way'}
+2025-02-27 20:17:52,919 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 20:17:52,920 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 20:18:25,213 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 20:18:25,225 - INFO - {
+  "instrument_type": "Memorandum of Agreement",
+  "volume_page": "375",
+  "document_case_number": "873659",
+  "execution_date": "1925-04-23",
+  "effective_date": "1925-12-12",
+  "recording_date": "1925-12-18",
+  "grantee": "Houston Pipe Line Company",
+  "grantor": "Thos. Petrucha et ux",
+  "property_description": "Being a certain 1276 acre tract of land a part of the F. W. Dempsey survey abstract #26 situated in Matagorda county Texas."
+}
+2025-02-27 20:18:25,225 - INFO - Total Token used for data extraction: 2052
+2025-02-27 20:18:30,438 - INFO - Completed processing file ID 91: Data successfully stored/updated.
+2025-02-27 20:18:30,439 - INFO - {'project_id': 12, 'results': [{'file_id': 34, 'result': 'Data successfully stored/updated.'}, {'file_id': 36, 'result': 'Data successfully stored/updated.'}, {'file_id': 37, 'result': 'Data successfully stored/updated.'}, {'file_id': 38, 'result': 'Data successfully stored/updated.'}, {'file_id': 39, 'result': 'Data successfully stored/updated.'}, {'file_id': 41, 'result': 'Data successfully stored/updated.'}, {'file_id': 42, 'result': 'Data successfully stored/updated.'}, {'file_id': 69, 'result': 'Data successfully stored/updated.'}, {'file_id': 70, 'result': 'Data successfully stored/updated.'}, {'file_id': 71, 'result': 'Data successfully stored/updated.'}, {'file_id': 72, 'result': 'Data successfully stored/updated.'}, {'file_id': 73, 'result': 'Data successfully stored/updated.'}, {'file_id': 74, 'result': 'Data successfully stored/updated.'}, {'file_id': 75, 'result': 'Data successfully stored/updated.'}, {'file_id': 76, 'result': 'Data successfully stored/updated.'}, {'file_id': 77, 'result': 'Data successfully stored/updated.'}, {'file_id': 78, 'result': 'Data successfully stored/updated.'}, {'file_id': 28, 'result': 'Data successfully stored/updated.'}, {'file_id': 43, 'result': 'Data successfully stored/updated.'}, {'file_id': 47, 'result': 'Data successfully stored/updated.'}, {'file_id': 48, 'result': 'Data successfully stored/updated.'}, {'file_id': 49, 'result': 'Data successfully stored/updated.'}, {'file_id': 50, 'result': 'Data successfully stored/updated.'}, {'file_id': 51, 'result': 'Data successfully stored/updated.'}, {'file_id': 52, 'result': 'Data successfully stored/updated.'}, {'file_id': 53, 'result': 'Data successfully stored/updated.'}, {'file_id': 56, 'result': 'Data successfully stored/updated.'}, {'file_id': 57, 'result': 'Data successfully stored/updated.'}, {'file_id': 58, 'result': 'Data successfully stored/updated.'}, {'file_id': 59, 'result': 'Data successfully stored/updated.'}, {'file_id': 61, 'result': 'Data successfully stored/updated.'}, {'file_id': 62, 'result': 'Data successfully stored/updated.'}, {'file_id': 63, 'result': 'Data successfully stored/updated.'}, {'file_id': 65, 'result': 'Data successfully stored/updated.'}, {'file_id': 66, 'result': 'Data successfully stored/updated.'}, {'file_id': 67, 'result': 'Data successfully stored/updated.'}, {'file_id': 80, 'result': 'Data successfully stored/updated.'}, {'file_id': 81, 'result': 'Data successfully stored/updated.'}, {'file_id': 82, 'result': 'Data successfully stored/updated.'}, {'file_id': 84, 'result': 'Data successfully stored/updated.'}, {'file_id': 87, 'result': 'Data successfully stored/updated.'}, {'file_id': 89, 'result': 'Data successfully stored/updated.'}, {'file_id': 91, 'result': 'Data successfully stored/updated.'}], 'timestamp': '2025-02-27T20:18:30.438974'}
+2025-02-27 20:18:30,439 - INFO - OpenAI Extraction Completed: 12

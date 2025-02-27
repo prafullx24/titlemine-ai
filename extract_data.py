@@ -6,7 +6,7 @@ import openai
 from datetime import datetime
 import concurrent.futures
 import logging
-
+from flask import Flask, jsonify
 
 # Load environment variables
 load_dotenv()
@@ -17,7 +17,7 @@ class Config:
     if not DATABASE_URL:
         raise ValueError("DATABASE_URL environment variable is missing.")
 
-# # Configure logging
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to get a database connection
@@ -28,37 +28,32 @@ def get_db_connection():
         logging.error(f"Error getting DB connection: {e}")
         return None
 
-# Function to fetch OCR text from the database
 def fetch_ocr_text(file_id):
     try:
         conn = get_db_connection()
         if conn is None:
-            return None, "Database connection error"
+            return None, None, None, None, "Database connection error"
 
         with conn:
             with conn.cursor() as cur:
-                query = "SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
-
-                try:
-                    cur.execute(query, (int(file_id),))  # If file_id is an integer
-                except ValueError:
-                    cur.execute(query, (file_id,))  # If file_id is a string
-
+                query = "SELECT id, file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
+                cur.execute(query, (file_id,))
                 response = cur.fetchone()
 
                 if not response:
-                    return None, None, None, "file_id not found in ocr_data table"
+                    return None, None, None, None, "file_id not found in ocr_data table"
 
-                file_id_from_db, project_id, ocr_json_1 = response
+                id_db, file_id_from_db, project_id, ocr_json_1 = response
 
                 try:
                     ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
-                    return file_id_from_db, project_id, ocr_data, None
+                    return id_db, file_id_from_db, project_id, ocr_data, None
                 except json.JSONDecodeError:
-                    return file_id_from_db, project_id, None, "Invalid JSON format"
+                    return id_db, file_id_from_db, project_id, None, "Invalid JSON format"
+
     except Exception as e:
         logging.error(f"Error fetching OCR text: {e}")
-        return None, str(e)
+        return None, None, None, None, f"Error: {e}"
 
 def extract_instrument_type(ocr_text):
     """
@@ -88,9 +83,11 @@ def extract_instrument_type(ocr_text):
         )
 
         resp = completion.choices[0].message.content.strip("```").lstrip("json\n").strip()
-
+        total_tokens = completion.usage.total_tokens
+        logging.info(f"Total Token used for instrument_type: {total_tokens}")
         try:
             json_resp = json.loads(resp)
+            logging.info(json_resp)
             return json_resp
         except json.JSONDecodeError as e:
             logging.error(f"Error parsing JSON: {e}")
@@ -129,9 +126,7 @@ def extract_and_process_document(ocr_text):
         {ocr_text} 
         """
         
-        print(user_prompt_doc_type)
-        
-        response = client.chat.completions.create(
+        completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "system", "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. The Text that you have to search this information from is at the end of the prompt."},
                       {"role": "user", "content": user_prompt_doc_type}],
@@ -169,8 +164,10 @@ def extract_and_process_document(ocr_text):
                 }
             }
         )
-        result = response.choices[0].message.content
-        print(result)
+        result = completion.choices[0].message.content
+        logging.info(result)
+        total_tokens = completion.usage.total_tokens
+        logging.info(f"Total Token used for data extraction: {total_tokens}")
         try:
             result_json = json.loads(result)
             return result_json
@@ -191,22 +188,25 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
         with conn:
             with conn.cursor() as cur:
                 try:
-                    conn.autocommit = False
+                    conn.autocommit = False  # Disable autocommit for transactions
 
+                    # Convert date strings to proper formats
                     def convert_date(date_str):
-                        if date_str and date_str.lower() != "none found" and date_str.lower() != "n/a":
+                        if date_str and date_str.lower() not in ["none found", "n/a"]:
                             try:
                                 return datetime.strptime(date_str, "%B %d, %Y").date()
                             except ValueError:
                                 return None
                         return None
 
+                    # Ensure extracted_data is in dict format
                     if isinstance(extracted_data, str):
                         try:
                             extracted_data = json.loads(extracted_data)
                         except json.JSONDecodeError:
                             return "Invalid JSON data"
 
+                    # Extract necessary fields
                     execution_date = convert_date(extracted_data.get("execution_date"))
                     effective_date = convert_date(extracted_data.get("effective_date"))
                     recording_date = convert_date(extracted_data.get("recording_date"))
@@ -217,14 +217,15 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
                     grantor = extracted_data.get("grantor", "N/A")
                     grantee = json.dumps(extracted_data.get("grantee", []))
                     property_description = json.dumps(extracted_data.get("property_description", []))
-                    sort_sequence = 0
-                    remarks = "N/A" 
-                    file_date = recording_date #add file_date if needed.
+                    remarks = "N/A"
+                    file_date = recording_date
 
-                    check_query = "SELECT file_name FROM public.runsheets WHERE file_id = %s and project_id = %s"
-                    existing_file_name = cur.execute(check_query, (file_id, project_id))
+                    # Check if the entry exists
+                    check_query = "SELECT id FROM public.runsheets WHERE file_id = %s AND project_id = %s"
+                    cur.execute(check_query, (file_id, project_id))
+                    existing_entry = cur.fetchone()
 
-                    if existing_file_name:
+                    if existing_entry:
                         update_query = """
                             UPDATE public.runsheets 
                             SET 
@@ -238,29 +239,38 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
                                 grantee = COALESCE(%s, grantee), 
                                 property_description = COALESCE(%s, property_description), 
                                 remarks = COALESCE(%s, remarks), 
-                                user_id = COALESCE(user_id, user_id),
-                                file_name = COALESCE(%s, file_name)
+                                user_id = COALESCE(%s, user_id)
                             WHERE file_id = %s AND project_id = %s
-                            """
-
+                        """
                         cur.execute(update_query, (
                             instrument_type, document_case, volume_page, effective_date,
-                            execution_date, file_date, grantor, grantee, property_description, remarks, existing_file_name, file_id, project_id
+                            execution_date, file_date, grantor, grantee, property_description, remarks,
+                            user_id, file_id, project_id
                         ))
+
+                        if cur.rowcount == 0:
+                            conn.rollback()
+                            return "Update failed. No rows affected."
+
                     else:
                         insert_query = """
-                        INSERT INTO public.runsheets (file_id, project_id, instrument_type, document_case, volume_page, 
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks, user_id)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            INSERT INTO public.runsheets (
+                                file_id, project_id, instrument_type, document_case, volume_page, 
+                                effective_date, execution_date, file_date, grantor, grantee, property_description, 
+                                remarks, user_id
+                            ) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """
-                        insert_output = cur.execute(insert_query, (
+                        cur.execute(insert_query, (
                             file_id, project_id, instrument_type, document_case, volume_page,
-                            effective_date, execution_date, file_date, grantor, grantee, property_description, remarks, user_id
+                            effective_date, execution_date, file_date, grantor, grantee, property_description,
+                            remarks, user_id
                         ))
-                        # return "Runsheet Entry not found."
-
+                    update_status_query = "UPDATE public.files SET ocr_status = 'Completed' WHERE id = %s"
+                    cur.execute(update_status_query, (file_id,))
                     conn.commit()
                     return "Data successfully stored/updated."
+
                 except Exception as e:
                     conn.rollback()
                     logging.error(f"Error storing extracted data: {e}")
@@ -269,17 +279,6 @@ def store_extracted_data(user_id, file_id, project_id, extracted_data):
     except Exception as e:
         logging.error(f"Error with DB operation: {e}")
         return f"DB error: {e}"
-
-# Concurrent execution for handling multiple documents
-def process_documents_concurrently(file_ids):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        results = list(executor.map(process_single_document, file_ids))
-    return results
-
-def process_documents_sequentially(file_ids):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        results = list(executor.map(process_single_document, file_ids))
-    return results
 
 def fetch_user_id(file_id):
     try:
@@ -290,24 +289,23 @@ def fetch_user_id(file_id):
         with conn:
             with conn.cursor() as cur:
                 query = "SELECT user_id FROM files WHERE files.id = %s"
-
                 try:
-                    cur.execute(query, (int(file_id),))  # If file_id is an integer
+                    cur.execute(query, (int(file_id),))
                 except ValueError:
-                    cur.execute(query, (file_id,))  # If file_id is a string
+                    cur.execute(query, (file_id,))
 
                 response = cur.fetchone()
 
                 if not response:
-                    return "user_id not found in files table"
+                    return None, "user_id not found in files table"
                 else:
-                    return response
+                    return response[0], None
     except Exception as e:
         logging.error(f"Error fetching user_id: {e}")
         return None, str(e)
 
 def process_single_document(file_id):
-    file_id_from_db, project_id, ocr_data, error = fetch_ocr_text(file_id)
+    id_db, file_id_from_db, project_id, ocr_data, error = fetch_ocr_text(file_id)
     if error:
         logging.error(f"Error fetching OCR text for file {file_id}: {error}")
         return error
@@ -315,25 +313,116 @@ def process_single_document(file_id):
     if not ocr_data:
         return f"No OCR data found for file_id {file_id}"
 
-    ocr_text = ocr_data.get("text", "")
+    logging.info(f"ocr_data fetched for file_id: {file_id}")
+
+    # Handle both list and dict cases for ocr_data
+    if isinstance(ocr_data, list) and ocr_data:
+        ocr_text = ocr_data[0].get("text", "")  # Take "text" from first item if list
+    elif isinstance(ocr_data, dict):
+        ocr_text = ocr_data.get("text", "")  # Original behavior for dict
+    else:
+        ocr_text = ""  # Default to empty string if unexpected format
+        logging.warning(f"Unexpected ocr_data format for file {file_id}")
+        return f"Error processing file_id {file_id}. No OCR Data Returned."
+
     extracted_data = extract_and_process_document(ocr_text)
     if "error" in extracted_data:
         logging.error(f"Error processing document {file_id}: {extracted_data}")
         return f"Error processing document {file_id}: {extracted_data.get('error')}"
-    user_id = fetch_user_id(file_id)
+
+    user_id, error = fetch_user_id(file_id)
+    if error:
+        logging.error(f"Error fetching user_id for file {file_id}: {error}")
+        return error
+
     result = store_extracted_data(user_id, file_id_from_db, project_id, extracted_data)
     return result
 
-# Example usage: process multiple file IDs concurrently
-# file_ids_to_process = [
-#     28, 33, 34, 36, 37, 38, 39, 41, 42, 43, 47, 48, 49, 50, 51, 52, 53, 
-#     56, 57, 58, 59, 61, 62, 63, 65, 66, 67, 69, 70, 71, 72, 73, 74, 75, 
-#     76, 77, 78, 80, 81, 82, 84, 87, 89, 91
-# ]
+def fetch_file_ids_by_project(project_id):
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return None, "Database connection error"
 
-file_ids_to_process = [527]  
-results = process_documents_concurrently(file_ids_to_process)
+        with conn:
+            with conn.cursor() as cur:
+                query = "SELECT id FROM public.files WHERE project_id = %s AND ocr_status = 'Extracting'"
+                cur.execute(query, (project_id,))
+                file_ids = cur.fetchall()
+
+                if not file_ids:
+                    return [], "No file IDs found for this project ID"
+                
+                return [row[0] for row in file_ids], None
+    except Exception as e:
+        logging.error(f"Error fetching file IDs for project {project_id}: {e}")
+        return None, str(e)
+
+def process_documents_by_project(project_id):
+    file_ids, error = fetch_file_ids_by_project(project_id)
+    if error:
+        logging.error(f"Error: {error}")
+        return [error]
+    
+    if not file_ids:
+        logging.info(f"No files to process for project ID {project_id}")
+        return ["No files to process"]
+
+    results = []
+    for file_id in file_ids:
+        logging.info(f"Processing file ID: {file_id}")
+        result = process_single_document(file_id)
+        results.append(f"File ID {file_id}: {result}")
+        logging.info(f"Completed processing file ID {file_id}: {result}")
+    
+    return results
 
 
-for result in results:
-    logging.info(f"Processing result: {result}")
+
+# Flask app initialization
+app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+@app.route('/api/project/<int:project_id>', methods=['GET'])
+def process_project(project_id):
+    try:
+        # Fetch the file IDs associated with the project_id
+        file_ids, error = fetch_file_ids_by_project(project_id)
+        if error:
+            logging.error(f"Error fetching file IDs for project {project_id}: {error}")
+            return jsonify({"error": f"Error fetching file IDs: {error}"}), 500
+
+        if not file_ids:
+            logging.info(f"No files to process for project {project_id}")
+            return jsonify({"message": f"No files to process for project ID {project_id}"}), 404
+
+        # Process each file_id
+        results = []
+        for file_id in file_ids:
+            logging.info(f"Processing file ID: {file_id}")
+            result = process_single_document(file_id)
+            results.append({
+                "file_id": file_id,
+                "result": result
+            })
+            logging.info(f"Completed processing file ID {file_id}: {result}")
+        
+        # Return the results in JSON format
+        return jsonify({
+            "project_id": project_id,
+            "results": results,
+            "timestamp": datetime.now().isoformat()
+        }), 200
+
+    except Exception as e:
+        logging.error(f"Error processing project {project_id}: {e}")
+        return jsonify({
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }), 500
+
+
+if __name__ == '__main__':  
+    app.run(debug=True, host='0.0.0.0', port=5000)

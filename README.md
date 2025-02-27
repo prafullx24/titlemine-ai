@@ -2,6 +2,10 @@
 This is the project guideline for setting up TitleMine Data Extractor Code. 
 The process of Data Extraction is split into three layers of isolation. 
 
+# TODO
+1. Combine the DB Config: Currently two config types are present
+2. Serial execution of Data extraction with OCR process runs in background parallely
+
 ## Installation
 
 To install the required dependencies, run the following command:

@@ -96,6 +96,7 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 import logging
 import threading
+from extract_data import *
 
 
 # Load environment variables
@@ -140,7 +141,6 @@ def save_project_files_to_variable(project_id, user_id, files):
         "project_id": project_id,
         "file_ids": [file[0] for file in files]
     }
-    # print(data)
     return data
 
 
@@ -156,12 +156,18 @@ def get_files_by_project(project_id):
     SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
     FROM public.files 
     WHERE project_id = %s 
-    AND (ocr_status IS NULL OR ocr_status = 'Processing' OR ocr_status != 'Extracting')
+    AND (ocr_status = 'Processing')
     """
+
+    # NOTE: ocr_status can be: 
+    # Processing: The default status after file upload. File is being processed for OCR with Google Document AI
+    #       - ALTER TABLE public.files ALTER COLUMN ocr_status SET DEFAULT 'Processing';
+    # Extracting: OCR is complete and OpenAI Extraction is in progress
+    # Completed: Runsheet is inserted for this file.
 
     cur.execute(query, (project_id,))
     files = cur.fetchall()
-
+    print(files)
     cur.close()
     conn.close()
 
@@ -180,7 +186,7 @@ def get_single_file_by_file_id(file_id):
     SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
     FROM public.files 
     WHERE id = %s 
-    AND (ocr_status IS NULL OR ocr_status = 'Processing' OR ocr_status != 'Extracting')
+    AND (ocr_status = 'Processing')
     """
     # Ensure OCR Status in files table before using this function.
     cur.execute(query, (file_id,))
@@ -204,14 +210,14 @@ def get_single_file_by_file_id(file_id):
 def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
     """Download a file from S3 URL and save it locally"""
     file_name = f"download_pdf_{user_id}_{project_id}_{file_id}{file_extension}"
-    file_path = os.path.join(DOWNLOAD_FOLDER, file_name) # Path to save the downloaded file
+    file_path = os.path.join(DOWNLOAD_FOLDER, file_name)
     if os.path.exists(file_path):
         return file_path
-    response = requests.get(s3_url, stream=True) # Send a GET request to the S3 URL to download the file 
+    response = requests.get(s3_url, stream=True)
     if response.status_code == 200:
-        with open(file_path, "wb") as file: # Open the file in write binary mode 
-            for chunk in response.iter_content(1024): # Iterate over the response content in chunks of 1024 bytes
-                file.write(chunk) # Write the chunk to the file 
+        with open(file_path, "wb") as file: 
+            for chunk in response.iter_content(1024):
+                file.write(chunk)
         logging.info(f"Downloaded file from S3: file_id: {file_id}; project_id {project_id}")
         return file_path 
     logging.error(f"Failed to download file from S3: {s3_url}")
@@ -222,17 +228,17 @@ def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
 
 # The code defines a function to download files concurrently from S3 URLs using a thread pool, handling errors and printing the download status for each file.
 def download_files_concurrently(files):
-    downloaded_files = [] # List to store the downloaded file paths
-    file_sizes = []  # List to store file names and their sizes
+    downloaded_files = [] 
+    file_sizes = []  
     temp_project_id = files[0][2]
 
     def download_file(file):
         try:
             id, user_id, project_id, file_name, s3_url, ocr_status = file
-            file_extension = os.path.splitext(file_name)[1] # Get the file extension 
+            file_extension = os.path.splitext(file_name)[1] 
             pdf_file_path = download_file_from_s3(s3_url, user_id, project_id, id, file_extension)
             if pdf_file_path:
-                downloaded_files.append(pdf_file_path) # Append the downloaded file path to the list
+                downloaded_files.append(pdf_file_path)
             else:
                 logging.error(f"Failed to download file from S3: {file_name} : {s3_url} project_id: {project_id}")
                 
@@ -242,7 +248,7 @@ def download_files_concurrently(files):
     if not files:
         logging.error(f"No files to download. project_id: {temp_project_id}")
         return []
-    # with ThreadPoolExecutor(max_workers=5) as executor:  # Limit to 5 concurrent downloads
+
     with ThreadPoolExecutor() as executor:    # No limit on concurrent downloads
         executor.map(download_file, files)
 
@@ -252,12 +258,7 @@ def download_files_concurrently(files):
         file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert size to MB
         file_size_formatted = f"{file_size:.2f}"  # Format file size to 2 decimal places
         file_sizes.append({"file_name": os.path.basename(file_path), "file_size": file_size_formatted})
-        # print(f"Downloaded file: {file_path}, Size: {file_size:.2f} MB")
 
-    # Print file sizes
-    # print("File sizes:", file_sizes)
-
-    # print("All files file size printed successfully")
     return downloaded_files, file_sizes
 
 # This function saves the OCR extracted data as a JSON file in a specified download folder, using the user ID, project ID, and file ID to name the file.
@@ -277,7 +278,6 @@ def save_ocr_outputs_as_json(extracted_data_list):
         file_id = data['file_id']
         extracted_data = data['extracted_data']
         save_ocr_output_as_json(user_id, project_id, file_id, extracted_data)
-    # print("All OCR JSON files saved successfully")
 
 
 def extract_text_with_confidence(file_path):
@@ -456,11 +456,11 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         psycopg2.extras.execute_values(cur, insert_query, new_records)
         
         file_ids = [data['file_id'] for data in all_extracted_data]
-        update_status_query = "UPDATE public.files SET ocr_status = 'Extracting' WHERE id = ANY(%s::int[])" # The %s::int[] placeholder is used to safely insert the list of file IDs into the query.
+        update_status_query = "UPDATE public.files SET ocr_status = 'Extracting' WHERE id = ANY(%s::int[])" 
         cur.execute(update_status_query, (file_ids,))
         
         conn.commit()
-        # print("Bulk insert and update executed successfully")
+        
     except Exception as e:
         conn.rollback()
         logging.error(f"Error in save_and_update_ocr_data_batch: {e} project_id: {project_id}")
@@ -468,37 +468,63 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         cur.close()
         conn.close()
 
-def start_extraction(project_id):
+def start_ocr(project_id):
     files = get_files_by_project(project_id)
     if not files:
-        logging.error(f"No files found for this project: {project_id}")
-    downloaded_files, file_sizes = download_files_concurrently(files)
-    all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
-    logging.info(f"OCR data saved successfully in the database for project_id: {project_id}")
+        logging.error(f"No files found for OCR in this project: {project_id}")
+    else:
+        downloaded_files, file_sizes = download_files_concurrently(files)
+        all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
+        save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+        logging.info(f"OCR data saved successfully in the database for project_id: {project_id}")
+    
+
+def start_openai(project_id):
+    try:
+        file_ids, error = fetch_file_ids_by_project(project_id)
+        if error:
+            logging.error(f"Error fetching file IDs for project {project_id}: {error}")
+
+        if not file_ids:
+            logging.info(f"No files to process for project {project_id}")
+
+        # Process each file_id
+        results = []
+        for file_id in file_ids:
+            logging.info(f"Processing file ID: {file_id}")
+            result = process_single_document(file_id)
+            results.append({
+                "file_id": file_id,
+                "result": result
+            })
+            logging.info(f"Completed processing file ID {file_id}: {result}")
+        
+        # Return the results in JSON format
+        logging.info({
+            "project_id": project_id,
+            "results": results,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    except Exception as e:
+        logging.error(f"Error processing project {project_id}: {e}")
+
+def start_extraction(project_id):
+    
+    start_ocr(project_id)
+    logging.info(f"Starting OpenAI Extraction: {project_id}")
+    start_openai(project_id)
+    logging.info(f"OpenAI Extraction Completed: {project_id}")
+    
+
 
 @app.route("/api/v1/batch_ocr/<int:project_id>", methods=["POST"])
 def batch_ocr(project_id):
-    """Batch process OCR for all files under a project."""
-
-    # step 1 - get files by project and store file ids in a json file which ocr_status is not completed
     files = get_files_by_project(project_id)
-    # id, user_id, project_id, file_name, s3_url, ocr_status = files
-    # print(files)
     if not files:
         return jsonify({"error": "No files found for this project."}), 404
-
-    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
-    # step 2 - download files from s3
     downloaded_files, file_sizes = download_files_concurrently(files)
-    # return jsonify({"message": "Inserted/Updated Data successfully in DataBase", "file_sizes": file_sizes}), 200
-    # # # step 3- check_file_sizes_and_count_pages
-    # split_pdf_paths = check_file_sizes_and_count_pages(downloaded_files, file_sizes)
-    # return jsonify({"message": " Data successfully in DataBase", "split_pdf_paths": split_pdf_paths}), 200
-    # Step 3: Perform OCR on all downloaded File
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    # return jsonify({"message": "Batch file download processing completed."}), 200
-    # Step 4: Save and Update OCR Data 
     save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
     logging.info(f"OCR data saved successfully in the database.{project_id}")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
@@ -517,11 +543,8 @@ def file_ocr(project_id, file_id):
 @app.route('/start-extraction/<int:project_id>', methods=['GET'])
 def start_task(project_id):
     thread = threading.Thread(target=start_extraction, args=(project_id,))
-    thread.start()  # Start the task in a new thread
-    
-    return jsonify({"message": "Process started", "file_id": project_id}), 202
-
+    thread.start()
+    return jsonify({"message": "OCR and Extraction started", "project_id": project_id}), 202
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-    # start_extraction(27)

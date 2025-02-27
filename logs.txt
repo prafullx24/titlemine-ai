@@ -1,3 +1,6 @@
+OCR
+
+
 2025-02-27 17:20:17,716 - INFO - 127.0.0.1 - - [27/Feb/2025 17:20:17] "GET /start-extraction/47 HTTP/1.1" 202 -
 2025-02-27 17:20:22,466 - INFO - Downloaded file from S3: file_id: 527; project_id 47
 2025-02-27 17:20:24,173 - INFO - Downloaded file from S3: file_id: 530; project_id 47
@@ -27,3 +30,199 @@
 2025-02-27 17:20:34,119 - INFO - OCR JSON saved successfully: download_file/download_json_2_47_531.json
 2025-02-27 17:20:34,119 - INFO - Done with Extracts text and confidence scores 
 2025-02-27 17:20:37,462 - INFO - OCR data saved successfully in the database for project_id: 47
+
+
+_____________________________________________________________________________________________________________
+
+Data Extraction
+
+2025-02-27 17:50:37,134 - INFO - 127.0.0.1 - - [27/Feb/2025 17:50:37] "GET /start-extraction/47 HTTP/1.1" 202 -
+2025-02-27 17:50:39,330 - ERROR - No files found for OCR in this project: 47
+2025-02-27 17:50:39,330 - INFO - Starting OpenAI Extraction: 47
+2025-02-27 17:50:41,721 - INFO - Processing file ID: 527
+2025-02-27 17:50:44,993 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 17:50:45,009 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 17:50:48,491 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+{
+  "instrument_type": "Deed",
+  "volume_page": "none found",
+  "document_case_number": "No. 9964",
+  "execution_date": "December 8, 1885",
+  "effective_date": "January 16, 1886",
+  "recording_date": "January 26, 1886",
+  "grantee": "Frank Seerden",
+  "grantor": "David Hirsch",
+  "property_description": "Three hundred and six acres of land part of the Dougald McFarlane league of land situated in the County of Matagorda in the State of Texas."
+}
+2025-02-27 17:50:53,783 - INFO - Completed processing file ID 527: Data successfully stored/updated.
+2025-02-27 17:50:53,783 - INFO - Processing file ID: 528
+2025-02-27 17:50:56,738 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:50:56,738 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:51:27,924 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 17:51:27,937 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 17:51:28,253 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:51:28,254 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:52:00,590 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+{
+  "instrument_type": "Deed",
+  "volume_page": "Volume S/Page 239",
+  "document_case_number": "Cause No. 1672",
+  "execution_date": "February 5, 1884",
+  "effective_date": "February 5, 1884",
+  "recording_date": "March 6, 1884",
+  "grantee": "David Hirsch",
+  "grantor": "N. S. Burton",
+  "property_description": "The undivided one third of one half interest of said defendant N. S. Burton in and to a certain two thousand acres of land out of the Dugald McFarlane league No. 8."
+}
+2025-02-27 17:52:05,843 - INFO - Completed processing file ID 528: Data successfully stored/updated.
+2025-02-27 17:52:05,843 - INFO - Processing file ID: 529
+2025-02-27 17:52:08,531 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:52:08,532 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:52:39,504 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 17:52:39,507 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 17:52:39,849 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:52:39,849 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:53:11,994 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+{
+  "instrument_type": "Deed",
+  "volume_page": "L/513",
+  "document_case_number": "No. 8371",
+  "execution_date": "April 6, 1880",
+  "effective_date": "April 17, 1880",
+  "recording_date": "April 19, 1880",
+  "grantee": "Frank Seardon",
+  "grantor": "Joseph Patrucio",
+  "property_description": "Two hundred and fifty (250) acres of land it being sub-division No. 2 out of league Survey No. 8, D. McFarlane Original grantee, situated on the East side of the Colorado River, in Matagorda County."
+}
+2025-02-27 17:53:17,247 - INFO - Completed processing file ID 529: Data successfully stored/updated.
+2025-02-27 17:53:17,247 - INFO - Processing file ID: 530
+2025-02-27 17:53:20,727 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 17:53:20,729 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 17:53:21,054 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:53:21,055 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:53:53,100 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+{
+  "instrument_type": "Deed",
+  "volume_page": "L/513",
+  "document_case_number": "No. 8370, No. 8371, No. 8372",
+  "execution_date": "April 17, 1880",
+  "effective_date": "N/A",
+  "recording_date": "April 19, 1880",
+  "grantee": "Joseph Patrucio, Frank Seardon, M. A. Savage",
+  "grantor": "Frank Seardon, Joseph Patrucio, Lucy Selkirk",
+  "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee situated on the East of the Colorado River in Matagorda County."
+}
+2025-02-27 17:54:03,763 - INFO - Completed processing file ID 530: Data successfully stored/updated.
+2025-02-27 17:54:03,764 - INFO - Processing file ID: 531
+2025-02-27 17:54:07,024 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:54:07,024 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:54:38,190 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 17:54:38,194 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 17:54:38,618 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 17:54:38,619 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 17:55:11,471 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+{
+  "instrument_type": "Deed",
+  "volume_page": "I, page 424",
+  "document_case_number": "No. 8369",
+  "execution_date": "April 8, 1880",
+  "effective_date": "April 8, 1880",
+  "recording_date": "April 19, 1880",
+  "grantee": "Joseph Patrucio",
+  "grantor": "Frank Seardon",
+  "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee situated on the East of the Colorado River in Matagorda County."
+}
+2025-02-27 17:55:17,061 - INFO - Completed processing file ID 531: Data successfully stored/updated.
+2025-02-27 17:55:17,061 - INFO - {'project_id': 47, 'results': [{'file_id': 527, 'result': 'Data successfully stored/updated.'}, {'file_id': 528, 'result': 'Data successfully stored/updated.'}, {'file_id': 529, 'result': 'Data successfully stored/updated.'}, {'file_id': 530, 'result': 'Data successfully stored/updated.'}, {'file_id': 531, 'result': 'Data successfully stored/updated.'}], 'timestamp': '2025-02-27T17:55:17.061545'}
+
+-----------------------------------------------------------------------------------------------------------------------
+
+OPEN AI: start_openai(47)
+(titlemine-env) user@user-To-be-filled-by-O-E-M:~/prafull/titlemine_extractor/titlemine-ai$ python3 ocr.py 
+2025-02-27 19:22:30,278 - INFO - Processing file ID: 527
+2025-02-27 19:22:32,634 - INFO - ocr_data fetched for file_id: 527
+2025-02-27 19:22:33,602 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:22:33,607 - INFO - Total Token used for instrument_type: 1466
+2025-02-27 19:22:33,607 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:22:35,487 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:22:35,492 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Book D/No. 4455",
+  "document_case_number": "No. 9964",
+  "execution_date": "December 8, 1885",
+  "effective_date": "January 16, 1886",
+  "recording_date": "January 26, 1886",
+  "grantee": "Frank Seerden",
+  "grantor": "David Hirsch",
+  "property_description": "an undivided half of the following described tract of land, part of the Dougald McFarlane league of land situated in the County of Matagorda in the State of Texas, including six hundred and twelve acres of land within said boundaries."
+}
+2025-02-27 19:22:35,492 - INFO - Total Token used for data extraction: 1957
+2025-02-27 19:22:40,705 - INFO - Completed processing file ID 527: Data successfully stored/updated.
+2025-02-27 19:22:40,706 - INFO - Processing file ID: 528
+2025-02-27 19:22:43,302 - INFO - ocr_data fetched for file_id: 528
+2025-02-27 19:22:43,611 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:22:43,612 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:23:14,538 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:23:14,543 - INFO - Total Token used for instrument_type: 2339
+2025-02-27 19:23:14,543 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:23:14,852 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:23:14,853 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:23:47,186 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:23:47,194 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "Volume S/Page 239",
+  "document_case_number": "Case No. 1672",
+  "execution_date": "February 5, 1884",
+  "effective_date": "February 5, 1884",
+  "recording_date": "March 5, 1884",
+  "grantee": "David Hirsch",
+  "grantor": "N. S. Burton",
+  "property_description": "The undivided one third of one half interest of said defendant N. S. Burton in and to a certain two thousand acres of land out of the Dugald McFarlane league No. 8. survey on the east margin of the Colorado river in Matagorda County, Texas."
+}
+2025-02-27 19:23:47,194 - INFO - Total Token used for data extraction: 2839
+2025-02-27 19:23:52,349 - INFO - Completed processing file ID 528: Data successfully stored/updated.
+2025-02-27 19:23:52,349 - INFO - Processing file ID: 529
+2025-02-27 19:23:54,691 - INFO - ocr_data fetched for file_id: 529
+2025-02-27 19:23:54,997 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:23:54,997 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:24:25,762 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:24:25,765 - INFO - Total Token used for instrument_type: 1531
+2025-02-27 19:24:25,765 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:24:26,075 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:24:26,075 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:24:58,560 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:24:58,574 - INFO - {
+  "instrument_type": "Deed",
+  "volume_page": "L/513",
+  "document_case_number": "No. 8371",
+  "execution_date": "April 6, 1880",
+  "effective_date": "April 17, 1880",
+  "recording_date": "April 19, 1880",
+  "grantee": "Frank Seardon",
+  "grantor": "Joseph Patrucio",
+  "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 2 out of league Survey No. 8, D. McFarlane Original grantee, situated on the East side of the Colorado River, in Matagorda County."
+}
+2025-02-27 19:24:58,574 - INFO - Total Token used for data extraction: 2020
+2025-02-27 19:25:03,797 - INFO - Completed processing file ID 529: Data successfully stored/updated.
+2025-02-27 19:25:03,797 - INFO - Processing file ID: 530
+2025-02-27 19:25:06,395 - INFO - ocr_data fetched for file_id: 530
+2025-02-27 19:25:07,177 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:25:07,181 - INFO - Total Token used for instrument_type: 2279
+2025-02-27 19:25:07,182 - INFO - {'instrument_type': 'Deed'}
+2025-02-27 19:25:07,487 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-02-27 19:25:07,488 - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-02-27 19:25:39,868 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-27 19:25:39,874 - INFO - {
+    "instrument_type": "Deed",
+    "volume_page": "Book L, p. 513",
+    "document_case_number": "none found",
+    "execution_date": "April 17, 1880",
+    "effective_date": "N/A",
+    "recording_date": "April 19, 1880",
+    "grantee": "Joseph Patrucio",
+    "grantor": "Frank Seardon",
+    "property_description": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee situated on the East of the Colorado River in Matagorda County"
+}
+2025-02-27 19:25:39,874 - INFO - Total Token used for data extraction: 2760
+2025-02-27 19:25:45,228 - INFO - Completed processing file ID 530: Data successfully stored/updated.
+2025-02-27 19:25:45,228 - INFO - {'project_id': 47, 'results': [{'file_id': 527, 'result': 'Data successfully stored/updated.'}, {'file_id': 528, 'result': 'Data successfully stored/updated.'}, {'file_id': 529, 'result': 'Data successfully stored/updated.'}, {'file_id': 530, 'result': 'Data successfully stored/updated.'}], 'timestamp': '2025-02-27T19:25:45.228895'} 
