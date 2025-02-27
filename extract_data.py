@@ -134,19 +134,76 @@ def process_legal_documents(project_id, batch_size=10):
             logging.error(f"Error processing document: {e}")
             return {"error": str(e)}
 
+    # Insert multiple documents into runsheets table in a single batch
+    def insert_runsheets_batch(data_list):
+        if not data_list:
+            return True
+            
+        try:
+            # Connect to the database
+            conn = get_db_connection()
+            if conn:
+                with conn.cursor() as cur:
+                    # Prepare the SQL statement for inserting data
+                    sql = """
+                        INSERT INTO public.runsheets (
+                            id, file_id, project_id, document_case, instrument_type, 
+                            volume_page, effective_date, execution_date, file_date, 
+                            grantor, grantee, property_description, remarks, 
+                            created_at, updated_at, sort_sequence
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """
+                    
+                    # Prepare batch values
+                    batch_values = []
+                    for data in data_list:
+                        values = (
+                            data.get('record_id'),
+                            data.get('file_id'),
+                            data.get('project_id'),
+                            data.get('document_case_number', ''),
+                            data.get('instrument_type', ''),
+                            data.get('volume_page', ''),
+                            data.get('effective_date', ''),
+                            data.get('execution_date', ''),
+                            data.get('recording_date', ''),
+                            data.get('grantor', ''),
+                            data.get('grantee', ''),
+                            data.get('property_description', ''),
+                            data.get('remarks', ''),
+                            datetime.now(),  # created_at
+                            datetime.now(),  # updated_at
+                            data.get('sort_sequence', 1)  # Default sort_sequence as 1
+                        )
+                        batch_values.append(values)
+                    
+                    # Execute batch insert
+                    cur.executemany(sql, batch_values)
+                    conn.commit()
+                    logging.info(f"Inserted {len(batch_values)} runsheets in a batch")
+                
+                conn.close()
+                return True
+        except Exception as e:
+            logging.error(f"Error inserting runsheets batch into database: {e}")
+            return False
+
     # Main processing logic
     file_ids = fetch_file_ids()
     if not file_ids:
         logging.error(f"No files found for project_id {project_id}")
         return "No files to process."
 
-    results = {}
+    all_results = {}
     for i in range(0, len(file_ids), batch_size):
         batch = [fid for fid in file_ids[i:i + batch_size] if not is_processed(fid)]
         if not batch:
             logging.info("Skipping batch, all files processed.")
             continue
 
+        # Process all documents in batch first
+        batch_data = []
         for file_id in batch:
             record_id, file_id_db, proj_id, ocr_data, error = fetch_ocr(file_id)
             if error:
@@ -158,67 +215,21 @@ def process_legal_documents(project_id, batch_size=10):
                 logging.info(f"Skipping {file_id} due to empty OCR text.")
                 continue
 
-            # Pass record_id and proj_id to process_document
+            # Process document
             extracted_data = process_document(ocr_text, file_id, record_id, proj_id)
             if "error" not in extracted_data:
-                results[file_id] = extracted_data
-                # Call the function to insert into runsheets
-                insert_runsheet_with_ocr_data(extracted_data)
+                all_results[file_id] = extracted_data
+                batch_data.append(extracted_data)
             else:
                 logging.error(f"Error processing {file_id}: {extracted_data['error']}")
 
+        # Insert all processed data in batch
+        if batch_data:
+            insert_runsheets_batch(batch_data)
+            
         logging.info(f"Processed batch: {batch}")
 
-    return results if results else "Processing completed with no new results."
-
-# Insert data into runsheets table
-def insert_runsheet_with_ocr_data(data):
-    try:
-        # Connect to the database
-        conn = get_db_connection()
-        if conn:
-            with conn.cursor() as cur:
-                # Prepare the SQL statement for inserting data
-                sql = """
-                    INSERT INTO public.runsheets (
-                        id, file_id, project_id, document_case, instrument_type, 
-                        volume_page, effective_date, execution_date, file_date, 
-                        grantor, grantee, property_description, remarks, 
-                        created_at, updated_at, sort_sequence
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                """
-                
-                # Extract data from the dictionary
-                values = (
-                    data.get('record_id'),  # This now comes directly from fetch_ocr via process_document
-                    data.get('file_id'),
-                    data.get('project_id'),
-                    data.get('document_case_number', ''),
-                    data.get('instrument_type', ''),
-                    data.get('volume_page', ''),
-                    data.get('effective_date', ''),
-                    data.get('execution_date', ''),
-                    data.get('recording_date', ''),
-                    data.get('grantor', ''),
-                    data.get('grantee', ''),
-                    data.get('property_description', ''),
-                    data.get('remarks', ''),
-                    datetime.now(),  # created_at
-                    datetime.now(),  # updated_at
-                    data.get('sort_sequence', 1)  # Default sort_sequence as 1
-                )
-                
-                # Execute the insert query
-                cur.execute(sql, values)
-                conn.commit()
-                logging.info(f"Inserted runsheet for file_id {data.get('file_id')}, record_id {data.get('record_id')}")
-            
-            conn.close()
-            return True
-    except Exception as e:
-        logging.error(f"Error inserting runsheet into database: {e}")
-        return False
+    return all_results if all_results else "Processing completed with no new results."
 
 # Flask API setup
 app = Flask(__name__)
