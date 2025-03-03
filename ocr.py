@@ -97,6 +97,7 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 import threading
 from extract_data import *
+from flask_cors import CORS
 
 
 # Load environment variables
@@ -111,6 +112,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 # Initialize Flask App
 app = Flask(__name__)
+CORS(app) 
 
 # Database Configuration
 DB_CONFIG = {

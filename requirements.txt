@@ -4,3 +4,4 @@ requests
 google-cloud-documentai
 python-dotenv
 PyPDF2
+flask-cors
