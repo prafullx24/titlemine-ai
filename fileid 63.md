@@ -141,3 +141,149 @@ aforesaid...",
 "summary": "No specific conditions post-effective date were detailed in the document."
 }
 }
+
+Logs for these data
+
+PS C:\Users\DELL\Desktop\titlemine> python app.py
+2025-03-03 16:07:13,520 - INFO - Processing document with file_id: 63, OCR text length: 7342
+2025-03-03 16:07:16,053 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-03 16:07:16,061 - INFO - Total Token used for instrument_type: 2313
+2025-03-03 16:07:25,493 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-03 16:07:25,496 - INFO - {
+"instrument_type": {
+"value": "Deed",
+"score": 10,
+"source": "In the document, it is stated: 'To Joseph Patrucio Deed' and 'To Frank Seardon Deed'.",
+"summary": "This legal document involves property transactions referenced as deeds executed between parties."
+},
+"volume_page": {
+"value": "book L / p. 513",
+"score": 8,
+"source": "References to 'recorded in Matagorda County, book L, p. 513' were noted in the descriptions.",
+"summary": "The volume and page reference where the document is recorded is book L, page 513."
+},
+"document_case_number": {
+"value": "#8370",
+"score": 10,
+"source": "The document contains a number mention: 'No. 8370'.",
+"summary": "The document case number is clearly stated as #8370."
+},
+"execution_date": {
+"value": "April 17, 1880",
+"score": 10,
+"source": "The date of execution is noted as 'this 17th day of April, 1880'.",
+"summary": "The execution date of the document is April 17, 1880."
+},
+"effective_date": {
+"value": "April 17, 1880",
+"score": 10,
+"source": "The effective transaction date is indicated on the execution date as 'this 17th day of April, 1880'.",
+"summary": "The effective date of the property transaction is April 17, 1880."
+},
+"recording_date": {
+"value": "April 19, 1880",
+"score": 10,
+"source": "The document mentions 'Recorded at 11 o'clock April 19th, 1880'.",
+"summary": "The recording date of the document is April 19, 1880."
+},
+"grantee": {
+"value": "Joseph Patrucio",
+"score": 10,
+"source": "The grantee is identified as 'Joseph Patrucio' in the transaction.",
+"summary": "The individual receiving the property is Joseph Patrucio."
+},
+"grantor": {
+"value": "Frank Seardon",
+"score": 10,
+"source": "The grantor is identified as 'Frank Seardon' in the document.",
+"summary": "The individual transferring ownership is Frank Seardon."
+},
+"property_description": {
+"value": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee.",  
+ "score": 10,
+"source": "The document describes the property as 'Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8'.",
+"summary": "The property consists of 250 acres described as subdivision No. 1 from the D. McFarlane survey."
+},
+"reservations": {
+"value": "none found",
+"score": 0,
+"source": "No specific exclusions or reservations are noted in the document.",
+"summary": "There are no reservations explicitly mentioned in the provided text."
+},
+"conditions": {
+"value": "none found",
+"score": 0,
+"source": "The document does not specify any conditions that relate to the transfer.",
+"summary": "No conditions are mentioned that need to be satisfied following the effective date."
+}
+}
+{
+"instrument_type": {
+"value": "Deed",
+"score": 10,
+"source": "In the document, it is stated: 'To Joseph Patrucio Deed' and 'To Frank Seardon Deed'.",
+"summary": "This legal document involves property transactions referenced as deeds executed between parties."
+},
+"volume_page": {
+"value": "book L / p. 513",
+"score": 8,
+"source": "References to 'recorded in Matagorda County, book L, p. 513' were noted in the descriptions.",
+"summary": "The volume and page reference where the document is recorded is book L, page 513."
+},
+"document_case_number": {
+"value": "#8370",
+"score": 10,
+"source": "The document contains a number mention: 'No. 8370'.",
+"summary": "The document case number is clearly stated as #8370."
+},
+"execution_date": {
+"value": "April 17, 1880",
+"score": 10,
+"source": "The date of execution is noted as 'this 17th day of April, 1880'.",
+"summary": "The execution date of the document is April 17, 1880."
+},
+"effective_date": {
+"value": "April 17, 1880",
+"score": 10,
+"source": "The effective transaction date is indicated on the execution date as 'this 17th day of April, 1880'.",
+"summary": "The effective date of the property transaction is April 17, 1880."
+},
+"recording_date": {
+"value": "April 19, 1880",
+"score": 10,
+"source": "The document mentions 'Recorded at 11 o'clock April 19th, 1880'.",
+"summary": "The recording date of the document is April 19, 1880."
+},
+"grantee": {
+"value": "Joseph Patrucio",
+"score": 10,
+"source": "The grantee is identified as 'Joseph Patrucio' in the transaction.",
+"summary": "The individual receiving the property is Joseph Patrucio."
+},
+"grantor": {
+"value": "Frank Seardon",
+"score": 10,
+"source": "The grantor is identified as 'Frank Seardon' in the document.",
+"summary": "The individual transferring ownership is Frank Seardon."
+},
+"property_description": {
+"value": "Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8, D. McFarlane Original grantee.",  
+ "score": 10,
+"source": "The document describes the property as 'Two hundred and fifty (250) acres of land it being subdivision No. 1 out of league Survey No. 8'.",
+"summary": "The property consists of 250 acres described as subdivision No. 1 from the D. McFarlane survey."
+},
+"reservations": {
+"value": "none found",
+"score": 0,
+"source": "No specific exclusions or reservations are noted in the document.",
+"summary": "There are no reservations explicitly mentioned in the provided text."
+},
+"conditions": {
+"value": "none found",
+"score": 0,
+"source": "The document does not specify any conditions that relate to the transfer.",
+"summary": "No conditions are mentioned that need to be satisfied following the effective date."
+}
+}
+2025-03-03 16:07:25,612 - INFO - Successfully stored data for file_id: 63
+Data stored successfully: True
