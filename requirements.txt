@@ -1,0 +1,8 @@
+Flask
+psycopg2
+psycopg2-binary
+requests
+google-cloud-documentai
+python-dotenv
+PyPDF2
+booto3
