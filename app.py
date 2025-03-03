@@ -114,7 +114,7 @@ def extract_instrument_type(ocr_text):
                 if json_match:
                     potential_json = json_match.group(1)
                     json_resp = json.loads(potential_json)
-                    logging.info(f"Extracted JSON with regex: {json_resp}")
+                    # logging.info(f"Extracted JSON with regex: {json_resp}")
                     
                     # Check if the expected key exists
                     if "instrument_type" not in json_resp:
@@ -131,7 +131,7 @@ def extract_instrument_type(ocr_text):
                 type_match = re.search(r'"instrument_type"\s*:\s*"([^"]+)"', raw_resp)
                 if type_match:
                     instrument_type = type_match.group(1)
-                    logging.info(f"Extracted instrument type with regex: {instrument_type}")
+                    # logging.info(f"Extracted instrument type with regex: {instrument_type}")
                     return {"instrument_type": instrument_type}
             except:
                 pass
@@ -350,7 +350,7 @@ def extract_and_process_document(ocr_text):
         result = completion.choices[0].message.content
         logging.info(result)
         total_tokens = completion.usage.total_tokens
-        logging.info(f"Total Token used for data extraction: {total_tokens}")
+        # logging.info(f"Total Token used for data extraction: {total_tokens}")
         try:
             result_json = json.loads(result)
             return result_json
