@@ -4,6 +4,7 @@ titlemine-documentai-ocr-898de9277942.json
 .vscode/
 
 .env
+config.py
 venv/
 download_file/
 Raw_data/
