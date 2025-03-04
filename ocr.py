@@ -76,64 +76,29 @@ PROCESSOR_ID =
 """
 
 
-
-
-
-
-
-
-import os
-import psycopg2
-import psycopg2.extras
-import requests
-import json
-import PyPDF2
-from PyPDF2 import PdfReader, PdfWriter
-from PyPDF2.errors import PdfReadError
-from flask import Flask, jsonify, request
-from google.cloud import documentai_v1 as documentai
-from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor
-import logging
 import threading
-from extract_data import *
+from concurrent.futures import ThreadPoolExecutor
+import psycopg2.extras
+from PyPDF2 import PdfReader, PdfWriter
 from flask_cors import CORS
-
-
-# Load environment variables
-load_dotenv('./.env', override=True)
+from google.cloud import documentai_v1 as documentai
+import config
+from aws_utils.s3_utils import *
+from db_operations.db import *
+from extract_data import *
 
 # Init Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Set Google Application Credentials
-credentials_path = os.getenv("CREDENTIALS_PATH")
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 # Initialize Flask App
 app = Flask(__name__)
 CORS(app) 
 
-# Database Configuration
-DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-}
-
-
-# Google Document AI Configuration
-PROJECT_ID = os.getenv("PROJECT_ID")
-LOCATION = os.getenv("LOCATION")
-PROCESSOR_ID = os.getenv("PROCESSOR_ID")
-
 
 # Folder to store downloaded and OCR files
 DOWNLOAD_FOLDER = "download_file"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
-
 
 
 # This function saves the project ID and file IDs to a variable and prints the value.
@@ -146,32 +111,12 @@ def save_project_files_to_variable(project_id, user_id, files):
     return data
 
 
-
-
 # Get files which not completed ocr by project ID from the database and save them to a JSON file
 def get_files_by_project(project_id): 
     """Fetch all file IDs for a given project."""
-    conn = psycopg2.connect(**DB_CONFIG)
-    cur = conn.cursor()
-
-    query = """
-    SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
-    FROM public.files 
-    WHERE project_id = %s 
-    AND (ocr_status = 'Processing')
-    """
-
-    # NOTE: ocr_status can be: 
-    # Processing: The default status after file upload. File is being processed for OCR with Google Document AI
-    #       - ALTER TABLE public.files ALTER COLUMN ocr_status SET DEFAULT 'Processing';
-    # Extracting: OCR is complete and OpenAI Extraction is in progress
-    # Completed: Runsheet is inserted for this file.
-
-    cur.execute(query, (project_id,))
-    files = cur.fetchall()
+    connection = psycopg2.connect(**config.DB_CONFIG)
+    files = select_file_by_projectid(connection, project_id)
     print(files)
-    cur.close()
-    conn.close()
 
     # Save project ID and file IDs to a JSON file
     if files:
@@ -180,22 +125,11 @@ def get_files_by_project(project_id):
 
     return files
 
-def get_single_file_by_file_id(file_id): 
-    conn = psycopg2.connect(**DB_CONFIG)
-    cur = conn.cursor()
 
-    query = """
-    SELECT id, user_id, project_id, file_name, s3_url, ocr_status 
-    FROM public.files 
-    WHERE id = %s 
-    AND (ocr_status = 'Processing')
-    """
-    # Ensure OCR Status in files table before using this function.
-    cur.execute(query, (file_id,))
-    files = cur.fetchall()
-
-    cur.close()
-    conn.close()
+def get_single_file_by_file_id(file_id):
+    connection = psycopg2.connect(**config.DB_CONFIG)
+    files = select_file_by_fileid(connection, file_id)
+    print(files)
 
     # Save project ID and file IDs to a JSON file
     if files:
@@ -205,45 +139,22 @@ def get_single_file_by_file_id(file_id):
     return files
 
 
-
-
-
-# The download_file_from_s3 function downloads a file from an S3 URL and saves it locally.
-def download_file_from_s3(s3_url, user_id, project_id, file_id, file_extension):
-    """Download a file from S3 URL and save it locally"""
-    file_name = f"download_pdf_{user_id}_{project_id}_{file_id}{file_extension}"
-    file_path = os.path.join(DOWNLOAD_FOLDER, file_name)
-    if os.path.exists(file_path):
-        return file_path
-    response = requests.get(s3_url, stream=True)
-    if response.status_code == 200:
-        with open(file_path, "wb") as file: 
-            for chunk in response.iter_content(1024):
-                file.write(chunk)
-        logging.info(f"Downloaded file from S3: file_id: {file_id}; project_id {project_id}")
-        return file_path 
-    logging.error(f"Failed to download file from S3: {s3_url}")
-    return None
-
-
-
-
 # The code defines a function to download files concurrently from S3 URLs using a thread pool, handling errors and printing the download status for each file.
 def download_files_concurrently(files):
-    downloaded_files = [] 
-    file_sizes = []  
+    downloaded_files = []
+    file_sizes = []
     temp_project_id = files[0][2]
 
     def download_file(file):
         try:
             id, user_id, project_id, file_name, s3_url, ocr_status = file
-            file_extension = os.path.splitext(file_name)[1] 
+            file_extension = os.path.splitext(file_name)[1]
             pdf_file_path = download_file_from_s3(s3_url, user_id, project_id, id, file_extension)
             if pdf_file_path:
                 downloaded_files.append(pdf_file_path)
             else:
                 logging.error(f"Failed to download file from S3: {file_name} : {s3_url} project_id: {project_id}")
-                
+
         except Exception as e:
             logging.error(f"Error downloading file {file}: {e}")
 
@@ -263,6 +174,7 @@ def download_files_concurrently(files):
 
     return downloaded_files, file_sizes
 
+
 # This function saves the OCR extracted data as a JSON file in a specified download folder, using the user ID, project ID, and file ID to name the file.
 def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
     """Save OCR output as JSON."""
@@ -270,6 +182,7 @@ def save_ocr_output_as_json(user_id, project_id, file_id, extracted_data):
     with open(ocr_file_path, "w", encoding="utf-8") as json_file:
         json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
         logging.info(f"OCR JSON saved successfully: {ocr_file_path}")
+
 
 #  This function iterates through a list of extracted OCR data and saves each entry as a JSON file using the save_ocr_output_as_json function.
 def save_ocr_outputs_as_json(extracted_data_list):
@@ -285,8 +198,8 @@ def save_ocr_outputs_as_json(extracted_data_list):
 def extract_text_with_confidence(file_path):
     """Extracts text and confidence scores from a document using Google Document AI"""
     
-    if not os.path.exists(credentials_path):
-        raise FileNotFoundError(f"Credentials file not found: {credentials_path}")
+    if not os.path.exists(config.credentials_path):
+        raise FileNotFoundError(f"Credentials file not found: {config.credentials_path}")
 
     def split_pdf(file_path, start_page, end_page):
         with open(file_path, 'rb') as file:
@@ -304,7 +217,7 @@ def extract_text_with_confidence(file_path):
         with open(file_path, "rb") as file:
             content = file.read()
         raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
-        name = f"projects/{PROJECT_ID}/locations/{LOCATION}/processors/{PROCESSOR_ID}"
+        name = f"projects/{config.PROJECT_ID}/locations/{config.LOCATION}/processors/{config.PROCESSOR_ID}"
         request = documentai.ProcessRequest(name=name, raw_document=raw_document)
 
         # Debugging statement to log request details
@@ -382,8 +295,6 @@ def extract_text_with_confidence(file_path):
         return process_document(file_path)
 
 
-
-
 # This function processes multiple documents using Google Document AI to extract text and confidence scores, saves the extracted data as JSON files, and returns the aggregated results.
 def extract_text_with_confidence_batch(downloaded_files, file_sizes):
     """Extracts text and confidence scores from multiple documents using Google Document AI."""
@@ -429,8 +340,6 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
     return all_extracted_data
 
 
-
-
 # This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
 def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
     conn = psycopg2.connect(**db_config)
@@ -470,6 +379,7 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
         cur.close()
         conn.close()
 
+
 def start_ocr(project_id):
     files = get_files_by_project(project_id)
     if not files:
@@ -477,7 +387,7 @@ def start_ocr(project_id):
     else:
         downloaded_files, file_sizes = download_files_concurrently(files)
         all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-        save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+        save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
         logging.info(f"OCR data saved successfully in the database for project_id: {project_id}")
     
 
@@ -511,13 +421,13 @@ def start_openai(project_id):
     except Exception as e:
         logging.error(f"Error processing project {project_id}: {e}")
 
+
 def start_extraction(project_id):
     
     start_ocr(project_id)
     logging.info(f"Starting OpenAI Extraction: {project_id}")
     start_openai(project_id)
     logging.info(f"OpenAI Extraction Completed: {project_id}")
-    
 
 
 @app.route("/api/v1/batch_ocr/<int:project_id>", methods=["POST"])
@@ -527,9 +437,10 @@ def batch_ocr(project_id):
         return jsonify({"error": "No files found for this project."}), 404
     downloaded_files, file_sizes = download_files_concurrently(files)
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+    save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
     logging.info(f"OCR data saved successfully in the database.{project_id}")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+
 
 @app.route("/api/v1/file_ocr/<int:project_id>/<int:file_id>", methods=["POST"])
 def file_ocr(project_id, file_id):
@@ -538,9 +449,10 @@ def file_ocr(project_id, file_id):
         return jsonify({"error": "File does not match the OCR criteria, Check ocr_status."}), 404
     downloaded_files, file_sizes = download_files_concurrently(files)
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    save_and_update_ocr_data_batch(project_id, all_extracted_data, DB_CONFIG)
+    save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
     logging.info("OCR data saved successfully in the database.")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+
 
 @app.route('/start-extraction/<int:project_id>', methods=['GET'])
 def start_task(project_id):
@@ -548,5 +460,6 @@ def start_task(project_id):
     thread.start()
     return jsonify({"message": "OCR and Extraction started", "project_id": project_id}), 202
 
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5001)
