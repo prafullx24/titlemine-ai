@@ -4,6 +4,8 @@ titlemine-env/
 __pycache__/
 *.py[cod]
 *$py.class
+titlemine-documentai-ocr-898de9277942.json
+download_file/
 
 # C extensions
 *.so

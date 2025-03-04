@@ -181,10 +181,11 @@ def extract_and_process_document(ocr_text):
         client = openai.OpenAI()
         instrument_type_data = extract_instrument_type(ocr_text)
         instrument_type = instrument_type_data.get("instrument_type", "")
-
+        logging.warning(f"instrument type: {instrument_type}")
         if not instrument_type:
             raise ValueError("Instrument type could not be extracted.")
         prompt_output = prompts_by_instrument_type(instrument_type)
+        logging.warning(f"prompt_output: {prompt_output}")
         user_prompt_doc_type = f"""
         Find the following parameters in the text data added at the end of this prompt. 
         Parameters: 
@@ -192,7 +193,7 @@ def extract_and_process_document(ocr_text):
         Search in this text data: 
         {ocr_text} 
         """
-        
+        logging.warning(f"user_prompt_doc_type: {user_prompt_doc_type}")
         # Fixed indentation here - moved completion inside try block
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -644,5 +645,9 @@ def process_project(project_id):
         }), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
 
+    ocr_text = f"""
+    459 office of the County Clerk in and for said County, in Book at page_ In Witness Whereof, the undersigned owner and releas or has signed this instrument this 23rd day of December 1939. W. H. Mannes THE STATE OF TEXAS, County of Harris, BEFORE ME, the undersigned, a Notary Public in and for said County and State, on this day personally appeared W. H. Mannes known to me to be the person whose name is subscribed to the foregoing instrument, and acknowledged to me that he executed the same for the purposes and consideration therein expressed. "LS "Given under my hand and seal of office this the 4th day of January, A. D. 1940. H. G. Gwinnup Notary Public in and for Harris County, Texas. Filed for record at 4:15 o'clock P. M. February 5th, A. D. 1940. Recorded at 11:50 o'clock A. M. February 15th, A. D. 1940. D. B. Huton Clk.Co.Ct.M.Co.Tex. BJ John J. Frick Deputy #6874 Partial PARTIAL RELEASE OF OIL AND GAS LEASE Rel O & GL THE STATE OF TEXAS, County of Matagorda, KNOW ALL MEN BY THESE PRESENTS: That W. H. Mannes for W. H. Mannes and in consideration of One Dollar ($1.00) and other valuable considerations, the receipt of to Tom Petrucha et ux which is hereby acknowledged, does hereby release, relinquish and surrender to Tom Petrucha and Julia Petrucha, husband and wife, their heirs or assigns, all right, title and interest in and to a certain oil and gas mining lease made and entered into by and between Tom Petrucha and Julia Petrucha, husband and wife, of Matagorda County, Texas, as lessors, and W. H. Mannes, as lessee dated the 23rd day of June, 1939, insofar as it covers the following described land in the County of Matagorda and State of Texas, to-wit: The East 50 acres of the 165.3 acre tract in the D. McFarland League, and the East 766 acres of the 1316 acre tract in the F. W. Dempsey Survey, as described in said lease. Whereas, under the terms and provisions of said lease the undersigned Lessee did on December 23, 1939, make selection of the West 115.3 acres of the 165.3 acre tract and the West 550 acres of the 1316 acre tract described in said lease and paid the rental of $665.30 into the Bay City Bank & Trust Co. of Bay City, Texas, covering the acreage selected, and said lease as to the 665.3 acres upon which the rental was paid is hereby expressly retained, and as to which the lease shall be and remain in full force and effect. This is a partial release, only, it being the intention to release back to the lessors the balance of the land not retain- ed by rental payment as first above described. said lease being recorded in the office of the County Clerk in and for said County, in Book at page _. In Witness Whereof, the undersigned owner and releasor has signed this instrument this 23rd day of December 1939. W. H. Mannes THE STATE OF TEXAS, County of Harris, BEFORE ME, the undersigned, a Notary Public in and for said County and State, on this day personally appeared W. H. Mannes known to me to be the per- son whose name is subscribed to the foregoing instrument, and acknowledged to me that he executed the same for the purposes and consideration therein expressed. "LS 11 Given under my hand and seal of office this the 4th day of January, A.D. 1940. H. G. Gwinnup Notary Public in and for Harris County, Texas. Filed for record at 4:15 o'clock P. M. February 5th, A. D. 1940. Recorded at 1:30 o'clock P. M. February 15th, A. D. 1940. D. B. shtan Clk.Co.Ct.M.Co.Tex. By John J. Frick Deputy 
+    """
+    extract_and_process_document(ocr_text)
