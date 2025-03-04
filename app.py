@@ -262,119 +262,6 @@ def save_ocr_outputs_as_json(extracted_data_list):
 
 
 
-
-# def extract_text_with_confidence(file_path):
-#     """Extracts text and confidence scores from a document using Google Document AI"""
-    
-#     if not os.path.exists(config.credentials_path):
-#         raise FileNotFoundError(f"Credentials file not found: {config.credentials_path}")
-
-#     def split_pdf(file_path, start_page, end_page):
-#         with open(file_path, 'rb') as file:
-#             reader = PdfReader(file)
-#             writer = PdfWriter()
-#             for page_num in range(start_page, end_page):
-#                 writer.add_page(reader.pages[page_num])
-#             split_file_path = f"{os.path.splitext(file_path)[0]}_pages_{start_page+1}_to_{end_page}.pdf"
-#             with open(split_file_path, 'wb') as output_file:
-#                 writer.write(output_file)
-#             return split_file_path
-
-#     def process_document(file_path):
-#         client = documentai.DocumentProcessorServiceClient()
-#         with open(file_path, "rb") as file:
-#             content = file.read()
-#         raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
-#         name = f"projects/{config.PROJECT_ID}/locations/{config.LOCATION}/processors/{config.PROCESSOR_ID}"
-#         request = documentai.ProcessRequest(name=name, raw_document=raw_document)
-
-#         # Debugging statement to log request details
-#         logging.info(f"Processing document: {file_path}, Size: {len(content)} bytes")
-
-#         response = client.process_document(request=request)
-
-#         # Debugging statement to log response details
-#         logging.info(f"Document processed: {file_path}, Size: {len(content)} bytes")
-
-#         document_dict = documentai.Document.to_dict(response.document)
-#         extracted_text = document_dict.get("text", "")
-#         extracted_data = {"text": extracted_text, "confidence_scores": []}
-
-#         for page in response.document.pages:
-#             for block in page.blocks:
-#                 for segment in block.layout.text_anchor.text_segments:
-#                     segment_text = document_dict["text"][segment.start_index:segment.end_index]
-#                     confidence = block.layout.confidence
-#                     extracted_data["confidence_scores"].append({
-#                         "text": segment_text,
-#                         "confidence": confidence,
-#                         "page_no": page.page_number
-#                     })
-
-#         return extracted_data
-
-#     def split_and_process(file_path, max_size_mb=20, max_pages=15):
-#         total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
-#         with open(file_path, 'rb') as file:
-#             reader = PdfReader(file)
-#             total_pages = len(reader.pages)
-#             size_per_page_mb = total_size_mb / total_pages
-
-#         if total_size_mb <= max_size_mb and total_pages <= max_pages:
-#             return [process_document(file_path)]
-
-#         start_page = 0
-#         extracted_data = []
-
-#         while start_page < total_pages:
-#             end_page = start_page
-#             current_size_mb = 0
-#             while end_page < total_pages and current_size_mb + size_per_page_mb <= max_size_mb and (end_page - start_page) < max_pages:
-#                 current_size_mb += size_per_page_mb
-#                 end_page += 1
-
-#             split_file_path = split_pdf(file_path, start_page, end_page)
-#             extracted_data.extend(split_and_process(split_file_path))
-
-#             start_page = end_page
-
-#         return extracted_data
-
-#     total_size_mb = os.path.getsize(file_path) / (1024 * 1024)
-#     with open(file_path, 'rb') as file:
-#         reader = PdfReader(file)
-#         num_pages = len(reader.pages)
-
-#         # Extract file ID from the file path
-#     file_id = os.path.basename(file_path).split('_')[4].split('.')[0]
-
-#     if total_size_mb > 20 and num_pages == 1:
-#         # print('Splitting for this file is not possible !')
-#         logging.error(f'Splitting for this file is not possible! File ID: {file_id}')
-#     elif total_size_mb > 20:
-#         return split_and_process(file_path)
-#     elif num_pages > 15:
-#         extracted_data = []
-#         for start_page in range(0, num_pages, 15):
-#             end_page = min(start_page + 15, num_pages)
-#             split_file_path = split_pdf(file_path, start_page, end_page)
-#             extracted_data.extend(split_and_process(split_file_path))
-#         return extracted_data
-#     else:
-#         return process_document(file_path)
-
-
-
-
-
-
-
-
-
-
-
-
-
 def extract_text_with_confidence(file_path, start_page_offset=0):
     """Extracts text and confidence scores from a document using Google Document AI"""
     
@@ -553,24 +440,10 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
                 (data['file_id'], project_id, json.dumps(extracted_data), extracted_data.get('text', '').replace("\n", " "))
         )
         
-        # insert_query = """
-        # INSERT INTO public.ocr_data (file_id, project_id, ocr_json_1, ocr_text_1)
-        # VALUES %s
-        # ON CONFLICT (file_id, project_id)  
-        # DO UPDATE SET 
-        #     ocr_json_1 = EXCLUDED.ocr_json_1,
-        #     ocr_text_1 = EXCLUDED.ocr_text_1
-        # """
-        
-        # psycopg2.extras.execute_values(cur, insert_query, new_records)
-
         insert_or_update_ocr_data(connection, new_records)
         connection.commit()
         
         file_ids = [data['file_id'] for data in all_extracted_data]
-        # update_status_query = "UPDATE public.files SET ocr_status = 'Extracting' WHERE id = ANY(%s::int[])" 
-        # cur.execute(update_status_query, (file_ids,))
-        # conn.commit()
         update_file_status(connection, file_ids)
         connection.commit()
         
