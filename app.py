@@ -140,13 +140,10 @@ def save_project_files_to_variable(project_id, user_id, files):
 # Get files which not completed ocr by project ID from the database and save them to a JSON file
 def get_files_by_project(project_id): 
     """Fetch all file IDs for a given project."""
-    # connection = psycopg2.connect(**config.DB_CONFIG)
-    
-    
 
     # NOTE: ocr_status can be: 
     # Processing: The default status after file upload. File is being processed for OCR with Google Document AI
-    #       - ALTER TABLE public.files ALTER COLUMN ocr_status SET DEFAULT 'Processing';
+    #           - ALTER TABLE public.files ALTER COLUMN ocr_status SET DEFAULT 'Processing';
     # Extracting: OCR is complete and OpenAI Extraction is in progress
     # Completed: Runsheet is inserted for this file.
 
@@ -165,7 +162,6 @@ def get_files_by_project(project_id):
 
 
 def get_single_file_by_file_id(file_id): 
-    # connection = psycopg2.connect(**config.DB_CONFIG)
     files = select_file_by_fileid(connection,file_id)
     connection.close()
     print(files)
@@ -426,8 +422,7 @@ def extract_text_with_confidence_batch(downloaded_files, file_sizes):
 
 
 # This function inserts or updates OCR data for multiple files in the database and updates their OCR status to 'Completed'.
-def save_and_update_ocr_data_batch(project_id, all_extracted_data, db_config):
-    connection = psycopg2.connect(**db_config)
+def save_and_update_ocr_data_batch(project_id, all_extracted_data):
     cur = connection.cursor()
     
     try:
@@ -461,7 +456,7 @@ def start_ocr(project_id):
     else:
         downloaded_files, file_sizes = download_files_concurrently(files)
         all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-        save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
+        save_and_update_ocr_data_batch(project_id, all_extracted_data)
         logging.info(f"OCR data saved successfully in the database for project_id: {project_id}")
     
 
@@ -511,7 +506,7 @@ def batch_ocr(project_id):
         return jsonify({"error": "No files found for this project."}), 404
     downloaded_files, file_sizes = download_files_concurrently(files)
     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-    save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
+    save_and_update_ocr_data_batch(project_id, all_extracted_data)
     logging.info(f"OCR data saved successfully in the database.{project_id}")
     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
@@ -522,7 +517,7 @@ def batch_ocr(project_id):
 #         return jsonify({"error": "File does not match the OCR criteria, Check ocr_status."}), 404
 #     downloaded_files, file_sizes = download_files_concurrently(files)
 #     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-#     save_and_update_ocr_data_batch(project_id, all_extracted_data, config.DB_CONFIG)
+#     save_and_update_ocr_data_batch(project_id, all_extracted_data)
 #     logging.info("OCR data saved successfully in the database.")
 #     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
 
