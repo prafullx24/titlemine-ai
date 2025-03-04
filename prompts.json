@@ -1,8 +1,8 @@
-
 {
+
   "Deed": {
     "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
-"fields": {
+  "fields": {
   "instrument_type": {
     "value": "Identify the type of legal document (e.g., Deed, Affidavit, Mortgage, etc.).",
     "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
@@ -56,290 +56,1019 @@
     "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
     "source": "Provide the exact text from the document that was used to determine the property description.",
     "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
-  },
-  "reservations": {
-    "value": "Is there any property or rights which are explicitly excluded from the transaction by the Grantor(s)?",
-    "score": "Provide a confidence score (0-10) indicating the reliability of the extracted reservations.",
-    "source": "Provide the exact text from the document that was used to determine the reservations."
-  },
-  "conditions": {
-    "value": "Are there any conditions that must be met after the effective date to finalize or avoid reversion of the sale?",
-    "score": "Provide a confidence score (0-10) indicating the reliability of the extracted conditions.",
-    "source": "Provide the exact text from the document that was used to determine the conditions."
   }
-  },
+  }},
+
   "Lease": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-      "instrument_type": "Lease",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which a lessor or lessee signed the document? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "effective_date": "What is the date the lease is effective? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "recording_date": "What is the date on which the lease was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "grantee": "Who is granting rights under.",
-      "grantor": "Who is granting rights under this lease?",
-      "property_description": "What is the description of the rights being transferred, including a description of the land they are associated with?",
-      "reservations": "Are there rights which are explicitly excluded from the transaction by the lessors?",
-      "conditions": "Are there any conditions that must be met after the effective date to finalize, maintain, or extend the lease?"
-    }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+  "fields": {
+  "instrument_type": {
+    "value": "Lease",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Reference the recording information found in the document and/or the file name to determine the volume number and page number of where the document was filed with the county. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":  "What is the latest date on which a lessor or lessee signed the document? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date the lease is effective? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the lease was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who is granting rights under? Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value":"Who is granting rights under this lease?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "What is the description of the rights being transferred, including a description of the land they are associated with?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Release": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-      "instrument_type": "Release",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the release was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "effective_date": "What is the date that the release went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "recording_date": "What is the date on which the release was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "grantee": "Who is gaining the rights or property?",
-      "grantor": "Who is releasing the rights or property?",
-      "property_description": "What is the description of the rights or property being transferred, including a description of the land they are associated with?",
-      "reservations": "Are there rights which are explicitly excluded from the release?",
-      "conditions": "Are there any conditions that must be met after the effective date to finalize or avoid negating the release?"
-    }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+ "fields": {
+  "instrument_type": {
+    "value": "Release",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":  "What is the latest date on which the release was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the release went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the release was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":  "Who is gaining the rights or property?,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is releasing the rights or property?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "What is the description of the rights or property being transferred, including a description of the land they are associated with?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Waiver": {
-    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-    "fields": {
-      "instrument_type": "Waiver",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "effective_date": "What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "recording_date": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-      "grantee": "Who is the counterparty in the waiver?.",
-      "grantor": "Who is waiving their rights?",
-      "property_description": "What is the description of the rights being waived, including a description of the land they are associated with?",
-      "reservations": "Are there rights which are explicitly excluded from the waiver?",
-      "conditions": "Are there any conditions that must be met after the effective date to finalize or avoid negating the waiver?"
-    }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+ "fields": {
+  "instrument_type": {
+    "value": "Waiver",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":   "Who is the counterparty in the waiver?,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is waiving their rights?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":  "What is the description of the rights being waived, including a description of the land they are associated with?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Quitclaim": {
-      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-      "fields": {
-        "instrument_type": "Quitclaim",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the quitclaim was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "effective_date": "What is the date that the quitclaim went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "recording_date": "What is the date on which the quitclaim was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "grantor": "Who is releasing the rights or property?",
-        "grantee": "Who is gaining the rights or property?",
-        "property_description": "Provide a detailed description of the property or rights being released.",
-        "reservations": "Are there rights which are explicitly excluded from the quitclaim?",
-        "conditions": "Are there any conditions that must be met after the effective date to finalize the quitclaim?"
-      }
-    },
-    "Option": {
-      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-      "fields": {
-        "instrument_type": "Option",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the option was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "effective_date": "What is the date that the option went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "recording_date": "What is the date on which the option was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "grantor": "Who granted the option?",
-        "grantee": "Who received the option rights?",
-        "property_description": "What is the description of the rights or property being optioned, including a description of the land they are associated with?",
-        "reservations": "Are there rights which are explicitly excluded from the option?",
-        "conditions": "How long is the option and what are the conditions that must be met to exercise the option?"
-      }
-    },
-    "Easement or Right of Way": {
-      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-      "fields": {
-        "instrument_type": "Easement or Right of Way",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the easement was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "effective_date": "What is the date that the easement went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "recording_date": "What is the date on which the easement was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "grantor": "Who granted the easement?",
-        "grantee": "Who received the easement?",
-        "property_description": "What is the description of the rights of the easement, including a description of the land they cover?",
-        "reservations": "Are there rights which are explicitly excluded from the easement?",
-        "conditions": "Are there rights which are explicitly excluded from the easement?"
-      }
-    },
-    "Ratification": {
-      "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-      "fields": {
-        "instrument_type": "Ratification",
-        "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-        "document_case_number": "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
-        "execution_date": "What is the latest date on which the ratification was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "effective_date": "What is the date that the ratification went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "recording_date": "What is the date on which the ratification was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
-        "grantor": "Who was the grantor in the agreement being ratified?",
-        "grantee": "Who is the grantee in the agreement being ratified?Identify the entity or person receiving the release.",
-        "property_description": "What rights or property are being confirmed or transfered in this ratification, including a description of the land involved?",
-        "reservations": "Are there rights or property which are explicitly excluded from the ratification?",
-        "conditions": "What conditions were met to ratify the original agreement? Are there any remaining conditions/"
-      }
-    },
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+ "fields": {
+  "instrument_type": {
+    "value": "Quitclaim",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who is gaining the rights or property?,,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is releasing the rights or property?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":  "Provide a detailed description of the property or rights being released.",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+  "Option": {
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Option",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":  "Who received the option rights?,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who granted the option?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "What is the description of the rights or property being optioned, including a description of the land they are associated with?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+  "Easement or Right of Way": {
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Easement or Right of Way",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":   "Who received the easement?,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value":  "Who granted the easement?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "What is the description of the rights of the easement, including a description of the land they cover?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+
+  "Ratification": {
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Ratification",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the waiver was signed? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the waiver went into effect? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the waiver was recorded or filed with the county? Return the date in 'Month Day, Year' format. Example: 'January 1, 2023'. If no date is found, return 'N/A'.",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":  "Who is the grantee in the agreement being ratified?Identify the entity or person receiving the release,Provide full names.",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value":  "Who was the grantor in the agreement being ratified?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":  "What rights or property are being confirmed or transfered in this ratification, including a description of the land involved?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+
   "Affidavit": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Affidavit",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the affidavit was signed?",
-      "effective_date": "Return: N/A",
-      "recording_date": "What is the date on which the affidavit was recorded or filed with the county?",
-      "grantor": "Who was attesting to the information provided?",
-      "grantee": "Return: N/A",
-      "property_description": "What is being attested to in the affidavit?",
-      "reservations": "Return: N/A",
-      "conditions": "Return: N/A"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Affidavit",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the affidavit was signed?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"Return: N/A",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the affidavit was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Return: N/A",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who was attesting to the information provided?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"What is being attested to in the affidavit?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Probate": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
   "fields": {
-      "instrument_type":"Probate",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the probate document was signed?",
-      "effective_date": "What is the effective date of the probate document?",
-      "recording_date": "What is the date on which the probate was recorded or filed with the county?",
-      "grantor": "Who died?",
-      "grantee": "Who are the heirs or beneficiaries that will receive property?",
-      "property_description": "List each heir or beneficiary of probate and what assets they received",
-      "reservations": "Return: N/A",
-      "conditions": "List each heir or beneficiary of probate and whether there are conditions that must be met for them to receive assets?"
-  }
+  "instrument_type": {
+    "value": "Probate",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the probate document was signed?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value": "What is the effective date of the probate document?",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":"What is the date on which the probate was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":"Who are the heirs or beneficiaries that will receive property?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who died?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"List each heir or beneficiary of probate and what assets they received",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Will and Testament": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
   "fields": {
-      "instrument_type":"Will and Testament",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the will was signed?",
-      "effective_date": "Return: N/A",
-      "recording_date": "What is the date on which the will was recorded or filed with the county?",
-      "grantor": "Who died?",
-      "grantee": "Who are the heirs or beneficiaries that will receive property?",
-      "property_description": "List each heir or beneficiary of the will and what assets they received.",
-      "reservations": "Return: N/A",
-      "conditions": "List each heir or beneficiary of the will and whether there are conditions that must be met for them to receive assets?"
-  }
+  "instrument_type": {
+    "value": "Will and Testament",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value": "What is the latest date on which the will was signed?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value": "Return: N/A",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date on which the will was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":"Who are the heirs or beneficiaries that will receive property?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who died?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "List each heir or beneficiary of the will and what assets they received.",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Death Certificate": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Death Certificate",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "Return: N/A",
-      "effective_date": "Return: N/A",
-      "recording_date": "What is the date of the death certificate?",
-      "grantor": "Who died?",
-      "grantee": "Return: N/A",
-      "property_description": "Return: N/A",
-      "reservations": "Return: N/A",
-      "conditions": "Return: N/A"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Death Certificate",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":  "Return: N/A",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value": "Return: N/A",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":  "What is the date of the death certificate?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Return: N/A",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who died?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":  "Return: N/A",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+
   "Obituary": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Obituary",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "Return: N/A",
-      "effective_date": "Return: N/A",
-      "recording_date": "Who died?",
-      "grantor": "Who died?",
-      "grantee": "Who are the surviving family members and what is their connection to the deceased?",
-      "property_description": "Return: N/A",
-      "reservations": "Return: N/A",
-      "conditions": "Return: N/A"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Death Certificate",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":  "Return: N/A",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value": "Return: N/A",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":  "What is the date of the Obituary?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who are the surviving family members and what is their connection to the deceased?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who died?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":  "Return: N/A",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+
   "Divorce": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Divorce",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which the divorce filing was signed?",
-      "effective_date": "What is the effective date of the divorce finalization?",
-      "recording_date": "What is the date that the divorce filing was recorded or filed with the county?",
-      "grantor": "Who was the spouse filing for divorce?",
-      "grantee": "Who was the other spouse?",
-      "property_description": "List each spouse and the property they received in the divorce.",
-      "reservations": "Return: N/A",
-      "conditions": "Are there any conditions that must be met for the distribution of property to take place as described in the divorce filing?"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Divorce",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":"What is the latest date on which the divorce filing was signed?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the effective date of the divorce finalization?",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value": "What is the date that the divorce filing was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who was the other spouse?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who was the spouse filing for divorce?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"List each spouse and the property they received in the divorce.",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Adoption": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Adoption",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date that the adoption documents were signed?",
-      "effective_date": "Return: N/A",
-      "recording_date": "What is the date the adoption was recorded or filed with the county?",
-      "grantor": "Who was doing the adopting?",
-      "grantee": "Who was adopted?",
-      "property_description": "Return: N/A",
-      "reservations": "Return: N/A",
-      "conditions": "Return: N/A"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Adoption",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":"What is the latest date that the adoption documents were signed?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"Return: N/A",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":"What is the date the adoption was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":  "Who was adopted?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who was doing the adopting?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"Return: N/A",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
+
   "Court Case": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Court Case",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "Return: N/A",
-      "effective_date": "What is the date that the ruling of the court case goes into effect?",
-      "recording_date": "What is the date of the court case recording or filing with the county?",
-      "grantor": "Who is the plaintiff?",
-      "grantee": "Who is the defendant?",
-      "property_description": "Does the court case ruling result in the transfer of rights or property? If so, what rights or property are transfered?",
-      "reservations": "Are there any rights or property explicitly excluded from the ruling?",
-      "conditions": "Are there any conditions that must be met in order for the transfer of rights to take place?"
-  }
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+    "fields": {
+  "instrument_type": {
+    "value": "Court Case",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
   },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":"Return: N/A",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date that the ruling of the court case goes into effect?",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":"What is the date of the court case recording or filing with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who is the defendant?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is the plaintiff?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"Does the court case ruling result in the transfer of rights or property? If so, what rights or property are transfered?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
+  }
+  }},
+
   "Assignment": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-      "instrument_type":"Assignment",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which party signed the assignment?",
-      "effective_date": "What is the effective date of the assignment?",
-      "recording_date": "What is the date of the assignment recording or filing with the county?",
-      "grantor": "Who is the grantor in this assignment?",
-      "grantee": "Who is the grantee in this assignment?",
-      "property_description": "Return: N/A",
-      "reservations": "Return: N/A",
-      "conditions": "Return: N/A"
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Assignment",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":"What is the latest date on which party signed the assignment?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the effective date of the assignment?",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":"What is the date of the assignment recording or filing with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value": "Who is the grantee in this assignment?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is the grantor in this assignment?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value":"Return: N/A",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
   }
   },
+
   "Other": {
-  "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format.",
-  "fields": {
-       "instrument_type":"Other",
-      "volume_page": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
-      "document_case_number": "Determine the case, file, or recording number. If not found, return 'none found'.",
-      "execution_date": "What is the latest date on which party signed the document?",
-      "effective_date": "What is the date the document is effective?",
-      "recording_date": "What is the date on which the document was recorded or filed with the county?",
-      "grantor": "Who is giving property or rights?",
-      "grantee": "Who is receiving property or rights?",
-      "property_description": "What is the description of the property or rights being transferred?",
-      "reservations": "Is there any property or rights which are explicitly excluded from the transaction?",
-      "conditions": "Are there any conditions that must be met after the effective date to finalize the transfer?"
+    "system": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format. For each extracted field, also include a confidence score (0-10) based on certainty, and the exact text from which the field was derived.",
+   "fields": {
+  "instrument_type": {
+    "value": "Other",
+    "score": "How confident are you about this instrument type? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the instrument type.",
+    "summary" : "what relevant information do you have  in this file about instrument type? summarize in less than 50 words."
+  },
+  "volume_page": {
+    "value": "Identify the volume and page number where the document was recorded. Return as 'Volume Number/Page Number'.",
+    "score": "How confident are you about this volume page? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the volume and page number.",
+    "summary" : "what relevant information do you have  in this file about volume page? summarize in less than 50 words."
+  },
+  "document_case_number": {
+    "value":  "Determine the case, file, or recording number. Examples: 'Case No. 12345', 'File: ABC-2023-001'. If not found, return 'none found'.",
+    "score": "How confident are you about this document case number? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the document case number.",
+    "summary" : "what relevant information do you have  in this file about document case number? summarize in less than 50 words."
+  },
+  "execution_date": {
+    "value":"What is the latest date on which party signed the document?",
+    "score": "How confident are you about this execution date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the execution date.",
+    "summary" : "what relevant information do you have  in this file about execution date? summarize in less than 50 words."
+  },
+  "effective_date": {
+    "value":"What is the date the document is effective?",
+    "score":"How confident are you about this effective date? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the effective date.",
+    "summary" : "what relevant information do you have  in this file about effective date? summarize in less than 50 words."
+  },
+  "recording_date": {
+    "value":"What is the date on which the document was recorded or filed with the county?",
+    "score":"How confident are you about this recording date ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the recording date.",
+    "summary" : "what relevant information do you have  in this file about recording date? summarize in less than 50 words."
+  },
+  "grantee": {
+    "value":  "Who is receiving property or rights?",
+    "score": "How confident are you about this grantee ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantee.",
+    "summary" : "what relevant information do you have  in this file about grantee? summarize in less than 50 words."
+  },
+  "grantor": {
+    "value": "Who is giving property or rights?, Provide full names.",
+    "score": "How confident are you about this grantor ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the grantor.",
+    "summary" : "what relevant information do you have  in this file about grantor? summarize in less than 50 words."
+  },
+  "property_description": {
+    "value": "What is the description of the property or rights being transferred?",
+    "score": "How confident are you about this property description ? Rate your confidence in a range 1 to 10. 1 being not able to understand the document and generating data from generic information to 10 being having exact answer to the question specifically mentioned in the document.",
+    "source": "Provide the exact text from the document that was used to determine the property description.",
+    "summary" : "what relevant information do you have  in this file about property description? summarize in less than 50 words."
   }
+  }
+
 }
 }
 }
+
+
   
