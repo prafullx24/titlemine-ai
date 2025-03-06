@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 def get_db_connection():
     """Establish and return a database connection."""
+    # print("Database credentials:", config.DB_CONFIG)  # Print the database credentials
     connection = psycopg2.connect(**config.DB_CONFIG)
+
     return connection
 
 def select_file_by_projectid(connection, project_id):

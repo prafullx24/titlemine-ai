@@ -108,38 +108,44 @@ def save_and_update_ocr_data_batch(project_id, all_extracted_data,results):
     
     try:
         new_records = []
-        for data in all_extracted_data:
-            # extracted_data = data['extracted_data']
-            extracted_data = data.get('extracted_data', {})
-            if isinstance(extracted_data, list):
-                extracted_data = {"text": "", "confidence_scores": extracted_data}
-            new_records.append(
-                (data['file_id'], project_id, json.dumps(extracted_data), extracted_data.get('text', '').replace("\n", " "))
-        )
+        if all_extracted_data:
+            for data in all_extracted_data:
+                # extracted_data = data['extracted_data']
+                extracted_data = data.get('extracted_data', {})
+                if isinstance(extracted_data, list):
+                    extracted_data = {"text": "", "confidence_scores": extracted_data}
+                new_records.append(
+                    (data['file_id'], project_id, json.dumps(extracted_data), extracted_data.get('text', '').replace("\n", " "))
+            )
+            insert_or_update_ocr_data(connection, new_records)
+            connection.commit()
         
 
         new_records_1 = []
-        for data_1 in results:
-            # extracted_data = data['extracted_data']
-            extracted_data_1 = data_1.get('extracted_data', {})
-            if isinstance(extracted_data_1, list):
-                extracted_data_1 = {"text": "", "confidence_scores": extracted_data_1}
-            new_records_1.append(
-                (data_1['file_id'], project_id, json.dumps(extracted_data_1), extracted_data_1.get('text', '').replace("\n", " "))
-        )
+        if results:
+            for data_1 in results:
+                # extracted_data = data['extracted_data']
+                extracted_data_1 = data_1.get('extracted_data', {})
+                if isinstance(extracted_data_1, list):
+                    extracted_data_1 = {"text": "", "confidence_scores": extracted_data_1}
+                new_records_1.append(
+                    (data_1['file_id'], project_id, json.dumps(extracted_data_1), extracted_data_1.get('text', '').replace("\n", " "))
+            )
+            
+            insert_or_update_ocr_data_1(connection, new_records_1)
+            connection.commit()
 
-        insert_or_update_ocr_data(connection, new_records)
-        connection.commit()
 
-        insert_or_update_ocr_data_1(connection, new_records_1)
-        connection.commit()
+
+
 
         logging.info(f"Open AI and AWS Textract OCR data saved for project_id: {project_id}")
 
-        file_ids = [data['file_id'] for data in all_extracted_data] 
-        update_file_status(connection, file_ids)
-        logging.info(f"OCR status updated to 'Extracting' for project_id: {project_id}")
-        connection.commit()
+        if all_extracted_data or results:
+            file_ids = [data['file_id'] for data in (all_extracted_data or results)]
+            update_file_status(connection, file_ids)
+            logging.info(f"OCR status updated to 'Extracting' for project_id: {project_id}")
+            connection.commit()
         
     except Exception as e:
         connection.rollback()

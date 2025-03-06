@@ -132,35 +132,50 @@ connection = get_db_connection()
 
 
 
+@app.route("/api/v1/docai_ocr/<int:project_id>", methods=["POST"])
+def batch_ocr(project_id):
+    try:
+        files = get_files_by_project(project_id)
+        if not files:
+            return jsonify({"error": "No files found for this project."}), 404
+        downloaded_files, file_sizes = download_files_concurrently(files["file_ids"])
+        logging.info(f"Downloaded files successfully for Document AI OCR.")
 
-# @app.route("/api/v1/docai_ocr/<int:project_id>", methods=["POST"])
-# def batch_ocr(project_id):
-#     files = get_files_by_project(project_id)
-#     if not files:
-#         return jsonify({"error": "No files found for this project."}), 404
-#     downloaded_files, file_sizes = download_files_concurrently(files["file_ids"])
-#     all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
-#     save_and_update_ocr_data_batch(project_id, all_extracted_data)
-#     logging.info(f"OCR data saved successfully in the database.{project_id}")
-#     return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+        all_extracted_data = extract_text_with_confidence_batch(downloaded_files, file_sizes)
+        logging.info(f"Extracted text with confidence successfully for Document AI OCR.")
+
+        if (all_extracted_data):
+            save_and_update_ocr_data_batch(project_id, all_extracted_data, None)
+            logging.info(f"OCR data saved successfully in the database.{project_id}")
+            return jsonify({"message": "Inserted/Updated Data successfully in DataBase"}), 200
+        else:
+            return jsonify({"error": "No files found for all_extracted_data."}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
-
-# @app.route("/api/v1/aws_textract/<int:project_id>", methods=["POST"])
-# def aws_textract_1(project_id):
-#     try:
-#         files = get_files_by_project(project_id)        
-#         s3_file_keys = [file["s3_file_key"] for file in files["file_ids"]]
-#         if not s3_file_keys:
-#             return jsonify({"error": "No files found for this project."}), 404
-#         results = process_images_with_textract(OUTPUT_FOLDER, s3_file_keys,files)
-#         save_and_update_ocr_data_batch(project_id, results)
-#         # Return the results as JSON
-#         return jsonify("Execute process_images_with_textract successfully !")
-    
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
+@app.route("/api/v1/aws_textract/<int:project_id>", methods=["POST"])
+def aws_textract_1(project_id):
+    try:
+        files = get_files_by_project(project_id)        
+        s3_file_keys = [file["s3_file_key"] for file in files["file_ids"]]
+        
+        if not s3_file_keys:
+            return jsonify({"error": "No files found for this project."}), 404
+        
+        results = process_images_with_textract(OUTPUT_FOLDER, s3_file_keys,files)
+        logging.info(f"Execute process_images_with_textract successfully.")
+        
+        if(results):
+            save_and_update_ocr_data_batch(project_id,None, results)
+            logging.info(f"Execute process_images_with_textract successfully.")
+            return jsonify("Execute process_images_with_textract successfully !")
+        else:
+            return jsonify({"error": "No files found for results."}), 404
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 
 
@@ -255,6 +270,8 @@ def combine_ocr(project_id):
         if not files:
             #return jsonify({"error": "No files found for OCR to this project."}), 404
             logging.info(f"No files found for OCR to this project.")
+
+        # s3_file_keys = [file["s3_file_key"] for file in files["file_ids"]]
         if not s3_file_keys:
             # return jsonify({"error": "No any s3 file key found for this project."}), 404
             logging.info(f"No any s3 file key found for this project.")
@@ -271,6 +288,8 @@ def combine_ocr(project_id):
         else:
             # return jsonify({"error": "No files found for all_extracted_data and results.."}), 404
             logging.info(f"No files found for all_extracted_data and results.")
+            # return jsonify({"error": "No files found for all_extracted_data and results."}), 404
+
 
         # Return the results as JSON
         # return jsonify("Execute successfully !")
