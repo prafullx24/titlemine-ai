@@ -14,28 +14,26 @@ from db_operations.db import *
 connection = get_db_connection() # Establish a database connection
 
 
+
+
 def fetch_ocr_text(file_id):
     try:
-        connection = get_db_connection() 
+        # connection = get_db_connection() 
         if connection is None:
             return None, None, None, None, "Database connection error"
 
-        with connection:
-            with connection.cursor() as cur:
-                query = "SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
-                cur.execute(query, (file_id,))
-                response = cur.fetchone()
+        response = fetch_ocr_data_by_file_id(connection, file_id)
 
-                if not response:
-                    return None, None, None, "file_id not found in ocr_data table"
+        if not response:
+            return None, None, None, "file_id not found in ocr_data table"
 
-                file_id_from_db, project_id, ocr_json_1 = response
+        file_id_from_db, project_id, ocr_json_1 = response
 
-                try:
-                    ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
-                    return file_id_from_db, project_id, ocr_data, None
-                except json.JSONDecodeError:
-                    return file_id_from_db, project_id, None, "Invalid JSON format"
+        try:
+            ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
+            return file_id_from_db, project_id, ocr_data, None
+        except json.JSONDecodeError:
+            return file_id_from_db, project_id, None, "Invalid JSON format"
 
     except Exception as e:
         logging.error(f"Error fetching OCR text: {e}")

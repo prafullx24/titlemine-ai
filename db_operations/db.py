@@ -98,6 +98,19 @@ def update_file_status(connection, file_ids, status='Extracting'):
 
 # for extracting data
 # Define queries as constants
+
+
+def fetch_ocr_data_by_file_id(connection, file_id):
+    query = "SELECT file_id, project_id, ocr_json_1 FROM ocr_data WHERE file_id = %s"
+    with connection.cursor() as cur:
+        cur.execute(query, (file_id,))
+        response = cur.fetchone()
+    return response
+
+
+
+
+
 EXTRACTED_DATA_UPSERT_QUERY = """
     INSERT INTO public.extracted_data(
         file_id, project_id, user_id, inst_no, instrument_type, 
