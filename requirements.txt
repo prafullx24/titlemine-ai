@@ -4,3 +4,7 @@ requests
 google-cloud-documentai
 python-dotenv
 PyPDF2
+flask-cors
+openai
+boto3
+python -m pip install --upgrade pip
