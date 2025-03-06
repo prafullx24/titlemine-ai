@@ -16,23 +16,15 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from PyPDF2 import PdfReader, PdfWriter
 from flask_cors import CORS
 import logging
-from extract_data import *
 from db_operations.db import *
-from aws_textract_ocr import *
-from document_ai_ocr import *
 
 
 # Establish a database connection
 connection = get_db_connection() 
 
 
-# Folder to store downloaded and OCR files
-OUTPUT_FOLDER = "output_file"
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-
-
 def process_images_with_textract(output_folder, s3_file_keys, files):
-    print("Wait! Text extraction is in progress...")
+    logging.info("AWS Text extraction is in progress")
 
     # Create a Textract client
     textract_client = boto3.client(
@@ -52,7 +44,8 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
         file_extension = os.path.splitext(s3_file_key)[1].lower()
         if file_extension not in supported_formats:
             error_message = f"Unsupported document format: {file_extension}. Supported formats: {', '.join(supported_formats)}"
-            print(error_message)
+            #print(error_message)
+            logging.error(error_message)
             return {"s3_file_key": s3_file_key, "error": error_message}
 
         try:
@@ -64,7 +57,8 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
                 s3.head_object(Bucket=config.AWS_BUCKET, Key=s3_file_key)
             except s3.exceptions.NoSuchKey:
                 error_message = f"The specified key does not exist: {s3_file_key}"
-                print(error_message)
+                #print(error_message)
+                logging.error(error_message)
                 return {"s3_file_key": s3_file_key, "error": error_message}
 
             if file_extension == ".pdf":
@@ -138,7 +132,8 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
             with open(output_path, "w") as json_file:
                 json.dump({"text": "\n".join([item['text'] for item in extracted_text]), "confidence_scores": extracted_text}, json_file, indent=4)
 
-            print(f"Text extraction completed successfully. Results saved to {output_path}")
+            #print(f"Text extraction completed successfully. Results saved to {output_path}")
+            logging.info(f"Text extraction completed successfully. Results saved to {output_path}")
 
             return {
                 'user_id': user_id,

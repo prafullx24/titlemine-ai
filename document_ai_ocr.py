@@ -10,10 +10,7 @@ from google.cloud import documentai_v1 as documentai
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from extract_data import *
 from db_operations.db import *
-from aws_textract_ocr import *
-from document_ai_ocr import *
 
 
 # Establish a database connection

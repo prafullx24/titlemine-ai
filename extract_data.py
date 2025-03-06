@@ -4,13 +4,11 @@ import psycopg2
 from dotenv import load_dotenv
 import openai
 from datetime import datetime
-import concurrent.futures
 import logging
 import config
 from flask import Flask, jsonify
 from db_operations.db import *
-# from psycopg2 import OperationalError, IntegrityError
-from db_operations.db import *
+
 
 
 connection = get_db_connection() # Establish a database connection
@@ -18,7 +16,6 @@ connection = get_db_connection() # Establish a database connection
 
 def fetch_ocr_text(file_id):
     try:
-         #   conn = get_db_connection()
         connection = get_db_connection() 
         if connection is None:
             return None, None, None, None, "Database connection error"
@@ -108,7 +105,6 @@ def extract_instrument_type(ocr_text):
                     "source": "Unknown",
                     "summary": "Instrument type not clearly identified"
                 }
-            print(json_resp)
             return json_resp
             
         
@@ -327,8 +323,8 @@ def extract_and_process_document(ocr_text, instrument_type_data):
         )
     
         result = completion.choices[0].message.content
-        logging.debug(f"Raw OpenAI response: {result}")
-        logging.info(result)
+        # logging.debug(f"Raw OpenAI response: {result}")
+        # logging.info(result)
         total_tokens = completion.usage.total_tokens
         logging.info(f"Total Token used for data extraction: {total_tokens}")
         
@@ -336,7 +332,6 @@ def extract_and_process_document(ocr_text, instrument_type_data):
             result_json = json.loads(result)
             # Combine the instrument_type_data with the extracted data
             combined_result = {**instrument_type_data, **result_json}
-            print(combined_result)
             return combined_result
         except json.JSONDecodeError as e:
             logging.error(f"Error parsing json from LLM: {e}")
@@ -431,51 +426,3 @@ app = Flask(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-
-# @app.route('/process_project/<project_id>', methods=['GET'])
-# def process_project(project_id):
-#     try:
-#         # Fetch file IDs associated with the project
-#         file_ids, error = fetch_file_ids_by_project(project_id)
-#         if error:
-#             logging.error(f"Error fetching file IDs for project {project_id}: {error}")
-#             return jsonify({"error": f"Error fetching file IDs: {error}"}), 500
-
-#         if not file_ids:
-#             logging.info(f"No files to process for project {project_id}")
-#             return jsonify({"message": f"No files to process for project ID {project_id}"}), 404
-
-#         results = []
-#         for file_id in file_ids:
-#             logging.info(f"Processing file ID: {file_id}")
-#             result = process_single_document(file_id)
-
-#             if "error" not in result:
-#                 storeprocessed_extracted_data(file_id, result, project_id)
-#                 store_runsheet_data(file_id, result, project_id)
-
-#             results.append({
-#                 "file_id": file_id,
-#                 "result": result
-#             })
-#             logging.info(f"Completed processing file ID {file_id}")
-
-#         return jsonify({
-#             "project_id": project_id,
-#             "results": results,
-#             "timestamp": datetime.now().isoformat()
-#         }), 200
-
-#     except Exception as e:
-#         logging.error(f"Error processing project {project_id}: {e}")
-#         return jsonify({
-#             "error": str(e),
-#             "timestamp": datetime.now().isoformat()
-#         }), 500
-
-
-
-if __name__ == '__main__':  
-    app.run(debug=True, host='0.0.0.0', port=5000)
-    #   app.run(debug=True)

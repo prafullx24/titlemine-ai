@@ -235,7 +235,7 @@ def store_runsheet_data(file_id, extracted_data, project_id):
                     with open("prompts.json", "r", encoding="utf-8") as file:
                         data = json.load(file)
                     top_level_keys = list(data.keys())
-                    logger.info(f"[store_runsheet_data] Loaded top-level keys from prompts.json: {top_level_keys}")
+                    # logger.info(f"[store_runsheet_data] Loaded top-level keys from prompts.json: {top_level_keys}")
                     if instrument_type and instrument_type not in top_level_keys:
                         logger.warning(f"[store_runsheet_data] Instrument type '{instrument_type}' not found in prompts.json. Setting to 'Other'.")
                         instrument_type = "Other"
