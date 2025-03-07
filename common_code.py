@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 import threading
 import urllib.parse
-
+import openai
 from db_operations.db import *
 from document_ai_ocr import *
 from extract_data import *

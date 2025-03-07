@@ -234,30 +234,15 @@ def process_project(project_id):
             logging.info(f"Processing file ID: {file_id}")
             result = process_single_document(file_id)
 
-            # Check if result is a list and convert it to a dictionary
-            if isinstance(result, list):
-                result = {str(i): item for i, item in enumerate(result)}
-
-            
-            # Log the result to understand its content
-            # logging.info(f"Result for file ID {file_id}: {result}")
-
+            if "error" not in result:
+                store_extracted_data(file_id, result, project_id)
+                store_runsheet_data(file_id, result, project_id)
 
             results.append({
                 "file_id": file_id,
                 "result": result
             })
             logging.info(f"Completed processing file ID {file_id}")
-
-
-            if "error" not in results:
-                store_extracted_data(file_id, results, project_id)
-                logging.info(f"Completed store_extracted_data file ID {file_id}")
-                # store_runsheet_data(file_id, result, project_id)
-
-
-        # print("results====================",result)
-        
 
         return jsonify({
             "project_id": project_id,
@@ -279,11 +264,11 @@ def process_project(project_id):
 @app.route("/api/v1/combine_ocr/<int:project_id>", methods=["POST"])
 def combine_ocr(project_id):
     try:
-        files = get_files_by_project(project_id) 
-        if files is None:
-            logging.error(f"get_files_by_project returned None for project_id: {project_id}")
-            return jsonify({"error": "No files found for this project."}), 404
-       
+        files = get_files_by_project(project_id)        
+        if not files:
+            logging.info(f"No files found for OCR to this project.")
+            return jsonify({"error": "No files found for OCR to this project."}), 404
+        
         s3_file_keys = [file["s3_file_key"] for file in files["file_ids"]]
 
         if not files:
@@ -357,4 +342,4 @@ def combine_ocr(project_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5001)

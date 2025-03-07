@@ -87,14 +87,18 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
                             FeatureTypes=["TABLES", "FORMS"]
                         )
 
-                        # Extract text along with page number
                         for block in response.get('Blocks', []):
                             if block['BlockType'] == 'LINE':
-                                extracted_text.append({
-                                    "text": block['Text'],
-                                    "confidence": block['Confidence'],
-                                    "page_no": page_num + 1
-                                })
+                                for word in block['Relationships']:
+                                    if word['Type'] == 'CHILD':
+                                        word_block = next(b for b in response['Blocks'] if b['Id'] == word['Ids'][0])
+                                        if word_block['BlockType'] == 'WORD':
+                                            text = word_block['Text']
+                                            vertices = word_block.get('Geometry', {}).get('Polygon', [])
+                                            extracted_text.append({
+                                                "word": text,
+                                                "vertices": vertices
+                                            })
 
                 else:
                     # Process single page PDF directly
@@ -105,10 +109,16 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
 
                     for block in response.get('Blocks', []):
                         if block['BlockType'] == 'LINE':
-                            extracted_text.append({
-                                "text": block['Text'],
-                                "confidence": block['Confidence']
-                            })
+                            for word in block['Relationships']:
+                                if word['Type'] == 'CHILD':
+                                    word_block = next(b for b in response['Blocks'] if b['Id'] == word['Ids'][0])
+                                    if word_block['BlockType'] == 'WORD':
+                                        text = word_block['Text']
+                                        vertices = word_block.get('Geometry', {}).get('Polygon', [])
+                                        extracted_text.append({
+                                            "word": text,
+                                            "vertices": vertices
+                                        })
 
             else:
                 # Process Non-PDF Files Directly
@@ -119,10 +129,17 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
 
                 for block in response.get('Blocks', []):
                     if block['BlockType'] == 'LINE':
-                        extracted_text.append({
-                            "text": block['Text'],
-                            "confidence": block['Confidence']
-                        })
+                        for word in block['Relationships']:
+                            if word['Type'] == 'CHILD':
+                                word_block = next(b for b in response['Blocks'] if b['Id'] == word['Ids'][0])
+                                if word_block['BlockType'] == 'WORD':
+                                    text = word_block['Text']
+                                    vertices = word_block.get('Geometry', {}).get('Polygon', [])
+                                    extracted_text.append({
+                                        "word": text,
+                                        "vertices": vertices
+                                    })
+
 
             # Save results as a single JSON file
             output_filename = os.path.splitext(os.path.basename(s3_file_key))[0] + ".json"
@@ -130,7 +147,8 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
             output_path = os.path.join(output_folder, output_filename)
 
             with open(output_path, "w") as json_file:
-                json.dump({"text": "\n".join([item['text'] for item in extracted_text]), "confidence_scores": extracted_text}, json_file, indent=4)
+                json.dump({"words": extracted_text}, json_file, indent=4)
+
 
             #print(f"Text extraction completed successfully. Results saved to {output_path}")
             logging.info(f"Text extraction completed successfully. Results saved to {output_path}")
@@ -140,8 +158,8 @@ def process_images_with_textract(output_folder, s3_file_keys, files):
                 'project_id': project_id,
                 'file_id': file_id,
                 'extracted_data': {
-                    'text': "\n".join([item['text'] for item in extracted_text]),
-                    'confidence_scores': extracted_text
+                    'words': extracted_text
+
                 }
             }
 
