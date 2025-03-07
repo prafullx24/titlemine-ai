@@ -14,10 +14,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
-      run: |
-        echo "aws_key=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-        echo "aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
