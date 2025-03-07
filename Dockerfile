@@ -33,4 +33,5 @@ ENV PORT=5000
 EXPOSE 5000
 
 # Use Gunicorn to serve the Flask app
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--threads", "8", "app:app"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--threads", "8", "app:app"]
+CMD exec gunicorn --bind :$PORT --workers 3 --threads 8 app:app
