@@ -75,12 +75,6 @@ PROCESSOR_ID =
 
 """
 
-
-
-
-
-
-
 import threading
 from flask_cors import CORS
 import config
@@ -104,6 +98,14 @@ from document_ai_ocr import *
 from aws_textract_ocr import *
 from extract_data import *
 
+for handler in app.logger.handlers[:]:
+    app.logger.removeHandler(handler)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+file_handler = logging.FileHandler("app.log", mode="a")  
+file_handler.setLevel(logging.DEBUG)  # Ensure INFO logs are captured
+file_handler.setFormatter(formatter)
+app.logger.addHandler(file_handler)
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -115,22 +117,8 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 
 
-for handler in app.logger.handlers[:]:
-    app.logger.removeHandler(handler)
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-
-file_handler = logging.FileHandler("app.log")
-file_handler.setLevel(logging.INFO)  # Ensure INFO logs are captured
-file_handler.setFormatter(formatter)
-app.logger.addHandler(file_handler)
-
-
 # Establish a database connection
 connection = get_db_connection() 
-
-
-
-
 
 @app.route("/api/v1/docai_ocr/<int:project_id>", methods=["POST"])
 def batch_ocr(project_id):
@@ -234,9 +222,9 @@ def process_project(project_id):
             logging.info(f"Processing file ID: {file_id}")
             result = process_single_document(file_id)
 
-            if "error" not in result:
-                store_extracted_data(file_id, result, project_id)
-                store_runsheet_data(file_id, result, project_id)
+            # Check if result is a list and convert it to a dictionary
+            if isinstance(result, list):
+                result = {str(i): item for i, item in enumerate(result)}
 
             results.append({
                 "file_id": file_id,
@@ -338,8 +326,21 @@ def combine_ocr(project_id):
             "timestamp": datetime.now().isoformat()
         }), 500
 
+@app.route("/api/v1/extract-file/<int:project_id>/<int:file_id>", methods=["POST"])
+def combine_ocr(project_id, file_id):
+    extracted_data = process_single_document(connection, file_id)
+    result = store_extracted_data(file_id, extracted_data, project_id, connection)
+    logging.info(result)
 
-
+@app.route("/test", methods=["GET"])
+def test():
+    return jsonify({
+            "Status": "OCR is live",
+            "timestamp": datetime.now().isoformat()
+        }), 200
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5001)
+    
+    
+    

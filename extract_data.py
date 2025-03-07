@@ -9,19 +9,57 @@ import config
 from flask import Flask, jsonify
 from db_operations.db import *
 
+   
 
-
-connection = get_db_connection() # Establish a database connection
-
-
-
-
-def fetch_ocr_text(file_id):
+# Load Prompts (unchanged)
+def load_prompts(filepath="prompts.json"):
     try:
-        # connection = get_db_connection() 
-        if connection is None:
-            return None, None, None, None, "Database connection error"
+        with open(filepath, "r") as f:
+            prompts = json.load(f)
+        return prompts
+    except Exception as e:
+        logging.error(f"Error loading prompts from {filepath}: {e}")
+        return {f"Error loading prompts from {filepath}: {e}"}
 
+
+def prompts_by_instrument_type(instrument_type):
+    try:
+        prompts = load_prompts()
+    except Exception as e:
+        logging.error(f"Failed to load prompts: {e}")
+        return json.dumps({"error": f"Failed to load prompts: {e}"}, indent=4)
+
+    types_list = prompts.get('Types', [])
+
+    if instrument_type not in types_list:
+        logging.warning(f"No prompts found for instrument type '{instrument_type}', defaulting to 'Other'")
+        instrument_type = "Other"
+
+    fields = prompts[instrument_type].get("fields", {})
+
+    return json.dumps(fields, indent=4)
+
+def system_prompt_by_instrument_type(instrument_type):
+    try:
+        prompts = load_prompts()
+    except Exception as e:
+        logging.error(f"Failed to load prompts: {e}")
+        return json.dumps({"error": f"Failed to load prompts: {e}"}, indent=4)
+
+    types_list = prompts.get('Types', [])
+
+    if instrument_type not in types_list:
+        logging.warning(f"No prompts found for instrument type '{instrument_type}', defaulting to 'Other'")
+        instrument_type = "Other"
+
+    system = prompts[instrument_type].get("system", {})
+
+    return json.dumps(system, indent=4)
+
+
+def fetch_ocr_data(connection, file_id): 
+    # returns: file_id_from_db, project_id, ocr_json_1, error
+    try:
         response = fetch_ocr_data_by_file_id(connection, file_id)
 
         if not response:
@@ -33,7 +71,7 @@ def fetch_ocr_text(file_id):
             ocr_data = json.loads(ocr_json_1) if isinstance(ocr_json_1, str) else ocr_json_1
             return file_id_from_db, project_id, ocr_data, None
         except json.JSONDecodeError:
-            return file_id_from_db, project_id, None, "Invalid JSON format"
+            return file_id_from_db, project_id, None, "Invalid JSON format in ocr_json_1 data"
 
     except Exception as e:
         logging.error(f"Error fetching OCR text: {e}")
@@ -41,126 +79,67 @@ def fetch_ocr_text(file_id):
 
 
 def extract_instrument_type(ocr_text):
-    """
-    Extracts the instrument type from the provided OCR text using OpenAI's GPT-4o-mini.
-    """
     client = openai.OpenAI()
-
-    system_prompt = """
-    You are a legal expert extraction algorithm specializing in property law and land transactions.
-    Extract the following details from the provided legal land document and provide output in valid JSON format.
-    """
-
-    user_prompt_doc_type = f"""
-    Extract legal information from the following document:\n\n{ocr_text}. 
-    Carefully analyze the first few lines of the document to determine the instrument type.
-    Instrument Type can be one of following: Deed, Lease, Release, Waiver, Quitclaim, Option, Easement or Right of Way, Ratification, Affidavit, Probate, Will and Testament, Death Certificate, Obituary, Divorce, Adoption, Court Case, Assignment or Other. 
-    If the type is an amendment, return what kind of instrument it is amending.
-    If the instrument type is not explicitly stated, return "Other".
+    try:
+        prompts = load_prompts()
+    except Exception as e:
+        logging.error(f"Failed to load prompts: {e}")
+        return json.dumps({"error": f"Failed to load prompts: {e}"}, indent=4)
     
-    Return a JSON object with the key "instrument_type" containing:
-    - "value": the instrument type as a string
-    - "score": confidence score (0-10) as an integer
-    - "source": brief text snippet from document justifying the type
-    - "summary": short explanation of why this type was chosen
-    
-    Example:
-    {{
-        "instrument_type": {{
-            "value": "Deed",
-            "score": 6,
-            "source": "This Deed made this 1st day of January",
-            "summary": "Document begins with 'This Deed', indicating a property transfer"
-        }}
-    }}
-    
-    ONLY return the JSON, nothing else.
-    """
+    system_prompt = prompts["Instrument Type"].get("system", {})
+    system_prompt_ocr = system_prompt + ocr_text
+    user_prompt_doc_type = json.dumps(prompts["Instrument Type"].get("fields", {}))
 
     try:
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "system", "content": system_prompt},
+            messages=[{"role": "system", "content": system_prompt_ocr},                
                       {"role": "user", "content": user_prompt_doc_type}],
-            response_format={"type": "json_object"}
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "instrument_type",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                                    "value": {"type": "string"},
+                                    "score": {"type": "integer"},
+                                    "source": {"type": "string"},
+                                    "summary": {"type": "string"}
+                                },
+                        "required": [
+                            "value", "score", "source", "summary"
+                        ],
+                        "additionalProperties": False
+                    },
+                    "strict": True
+                }
+            }
         )
 
-        raw_resp = completion.choices[0].message.content.strip()
+        raw_resp = completion.choices[0].message.content
         total_tokens = completion.usage.total_tokens
         logging.info(f"Total Token used for instrument_type: {total_tokens}")
-
         logging.debug(f"Raw response from OpenAI: {raw_resp}")
-
         try:
-            json_resp = json.loads(raw_resp)
-            logging.debug(f"Parsed JSON response: {json_resp}")
-
-            if "instrument_type" not in json_resp or not all(k in json_resp["instrument_type"] for k in ["value", "score", "source", "summary"]):
-                logging.warning("Incomplete 'instrument_type' data in JSON response")
-                json_resp["instrument_type"] = {
-                    "value": "Other",
-                    "score": 50,
-                    "source": "Unknown",
-                    "summary": "Instrument type not clearly identified"
-                }
-            return json_resp
-            
-        
-
+            parsed_resp = json.loads(raw_resp)
         except json.JSONDecodeError as e:
-            logging.error(f"Error parsing JSON: {e}")
-            return {
-                "instrument_type": {
-                    "value": "Other",
-                    "score": 50,
-                    "source": "Unknown",
-                    "summary": f"Failed to parse response: {e}"
-                }
-            }
+            logging.info(f"Error parsing JSON: {e}")
+            parsed_resp = {}  # Default to an empty dictionary
 
+        return parsed_resp
+    
     except Exception as e:
-        logging.error(f"Error communicating with OpenAI: {e}")
-        return {
-            "instrument_type": {
-                "value": "Other",
-                "score": 1,
-                "source": "Error",
-                "summary": f"API error: {e}"
-            }
-        }
-
-# Load Prompts (unchanged)
-def load_prompts(filepath="prompts.json"):
-    try:
-        with open(filepath, "r") as f:
-            prompts = json.load(f)
-        return prompts
-    except Exception as e:
-        logging.error(f"Error loading prompts from {filepath}: {e}")
-        return {"Other": {"fields": {"instrument_type": "string"}}}
-
-try:
-    prompts = load_prompts()
-except Exception as e:
-    logging.error(f"Failed to load prompts: {e}")
-    prompts = {"Other": {"fields": {"instrument_type": "string"}}}
-
-# Prompts by Instrument Type (unchanged)
-def prompts_by_instrument_type(instrument_type):
-    if instrument_type not in prompts:
-        logging.warning(f"No prompts found for instrument type '{instrument_type}', defaulting to 'Other'")
-        instrument_type = "Other"
-        
-    if instrument_type not in prompts:
-        return json.dumps({"instrument_type": "string"})
-        
-    fields = prompts.get(instrument_type, {}).get("fields", {})
-    return json.dumps(fields, indent=4)
+        logging.error(f"Error communicating with OpenAI in extract_instrument_type: {e}")
+    
+ 
 
 
 
-#  extract_and_process_document to accept instrument_type_data
+
+#  extract_and_process_document to accept instrument_type_data 
 def extract_and_process_document(ocr_text, instrument_type_data):
+    # Returns JSON for extracted_data table
     try:
         client = openai.OpenAI()
         
@@ -169,7 +148,7 @@ def extract_and_process_document(ocr_text, instrument_type_data):
             ocr_text = str(ocr_text)
         
         # Use the passed instrument_type_data 
-        instrument_type_value = instrument_type_data.get("instrument_type", {}).get("value", "")
+        instrument_type_value = instrument_type_data.get("value")
 
         if not instrument_type_value:
             raise ValueError("Instrument type could not be extracted.")
@@ -179,24 +158,22 @@ def extract_and_process_document(ocr_text, instrument_type_data):
             prompt_output = prompts_by_instrument_type(instrument_type_value)
         except Exception as prompt_error:
             logging.warning(f"Error getting prompts: {prompt_error}")
-            prompt_output = json.dumps({"instrument_type": "string"})
-        
+            return None
         # Validate prompt_output
         try:
             json.loads(prompt_output)
         except json.JSONDecodeError:
-            logging.error("Invalid prompt output, using default")
-            prompt_output = json.dumps({"instrument_type": "string"})
+            logging.error("Invalid prompt output from prompts.json file.")
+            return None
         
-        # Truncate OCR text safely
-        safe_ocr_text = ocr_text[:1000] if isinstance(ocr_text, str) else str(ocr_text)[:1000]
-        
+        system_prompt = system_prompt_by_instrument_type(instrument_type_value)
+
         user_prompt_doc_type = f"""
         Find the following parameters in the text data added at the end of this prompt. 
         Parameters: 
         {prompt_output}
         Search in this text data: 
-        {safe_ocr_text}
+        {ocr_text}
         """
         
         completion = client.chat.completions.create(
@@ -204,7 +181,7 @@ def extract_and_process_document(ocr_text, instrument_type_data):
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a legal expert extraction algorithm specializing in property law and land transactions. Extract the following details from the provided legal land document and provide output in valid JSON format."
+                    "content": system_prompt
                 },
                 {
                     "role": "user", 
@@ -321,51 +298,53 @@ def extract_and_process_document(ocr_text, instrument_type_data):
         )
     
         result = completion.choices[0].message.content
-        # logging.debug(f"Raw OpenAI response: {result}")
-        # logging.info(result)
         total_tokens = completion.usage.total_tokens
         logging.info(f"Total Token used for data extraction: {total_tokens}")
+
         
         try:
             result_json = json.loads(result)
             # Combine the instrument_type_data with the extracted data
-            combined_result = {**instrument_type_data, **result_json}
+            combined_result = {
+                "instrument_type": instrument_type_data,  # Renamed key
+                **result_json  # Merge the rest of the data
+            }
             return combined_result
         except json.JSONDecodeError as e:
-            logging.error(f"Error parsing json from LLM: {e}")
-            return {
-                "error": "Invalid JSON response from OpenAI", 
-                "raw_response": result, 
-                **instrument_type_data
-            }
+            logging.error(f"Error Combining JSON for Instrument Type and Runsheet Values: {e}")
+            return None
 
     except Exception as e:
         logging.error(f"Error processing document: {e}")
         return {"error": str(e), **instrument_type_data}
 
 
-def process_single_document(file_id):
+def process_single_document(connection, file_id):
     try:
         # Fetch OCR text for the given file_id
-        ocr_text = fetch_ocr_text(file_id)
-        if not ocr_text:
+        file_id_from_db, project_id, ocr_data, Error = fetch_ocr_data(connection, file_id)
+
+        if not ocr_data:
             logging.error(f"No OCR text available for file_id: {file_id}")
             return {}
-
+        
         # Extract instrument type
+        ocr_text = ocr_data.get("text")
         instrument_type_data = extract_instrument_type(ocr_text)
-        if not instrument_type_data.get("instrument_type", {}).get("value"):
+        logger.info("instrument_type_data: %s",instrument_type_data)
+        if not instrument_type_data.get("value"):
             logging.warning(f"Could not extract instrument type for file_id: {file_id}")
             return {}
 
         # Extract and process the document
-        extracted_data = extract_and_process_document(ocr_text,instrument_type_data)
+        extracted_data = extract_and_process_document(ocr_text, instrument_type_data)
+        logger.info("extracted_data: %s",extracted_data)
         if "error" in extracted_data:
             logging.error(f"Error extracting data for file_id: {file_id}, {extracted_data['error']}")
             return {}
 
         return extracted_data
-
+ 
     except Exception as e:
         logging.error(f"Error processing document {file_id}: {e}")
         return {}
@@ -406,252 +385,17 @@ def process_documents_by_project(project_id):
     for file_id in file_ids:
         logging.info(f"Processing file ID: {file_id}")
         result = process_single_document(file_id)
-        results.append(f"File ID {file_id}: {result}")
+        # results.append(f"File ID {file_id}: {result}")
+
         logging.info(f"Completed processing file ID {file_id}: {result}")
     
     return results
 
 
 
-#  # to store the data into the database 
-# def storeprocessed_extracted_data(file_id, extracted_data, project_id):
-#     # Pass-through to db.py; no additional logic needed here
-#     return store_extracted_data(file_id, extracted_data, project_id)
 
-
-
-
-
-# EXTRACTED_DATA_UPSERT_QUERY = """
-#     INSERT INTO public.extracted_data(
-#         file_id, project_id, user_id, inst_no, instrument_type, 
-#         volume_page, effective_date, execution_date, file_date, 
-#         remarks, created_at, updated_at, grantor, grantee, 
-#         land_description, volume_page_number, document_case_number, 
-#         execution_date_extra, effective_date_extra, recording_date, 
-#         property_description
-#     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-#     ON CONFLICT (file_id)
-#     DO UPDATE SET
-#         project_id = EXCLUDED.project_id,
-#         instrument_type = EXCLUDED.instrument_type,
-#         volume_page = EXCLUDED.volume_page,
-#         effective_date = EXCLUDED.effective_date,
-#         execution_date = EXCLUDED.execution_date,
-#         updated_at = EXCLUDED.updated_at,
-#         grantor = EXCLUDED.grantor,
-#         grantee = EXCLUDED.grantee,
-#         document_case_number = EXCLUDED.document_case_number,
-#         recording_date = EXCLUDED.recording_date,
-#         property_description = EXCLUDED.property_description
-# """
-
-# EXTRACTED_DATA_UPSERT_QUERY = """
-#     INSERT INTO public.extracted_data(
-#         id, file_id, project_id, user_id, inst_no, instrument_type, 
-#         volume_page, effective_date, execution_date, file_date, 
-#         remarks, created_at, updated_at, grantor, grantee, 
-#         land_description, volume_page_number, document_case_number, 
-#         execution_date_extra, effective_date_extra, recording_date, 
-#         property_description
-#     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-#     ON CONFLICT (id)
-#     DO UPDATE SET
-#         file_id = EXCLUDED.file_id,
-#         project_id = EXCLUDED.project_id,
-#         user_id = EXCLUDED.user_id,
-#         inst_no = EXCLUDED.inst_no,
-#         instrument_type = EXCLUDED.instrument_type,
-#         volume_page = EXCLUDED.volume_page,
-#         effective_date = EXCLUDED.effective_date,
-#         execution_date = EXCLUDED.execution_date,
-#         file_date = EXCLUDED.file_date,
-#         remarks = EXCLUDED.remarks,
-#         updated_at = EXCLUDED.updated_at,
-#         grantor = EXCLUDED.grantor,
-#         grantee = EXCLUDED.grantee,
-#         land_description = EXCLUDED.land_description,
-#         volume_page_number = EXCLUDED.volume_page_number,
-#         document_case_number = EXCLUDED.document_case_number,
-#         execution_date_extra = EXCLUDED.execution_date_extra,
-#         effective_date_extra = EXCLUDED.effective_date_extra,
-#         recording_date = EXCLUDED.recording_date,
-#         property_description = EXCLUDED.property_description;
-# """
-
-
-
-
-
-EXTRACTED_DATA_UPSERT_QUERY = """
-    INSERT INTO public.extracted_data(
-        id, file_id, project_id, user_id, inst_no, instrument_type, 
-        volume_page, effective_date, execution_date, file_date, 
-        remarks, created_at, updated_at, grantor, grantee, 
-        land_description, volume_page_number, document_case_number, 
-        execution_date_extra, effective_date_extra, recording_date, 
-        property_description
-    ) VALUES (
-        nextval('extracted_data_id_seq'::regclass), %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-    )
-    ON CONFLICT (file_id)
-    DO UPDATE SET
-        project_id = EXCLUDED.project_id,
-        instrument_type = EXCLUDED.instrument_type,
-        volume_page = EXCLUDED.volume_page,
-        effective_date = EXCLUDED.effective_date,
-        execution_date = EXCLUDED.execution_date,
-        updated_at = EXCLUDED.updated_at,
-        grantor = EXCLUDED.grantor,
-        grantee = EXCLUDED.grantee,
-        document_case_number = EXCLUDED.document_case_number,
-        recording_date = EXCLUDED.recording_date,
-        property_description = EXCLUDED.property_description
-"""
-
-
-
-# Function to store insert the extracted data in the Extracted data table 
-
-# def store_extracted_data(file_id, extracted_data, project_id):
-#     try:
-#         connection = psycopg2.connect(**config.DB_CONFIG)
-#         if connection is None:
-#             logger.error("Failed to connect to database")
-#             return False
-        
-#         with connection:
-#             with connection.cursor() as cur:
-#                 current_time = datetime.now()
-#                 instrument_type_json = json.dumps(extracted_data.get('instrument_type', {}))
-#                 volume_page_json = json.dumps(extracted_data.get('volume_page', {}))
-#                 effective_date_json = json.dumps(extracted_data.get('effective_date', {}))
-#                 execution_date_json = json.dumps(extracted_data.get('execution_date', {}))
-#                 grantor_json = json.dumps(extracted_data.get('grantor', {}))
-#                 grantee_json = json.dumps(extracted_data.get('grantee', {}))
-#                 document_case_number_json = json.dumps(extracted_data.get('document_case_number', {}))
-#                 recording_date_json = json.dumps(extracted_data.get('recording_date', {}))
-#                 property_description_json = json.dumps(extracted_data.get('property_description', {}))
-#                 created_at_json = json.dumps({'timestamp': current_time.isoformat()})
-#                 updated_at_json = json.dumps({'timestamp': current_time.isoformat()})
-
-#                 cur.execute(EXTRACTED_DATA_UPSERT_QUERY, (
-#                     file_id, project_id, None, None, instrument_type_json,
-#                     volume_page_json, effective_date_json, execution_date_json, None,
-#                     None, created_at_json, updated_at_json, grantor_json, grantee_json,
-#                     None, volume_page_json, document_case_number_json, None, None,
-#                     recording_date_json, property_description_json
-#                 ))
-
-#                 connection.commit()
-#                 logger.info(f"Successfully stored/updated data in Extracted Data Table for file_id: {file_id}")
-#                 return True
-#     except (IntegrityError, OperationalError) as e:
-#         logger.error(f"Database integrity or operational error: {e}")
-#         connection.rollback()
-#         return False
-#     except Exception as e:
-#         logger.error(f"Unexpected error storing data: {e}")
-#         if connection:
-#             connection.rollback()
-#         return False
-#     finally:
-#         if connection:
-#             connection.close()
-
-
-
-
-
-
-
-
-# def store_extracted_data(file_id, extracted_data, project_id):
-#     try:
-#         connection = psycopg2.connect(**config.DB_CONFIG)
-#         if connection is None:
-#             logger.error("Failed to connect to database")
-#             return False
-
-#         with connection:
-#             with connection.cursor() as cur:
-#                 current_time = datetime.now()
-
-#                 # Extract values from JSON response
-#                 result = extracted_data.get("results", [{}])[0].get("result", {})
-
-#                 inst_no = None  # Not present in JSON, setting default as None
-#                 instrument_type_json = json.dumps(result.get("instrument_type", {}))
-#                 volume_page_json = json.dumps(result.get("volume_page", {}))
-#                 effective_date_json = json.dumps(result.get("effective_date", {}))
-#                 execution_date_json = json.dumps(result.get("execution_date", {}))
-#                 file_date = None  # Not present in JSON, setting default as None
-#                 remarks = None  # Not present in JSON, setting default as None
-#                 grantor_json = json.dumps(result.get("grantor", {}))
-#                 grantee_json = json.dumps(result.get("grantee", {}))
-#                 land_description = None  # Not present in JSON, setting default as None
-#                 volume_page_number = None  # Not present in JSON, setting default as None
-#                 document_case_number_json = json.dumps(result.get("document_case_number", {}))
-#                 execution_date_extra = None  # Not present in JSON, setting default as None
-#                 effective_date_extra = None  # Not present in JSON, setting default as None
-#                 recording_date_json = json.dumps(result.get("recording_date", {}))
-#                 property_description_json = json.dumps(result.get("property_description", {}))
-#                 created_at_json = json.dumps({'timestamp': current_time.isoformat()})
-#                 updated_at_json = json.dumps({'timestamp': current_time.isoformat()})
-
-#                 # Log the values being passed to the query
-#                 logger.debug(f"Values for UPSERT query: file_id={file_id}, project_id={project_id}, inst_no={inst_no}, instrument_type_json={instrument_type_json}, volume_page_json={volume_page_json}, effective_date_json={effective_date_json}, execution_date_json={execution_date_json}, file_date={file_date}, remarks={remarks}, created_at_json={created_at_json}, updated_at_json={updated_at_json}, grantor_json={grantor_json}, grantee_json={grantee_json}, land_description={land_description}, volume_page_number={volume_page_number}, document_case_number_json={document_case_number_json}, execution_date_extra={execution_date_extra}, effective_date_extra={effective_date_extra}, recording_date_json={recording_date_json}, property_description_json={property_description_json}")
-
-#                 # Execute the UPSERT query
-#                 cur.execute(EXTRACTED_DATA_UPSERT_QUERY, (
-#                     file_id, project_id, None, inst_no, instrument_type_json,
-#                     volume_page_json, effective_date_json, execution_date_json, file_date,
-#                     remarks, created_at_json, updated_at_json, grantor_json, grantee_json,
-#                     land_description, volume_page_number, document_case_number_json,
-#                     execution_date_extra, effective_date_extra, recording_date_json, property_description_json
-#                 ))
-
-#                 connection.commit()
-#                 logger.info(f"Successfully stored/updated data in Extracted Data Table for file_id: {file_id}")
-#                 return True
-
-#     except (IntegrityError, OperationalError) as e:
-#         logger.error(f"Database integrity or operational error: {e}")
-#         if connection:
-#             connection.rollback()
-#         return False
-
-#     except Exception as e:
-#         logger.error(f"Unexpected error storing data: {e}")
-#         if connection:
-#             connection.rollback()
-#         return False
-
-#     finally:
-#         if connection:
-#             connection.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-def store_extracted_data(file_id, results, project_id):
+def store_extracted_data_old(file_id, results, project_id):
     try:
-        connection = psycopg2.connect(**config.DB_CONFIG)
-        if connection is None:
-            logger.error("Failed to connect to database")
-            return False
-
-        print("extracted_data==============",results)
         results = results.get("results", [])
         if isinstance(results, dict):
             results = results.get("results", [])
@@ -660,7 +404,6 @@ def store_extracted_data(file_id, results, project_id):
             return False
 
         result = results[0].get("result", {})
-        current_time = datetime.now()
 
         def get_json_field(field_name):
             return json.dumps(result.get(field_name, {}))
@@ -675,45 +418,15 @@ def store_extracted_data(file_id, results, project_id):
         recording_date_json = get_json_field("recording_date")
         property_description_json = get_json_field("property_description")
 
-        inst_no = None  
-        file_date = None  
-        remarks = None  
-        land_description = None  
-        volume_page_number = None  
-        execution_date_extra = None  
-        effective_date_extra = None  
-        created_at_json = json.dumps({'timestamp': current_time.isoformat()})
-        updated_at_json = json.dumps({'timestamp': current_time.isoformat()})
+        log_result = [ file_id, project_id, instrument_type_json,
+        volume_page_json, effective_date_json, execution_date_json, grantor_json, grantee_json, document_case_number_json,
+        recording_date_json, property_description_json]
 
-        with connection:
-            with connection.cursor() as cur:
-                cur.execute(EXTRACTED_DATA_UPSERT_QUERY, (
-                    file_id, project_id, None, inst_no, instrument_type_json,
-                    volume_page_json, effective_date_json, execution_date_json, file_date,
-                    remarks, created_at_json, updated_at_json, grantor_json, grantee_json,
-                    land_description, volume_page_number, document_case_number_json,
-                    execution_date_extra, effective_date_extra, recording_date_json, property_description_json
-                ))
-
-                connection.commit()
-                logger.info(f"Successfully stored/updated data in Extracted Data Table for file_id: {file_id}")
-                return True
-
-    except (IntegrityError, OperationalError) as e:
-        logger.error(f"Database integrity or operational error: {e}")
-        if connection:
-            connection.rollback()
-        return False
+        logger.info(log_result)
 
     except Exception as e:
         logger.error(f"Unexpected error storing data: {e}")
-        if connection:
-            connection.rollback()
         return False
-
-    finally:
-        if connection:
-            connection.close()
 
 
 
@@ -840,6 +553,145 @@ def store_runsheet_data(file_id, extracted_data, project_id):
     finally:
         if connection and not connection.closed:
             connection.close()
+
+
+def insert_extracted_data(file_id, project_id, result, connection):
+    """ Inserts extracted JSON data into the extracted_data table """
+    try:
+        # Helper function to get full JSON
+        def get_json_field(field_name):
+            return json.dumps(result.get(field_name, {}))
+
+        # Prepare JSON fields for extracted_data table
+        instrument_type_json = get_json_field("instrument_type")
+        volume_page_json = get_json_field("volume_page")
+        effective_date_json = get_json_field("effective_date")
+        execution_date_json = get_json_field("execution_date")
+        grantor_json = get_json_field("grantor")
+        grantee_json = get_json_field("grantee")
+        document_case_number_json = get_json_field("document_case_number")
+        recording_date_json = get_json_field("recording_date")  # recording_date is file_date
+        property_description_json = get_json_field("property_description")
+
+        # SQL query for inserting JSON data into extracted_data
+        insert_extracted_data_query = """
+            INSERT INTO public.extracted_data(
+                file_id, project_id, instrument_type, volume_page, 
+                effective_date, execution_date, file_date, grantor, grantee, 
+                property_description, document_case_number
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (file_id) DO UPDATE 
+            SET instrument_type = EXCLUDED.instrument_type, 
+                volume_page = EXCLUDED.volume_page, 
+                effective_date = EXCLUDED.effective_date, 
+                execution_date = EXCLUDED.execution_date, 
+                file_date = EXCLUDED.file_date,
+                grantor = EXCLUDED.grantor,
+                grantee = EXCLUDED.grantee,
+                property_description = EXCLUDED.property_description,
+                document_case_number = EXCLUDED.document_case_number
+            RETURNING file_id;
+        """
+
+        extracted_data_values = (
+            file_id, project_id, instrument_type_json, volume_page_json,
+            effective_date_json, execution_date_json, recording_date_json,
+            grantor_json, grantee_json, property_description_json,
+            document_case_number_json
+        )
+
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(insert_extracted_data_query, extracted_data_values)
+        
+        logger.info(f"Inserted into extracted_data for file_id: {file_id}")
+
+        return True
+
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error inserting extracted data for file_id {file_id}: {e}")
+        return False
+
+
+def insert_runsheet_data(file_id, project_id, result, connection):
+    """ Inserts extracted value fields into the runsheets table """
+    try:
+        # Helper function to get only the "value" field
+        def get_value_field(field_name):
+            return result.get(field_name, {}).get("value", None)
+
+        # Prepare value fields for runsheets table
+        instrument_type_value = get_value_field("instrument_type")
+        volume_page_value = get_value_field("volume_page")
+        effective_date_value = get_value_field("effective_date")
+        execution_date_value = get_value_field("execution_date")
+        grantor_value = get_value_field("grantor")
+        grantee_value = get_value_field("grantee")
+        document_case_number_value = get_value_field("document_case_number")
+        recording_date_value = get_value_field("recording_date")  # recording_date is file_date
+        property_description_value = get_value_field("property_description")
+
+        # SQL query for inserting "value" data into runsheets
+        insert_runsheet_query = """
+            INSERT INTO public.runsheets(
+                project_id, file_id, instrument_type, volume_page, 
+                document_case, execution_date, effective_date, file_date, 
+                grantor, grantee, property_description
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (file_id, project_id) DO UPDATE 
+            SET instrument_type = EXCLUDED.instrument_type, 
+                volume_page = EXCLUDED.volume_page, 
+                effective_date = EXCLUDED.effective_date, 
+                execution_date = EXCLUDED.execution_date, 
+                file_date = EXCLUDED.file_date,
+                grantor = EXCLUDED.grantor,
+                grantee = EXCLUDED.grantee,
+                property_description = EXCLUDED.property_description,
+                document_case = EXCLUDED.document_case
+            RETURNING file_id;
+        """
+
+        runsheet_values = (
+            project_id, file_id, instrument_type_value, volume_page_value,
+            document_case_number_value, execution_date_value, effective_date_value,
+            recording_date_value, grantor_value, grantee_value, property_description_value
+        )
+
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(insert_runsheet_query, runsheet_values)
+        
+        logger.info(f"Inserted into runsheets for file_id: {file_id}")
+
+        return True
+
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error inserting runsheet data for file_id {file_id}: {e}")
+        return False
+
+
+def store_extracted_data(file_id, result, project_id, connection):
+    """ Calls both functions to insert data into extracted_data and runsheets """
+    try:
+        # extracted_success = insert_extracted_data(file_id, project_id, result, connection)
+        runsheet_success = insert_runsheet_data(file_id, project_id, result, connection)
+
+        # if extracted_success and runsheet_success:
+        if runsheet_success:
+            connection.commit()
+            logger.info(f"Successfully stored extracted data for file_id: {file_id}")
+            return True
+        else:
+            connection.rollback()
+            logger.error(f"Failed to store extracted data for file_id: {file_id}")
+            return False
+
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Unexpected error storing data for file_id {file_id}: {e}")
+        return False
 
 
 
